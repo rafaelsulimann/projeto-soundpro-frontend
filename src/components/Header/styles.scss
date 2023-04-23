@@ -1,0 +1,67 @@
+.header {
+  padding: 15px 0px 0px 15px;
+  padding-bottom: 87px;
+  height: 96vh;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  
+  .header-logo {
+    margin-bottom: 40px;
+    .homeImg {
+      width: 35px !important;
+      height: auto;
+      //fill: rgb(136, 0, 255);
+      fill: #884bfd;
+      //fill: #A836D9;
+      .rect {
+        stroke: #000;
+        stroke-width: 2px;
+      }
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--white-color);
+      text-shadow: -1px -1px 0px #000, -1px 1px 0px #000, 1px -1px 0px #000,
+        1px 0px 0px #000;
+    }
+  }
+  .header-nav {
+    overflow: auto;
+    .header-nav-session {
+      margin-bottom: 40px;
+      h2 {
+        font-size: 16px;
+        color: var(--white-color);
+        font-weight: 400;
+        margin-bottom: 22px;
+        text-shadow: -1px -1px 0px #000, -1px 1px 0px #000, 1px -1px 0px #000,
+          1px 0px 0px #000;
+      }
+      ul {
+        li {
+          list-style: none;
+          font-size: 14px;
+          color: var(--gray-light-color);
+          font-weight: 500;
+          margin-bottom: 15px;
+        }
+      }
+    }
+  }
+  .header-div-comp {
+    display: flex;
+    align-items: center;
+    .iconSvg {
+      margin-right: 17px;
+      width: 19px;
+      height: auto;
+    }
+  }
+
+  .header-nav-session-last {
+    margin-bottom: 5px !important;
+  }
+}
+

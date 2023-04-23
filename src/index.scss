@@ -1,0 +1,47 @@
+:root {
+  --green-color: #1ed760;
+  --white-color: #fff;
+  --purple-color: #884bfd;
+  --background-color: #1b1b1f;
+  --dashboard-color: #222228;
+  --music-dashboard-background-color: #19191e;
+  --line-gray-color: #2d2d33;
+  --gray-light-color: #999aa7;
+  --border-gray-color: #838289;
+  --orange-color: #fc9700;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: "PT Root UI", sans-serif;
+}
+
+body {
+  background-color: var(--background-color);
+  color: var(--white-color);
+}
+
+header {
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 4px;
+  }
+}
+
+header:hover{
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--line-gray-color);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: #3f3f48;
+  }
+}
+
+
+

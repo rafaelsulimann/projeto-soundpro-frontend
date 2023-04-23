@@ -1,0 +1,232 @@
+.linha-branca {
+  height: 1px;
+  background-color: var(--line-gray-color);
+  border: none;
+  width: 100%;
+  position: fixed;
+  bottom: 12.48%;
+}
+
+.music-player-bar-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  background-color: var(--music-dashboard-background-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  @media (min-width: 1080px) {
+    padding: 0px 65px;
+  }
+  @media (max-width: 1080px) {
+    padding: 0px 20px;
+  }
+  .left-div {
+    @media (min-width: 1220px) {
+      min-width: 320px;
+    }
+    @media (max-width: 1220px) {
+      min-width: 220px;
+    }
+    @media (max-width: 1080px) {
+      min-width: 100px;
+    }
+    display: flex;
+    .album-photo {
+      height: 45px;
+      width: 45px;
+      background-color: var(--line-gray-color);
+      border-radius: 5px;
+      margin-right: 17px;
+    }
+    .music-gif {
+      width: 25px;
+    }
+  }
+  .center-div {
+    width: 100%;
+    min-width: 320px;
+    max-width: 450px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-height: 90px;
+    height: 90px;
+    @media (max-width: 800px) {
+      margin-right: 10px;
+    }
+    .music-buttons {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      .random-button {
+        width: 25px;
+        height: auto;
+        margin-right: 20px;
+      }
+      .back-music-button {
+        width: 30px;
+        height: auto;
+        margin-right: 10px;
+      }
+      .play-button,
+      .stop-button {
+        cursor:pointer;
+        width: 40px;
+        height: auto;
+        margin-right: 10px;
+      }
+      .next-music-button {
+        width: 30px;
+        height: auto;
+        margin-right: 20px;
+      }
+      .repeat-button {
+        width: 25px;
+        height: auto;
+      }
+    }
+    .music-time {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      .current-music-time {
+        min-width: 20px;
+        width: 20px;
+        margin-right: 15px;
+        p {
+          font-size: 14px;
+        }
+      }
+      .music-time-bar {
+        width: 100%;
+        height: 5px;
+        border-radius: 3px;
+        input[type="range"] {
+          width: 100%;
+          border-radius: 3px;
+          position: relative;
+          top: -11px;
+          height: 5px;
+          outline: none;
+          appearance: none;
+          -webkit-appearance: none; /* Remove a aparência padrão do navegador */
+          cursor: pointer;
+          pointer-events: auto;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+          display: none;
+          cursor: pointer;
+          pointer-events: auto;
+          -webkit-appearance: none; /* Remove a aparência padrão do navegador */
+          position: relative;
+          top: 3.5px;
+          right: -2px;
+          background-color: #fff; /* Cor da bolinha */
+          width: 12px; /* Largura da bolinha */
+          height: 12px; /* Altura da bolinha */
+          border-radius: 50%; /* Deixa a bolinha arredondada */
+          margin-top: -8px; /* Ajusta a posição da bolinha */
+        }
+        input[type="range"]:hover::-webkit-slider-thumb {
+          display: block;
+        }
+      }
+      .music-full-time {
+        margin-left: 10px;
+        p {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  .right-div {
+    @media (min-width: 1220px) {
+      min-width: 320px;
+    }
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .microfone-button {
+      width: 13px;
+      @media (min-width: 1220px) {
+        margin-right: 25px;
+      }
+      @media (max-width: 1220px) {
+        margin-right: 15px;
+      }
+    }
+    .eq-button {
+      width: 19px;
+      @media (min-width: 1220px) {
+        margin-right: 25px;
+      }
+      @media (max-width: 1220px) {
+        margin-right: 15px;
+      }
+    }
+    .user-playlist {
+      width: 20px;
+      @media (min-width: 1220px) {
+        margin-right: 25px;
+      }
+      @media (max-width: 1220px) {
+        margin-right: 15px;
+      }
+    }
+    .like-button {
+      width: 20px;
+      @media (min-width: 1220px) {
+        margin-right: 25px;
+      }
+      @media (max-width: 1220px) {
+        margin-right: 15px;
+      }
+    }
+    .volume-div {
+      display: flex;
+      align-items: center;
+      .volume-button {
+        width: 12px;
+        margin-right: 5px;
+        fill: var(--orange-color);
+      }
+      .volume-bar {
+        height: 10px;
+        width: 100px;
+        display: flex;
+        align-items: center;
+        input[type="range"] {
+          width: 100%;
+          border-radius: 3px;
+          height: 5px;
+          outline: none;
+          appearance: none;
+          -webkit-appearance: none; /* Remove a aparência padrão do navegador */
+          cursor: pointer;
+          pointer-events: auto;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+          display: none;
+          cursor: pointer;
+          pointer-events: auto;
+          -webkit-appearance: none; /* Remove a aparência padrão do navegador */
+          position: relative;
+          top: 3.5px;
+          background-color: #fff; /* Cor da bolinha */
+          width: 12px; /* Largura da bolinha */
+          height: 12px; /* Altura da bolinha */
+          border-radius: 50%; /* Deixa a bolinha arredondada */
+          margin-top: -8px; /* Ajusta a posição da bolinha */
+        }
+        input[type="range"]:hover::-webkit-slider-thumb {
+          display: block;
+        }
+      }
+    }
+  }
+}
