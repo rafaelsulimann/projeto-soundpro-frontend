@@ -7,9 +7,10 @@ import waveIcon from "../../assets/music-wave-icon.svg";
 import { TesteAudioDTO } from "../../models/testeAudio";
 import soundImg from "../../assets/capa-pack.png";
 import { TesteAudioResponseDTO } from "../../models/testeAudioResponseDTO";
+import { TesteAudioFirebaseDTO } from "../../models/testeAudioFirebaseDTO";
 
 type Props = {
-  audio: TesteAudioResponseDTO;
+  audio: TesteAudioFirebaseDTO;
   onUpdateSrc: Function;
 };
 
@@ -19,17 +20,17 @@ export default function SoundSampleRowTeste({ audio, onUpdateSrc }: Props) {
   const [blobSrc, setBlobSrc] = useState<string>("");
 
   useEffect(() => {
-    setBlobSrc(convertBase64ToBlobSrc());
+    setBlobSrc(audio.audioUrl);
   }, []);
 
-  function convertBase64ToBlobSrc(): string {
-    const base64String = audio.audio;
-    const byteArray = atob(base64String)
-      .split("")
-      .map((char) => char.charCodeAt(0));
-      const blob = new Blob([new Uint8Array(byteArray)], { type: "audio/mpeg" });
-    return URL.createObjectURL(blob);
-  }
+  //function convertBase64ToBlobSrc(): string {
+  //  const base64String = audio.audio;
+  //  const byteArray = atob(base64String)
+  //    .split("")
+  //    .map((char) => char.charCodeAt(0));
+  //    const blob = new Blob([new Uint8Array(byteArray)], { type: "audio/mpeg" });
+  //  return URL.createObjectURL(blob);
+  //}
 
   function handleUpdateSrc(newSrc: string, liked: boolean) {
     onUpdateSrc(newSrc, liked);
@@ -71,7 +72,7 @@ export default function SoundSampleRowTeste({ audio, onUpdateSrc }: Props) {
                 <path d="M0 66.7981V2.81699C0 0.615093 2.4159 -0.732909 4.2896 0.423591L56.122 32.414C57.903 33.5129 57.903 36.1018 56.122 37.2007L4.2897 69.1911C2.4159 70.3471 0 69.0001 0 66.7981Z" />
               </svg>
             )
-          ) : isHovered && src !== `${audio?.audio}` ? (
+          ) : isHovered && src !== `${audio?.audioUrl}` ? (
             <svg
               width="58"
               height="70"
@@ -94,11 +95,6 @@ export default function SoundSampleRowTeste({ audio, onUpdateSrc }: Props) {
 
         <div className="sound-infos">
           <h3>{audio?.name}</h3>
-          <div className="sound-infos-categories">
-            {audio?.categories.map((category) => (
-              <h4 key={category.name}>{category.name}</h4>
-            ))}
-          </div>
         </div>
         <div className="sounds-samples-buttons">
           <svg

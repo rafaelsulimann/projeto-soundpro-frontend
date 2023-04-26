@@ -10,6 +10,10 @@ import SoundSampleRowTeste from "../SoundSampleRowTeste";
 import "./styles.scss";
 import { CategoryDTO } from "../../models/category";
 import { TesteAudioResponseDTO } from "../../models/testeAudioResponseDTO";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../utils/firebase-config";
+import { TesteAudioFirebaseDTO } from "../../models/testeAudioFirebaseDTO";
+import { TesteAudioFirebaseRequestDTO } from "../../models/testeAudioFirebaseBackendDTO";
 
 export default function Sounds() {
   const { src, setSrc, isPlaying, setIsPlaying, liked, setLiked } =
@@ -17,7 +21,7 @@ export default function Sounds() {
   const [isHovered, setIsHovered] = useState(false);
   const [primeiraRenderizacao, setPrimeiraRenderizacao] = useState(true);
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [sounds, setSounds] = useState<TesteAudioResponseDTO[]>([]);
+  const [sounds, setSounds] = useState<TesteAudioFirebaseDTO[]>([]);
 
   useEffect(() => {
     soundService.findAllRequest(0).then((response) => {
@@ -79,74 +83,138 @@ export default function Sounds() {
   //              console.log(error);
   //            });
   //        });
-//
+  //
   //      }
   //    };
   //  }
   //}
+  //function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+  //  const file = event.target.files && event.target.files[0];
+  //  console.log("file", file);
+  //  if (file) {
+  //    const storageRef = ref(storage, file.name);
+  //    uploadBytes(storageRef, file)
+  //      .then((snapshot) => {
+  //        console.log("Arquivo enviado com sucesso!", snapshot);
+  //        getDownloadURL(storageRef)
+  //          .then((response) => {
+  //            const audioUrl = response;
+  //            console.log("URL de referência do arquivo de áudio:", audioUrl);
+  //
+  //            const requestDTO: TesteAudioFirebaseDTO = {
+  //              name: file.name,
+  //              audioUrl: audioUrl,
+  //            };
+  //            console.log("enviando requisição", requestDTO);
+  //            axios
+  //              .post(
+  //                "http://localhost:8081/soundpro-sound/sounds",
+  //                requestDTO,
+  //                {
+  //                  headers: {
+  //                    "Content-Type": "application/json",
+  //                  },
+  //                }
+  //              )
+  //              .then((response) => {
+  //                console.log(response.data);
+  //                setAudioFile(file);
+  //              })
+  //              .catch((error) => {
+  //                console.log(error);
+  //              });
+  //          })
+  //          .catch((error) => {
+  //            console.log("Erro ao obter link url do arquivo", error);
+  //          });
+  //      })
+  //      .catch((error) => {
+  //        console.error("Erro ao enviar o arquivo:", error);
+  //      });
+  //    }
+  //  }
   function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files && event.target.files[0];
     console.log("file", file);
     if (file) {
-      const reader = new FileReader();
-      const audioContext = new AudioContext();
-      reader.readAsArrayBuffer(file);
-      console.log("reader", reader);
-      reader.onload = () => {
-        if (reader) {
-          const result = reader.result;
-          console.log("result", result);
-          const arrayBuffer = reader.result as ArrayBuffer;
-          console.log("arrayBuffer", arrayBuffer);
-          const audioBlobBuffer = new Blob([arrayBuffer], { type: file.type });
-          console.log("audioBlobBuffer",audioBlobBuffer);
-          //const byteArray = new Uint8Array(arrayBuffer);
-          //console.log("bytArray", byteArray);
-          //const base64String = Buffer.from(byteArray).toString("base64");
-          //console.log("base64String", base64String);
-          const audioBlob = new Blob([file], { type: `multipart/form-data` });
-          console.log("audioBlob", audioBlob);
-          console.log("audio context", audioContext);
-          audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
-            console.log("Formato do arquivo:", file.type);
-            console.log("Duração da música:", audioBuffer.duration);
-            const duration: number = audioBuffer.duration;
-            console.log("Nome do arquivo:", file.name);
-            const fileName = file.name;
-            const categories: CategoryDTO[] = [
-              { name: 'category1' },
-              { name: 'category2' },
-          ];
-            const formData = new FormData();
-            formData.append('name', fileName);
-            formData.append('audio', audioBlob);
-            formData.append("duration", duration.toString());
-            formData.append("categories", JSON.stringify(categories));
-            console.log(formData);
-            //const soundDTO: TesteAudioDTO= {
-            //  name: fileName,
-            //  duration: duration,
-            //  audio: audioBlob
-            //}
-            axios
-              .post("http://localhost:8081/soundpro-sound/sounds", formData, {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              })
-              .then((response) => {
-                console.log(response.data);
-                setAudioFile(file);
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          });
-
-        }
-      };
+      console.log("storageRef", ref(storage, file.name));
+      const formData = new FormData();
+      formData.append("name", file.name);
+      formData.append("audio", file);
+      axios
+        .post("http://localhost:8081/soundpro-sound/sounds", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          console.log(response.data);
+          setAudioFile(file);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }
+  //const reader = new FileReader();
+  //const audioContext = new AudioContext();
+  //reader.readAsArrayBuffer(file);
+  //console.log("reader", reader);
+  //reader.onload = () => {
+  //  if (reader) {
+  //    const result = reader.result;
+  //    console.log("result", result);
+  //    const arrayBuffer = reader.result as ArrayBuffer;
+  //    console.log("arrayBuffer", arrayBuffer);
+  //    const audioBlobBuffer = new Blob([arrayBuffer], { type: file.type });
+  //    console.log("audioBlobBuffer",audioBlobBuffer);
+  //    //const byteArray = new Uint8Array(arrayBuffer);
+  //    //console.log("bytArray", byteArray);
+  //    //const base64String = Buffer.from(byteArray).toString("base64");
+  //    //console.log("base64String", base64String);
+  //    const audioBlob = new Blob([file], { type: `multipart/form-data` });
+  //    console.log("audioBlob", audioBlob);
+  //    console.log("audio context", audioContext);
+  //    audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
+  //      console.log("Formato do arquivo:", file.type);
+  //      console.log("Duração da música:", audioBuffer.duration);
+  //      const duration: number = audioBuffer.duration;
+  //      console.log("Nome do arquivo:", file.name);
+  //      const fileName = file.name;
+  //      const categories: CategoryDTO[] = [
+  //        { name: 'category1' },
+  //        { name: 'category2' },
+  //    ];
+  //      const formData = new FormData();
+  //      formData.append('name', fileName);
+  //      formData.append('audio', audioBlob);
+  //      formData.append("duration", duration.toString());
+  //      formData.append("categories", JSON.stringify(categories));
+  //      console.log(formData);
+  //      //const soundDTO: TesteAudioDTO= {
+  //      //  name: fileName,
+  //      //  duration: duration,
+  //      //  audio: audioBlob
+  //      //}
+  //      axios
+  //        .post("http://localhost:8081/soundpro-sound/sounds", formData, {
+  //          headers: {
+  //            "Content-Type": "multipart/form-data",
+  //          },
+  //        })
+  //        .then((response) => {
+  //          console.log(response.data);
+  //          setAudioFile(file);
+  //        })
+  //        .catch((error) => {
+  //          console.log(error);
+  //        });
+  //    });
+  //
+  //  }
+  //};
+  //  }
+  //}
 
   const audios: AudioDTO[] = [
     {
