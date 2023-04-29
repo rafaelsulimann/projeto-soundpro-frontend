@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeClient from "./routes/HomeClient";
 import { useState } from "react";
 import { ContextPlayer } from "./utils/context-player";
+import Sounds from "./routes/HomeClient/Sounds";
 
 export default function App() {
   const [currentTime, setCurrentTime] = useState<number>(0);
@@ -33,7 +34,9 @@ export default function App() {
     >
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<HomeClient />} />
+          <Route path="/" element={<HomeClient />} >
+            <Route path="sounds" element={<Sounds />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </ContextPlayer.Provider>

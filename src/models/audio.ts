@@ -1,11 +1,6 @@
-import { CategoryDTO } from "./category";
-
 export type AudioDTO ={
-    id: string;
-    image: string;
-    src: string;
+    id?: string;
     name: string;
-    categories: CategoryDTO[];
-    liked: boolean;
+    audioUrl: string;
 }
 
