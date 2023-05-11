@@ -15,21 +15,28 @@ export function findAllSounds(page: number, size = 12, sort = "name,asc") {
     },
     headers: {
       "Content-Type": "application/json",
-    }
+    },
   };
 
   return requestBackend(config, contextPath);
 }
 export function insertSound(sound: FormData) {
-  
   const config: AxiosRequestConfig = {
     method: "POST",
     url: "/sounds",
     data: sound,
     headers: {
       "Content-Type": "multipart/form-data",
-    }
+    },
   };
 
+  return requestBackend(config, contextPath);
+}
+
+export function deleteSoundById(soundId: string) {
+  const config: AxiosRequestConfig = {
+    method: "DELETE",
+    url: `/sounds/${soundId}`,
+  };
   return requestBackend(config, contextPath);
 }

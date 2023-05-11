@@ -1,0 +1,35 @@
+.options-button-container {
+  .options-button {
+    position: relative;
+    width: 5px;
+    margin-right: 20px;
+    cursor: pointer;
+  }
+  .options-box-div {
+    border: 1px solid var(--line-gray-color);
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    position: absolute;
+    min-height: 35px;
+    width: 100px;
+    background-color: var(--music-dashboard-background-color);
+    color: var(--white-color);
+    .delete-div {
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      border-radius: 3px;
+      padding: 5px 0px;
+      .options-box-icon {
+        margin-right: 10px;
+        width: 15px;
+      }
+    }
+  }
+}

@@ -1,13 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AudioDTO } from "../../../models/audio";
-import { ContextPlayer } from "../../../utils/context-player";
 import SoundSampleRow from "../../../components/SoundSampleRow";
 import * as soundService from "../../../services/sound-service";
 import "./styles.scss";
 
 export default function Sounds() {
-  const { src, setSrc, isPlaying, setIsPlaying, liked, setLiked } =
-    useContext(ContextPlayer);
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
 
@@ -18,12 +15,15 @@ export default function Sounds() {
     });
   }, [audioFile]);
 
+  function handleDeleteAudioFile(){
+    setAudioFile(null);
+  }
+
   function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files && event.target.files[0];
     console.log("file", file);
     if (file) {
       const formData = new FormData();
-      formData.append("name", file.name);
       formData.append("audio", file);
       soundService
         .insertSound(formData)
@@ -34,26 +34,6 @@ export default function Sounds() {
         .catch((error) => {
           console.log(error);
         });
-    }
-  }
-
-  function handleUpdateSrc(newSrc: string, liked: boolean) {
-    if (src === "" || src === undefined) {
-      setSrc(newSrc);
-      setLiked(liked);
-    }
-    if (src === newSrc) {
-      if (isPlaying) {
-        setIsPlaying(!isPlaying);
-      } else {
-        setIsPlaying(!isPlaying);
-      }
-    } else {
-      setSrc(newSrc);
-      setLiked(liked);
-      if (isPlaying) {
-        setIsPlaying(!isPlaying);
-      }
     }
   }
 
@@ -87,7 +67,7 @@ export default function Sounds() {
               sounds.map((sound) => (
                 <SoundSampleRow
                   audio={sound}
-                  onUpdateSrc={handleUpdateSrc}
+                  onDeleteAudioFile={handleDeleteAudioFile}
                   key={sound.id}
                 />
               ))}
