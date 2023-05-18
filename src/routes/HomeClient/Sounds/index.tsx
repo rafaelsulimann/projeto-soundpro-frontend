@@ -6,6 +6,7 @@ import "./styles.scss";
 
 export default function Sounds() {
   const [audioFile, setAudioFile] = useState<File | null>(null);
+  const [count, setCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
 
   useEffect(() => {
@@ -13,10 +14,14 @@ export default function Sounds() {
       console.log(response);
       setSounds(response.data.content);
     });
-  }, [audioFile]);
+  }, [audioFile, count]);
 
   function handleDeleteAudioFile(){
-    setAudioFile(null);
+    setCount(count + 1);
+  }
+  
+  function handleUpdateAudioFile(){
+    setCount(count + 1);
   }
 
   function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -68,6 +73,7 @@ export default function Sounds() {
                 <SoundSampleRow
                   audio={sound}
                   onDeleteAudioFile={handleDeleteAudioFile}
+                  onEditAudioFile={handleUpdateAudioFile}
                   key={sound.id}
                 />
               ))}

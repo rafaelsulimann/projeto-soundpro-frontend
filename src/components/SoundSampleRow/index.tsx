@@ -12,10 +12,11 @@ import './styles.scss'
 
 type Props = {
   audio: AudioDTO;
-  onDeleteAudioFile: Function
+  onDeleteAudioFile: any;
+  onEditAudioFile: any;
 };
 
-export default function SoundSampleRow({ audio , onDeleteAudioFile}: Props) {
+export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioFile}: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked} = useContext(ContextPlayer);
   const [isHovered, setIsHovered] = useState(false);
   const [blobSrc, setBlobSrc] = useState<string>("");
@@ -29,6 +30,18 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile}: Props) {
     .then(() => {
       console.log(`Sound ${audio.name} deleted successfully`);
       onDeleteAudioFile();
+    })
+    .catch((error) => {
+      console.log(error.data);
+    })
+  }
+  
+  function handleEditClick(){
+    const originalName = audio.name;
+    soundService.updateSound(audio.id, {soundName: "teste", liked: audio.liked})
+    .then(() => {
+      console.log(`Sound ${originalName} updated to name teste`);
+      onEditAudioFile();
     })
     .catch((error) => {
       console.log(error.data);
@@ -87,7 +100,7 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile}: Props) {
           <LikeButton simbolColor="#999AA7" className="like-button" />
         )}
           <h4>+</h4>
-          <Points3Button simbolColor="#999AA7" className="options-button" onDeleteClick={handleDeleteClick}/>
+          <Points3Button simbolColor="#999AA7" className="options-button" onDeleteClick={handleDeleteClick} onEditClick={handleEditClick}/>
         </div>
       </div>
     </div>

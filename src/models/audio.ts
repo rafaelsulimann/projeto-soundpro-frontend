@@ -8,3 +8,7 @@ export type AudioDTO ={
     soundType: string;
 }
 
+export type AudioUpdateDTO = {
+    soundName: string;
+    liked: boolean;
+}

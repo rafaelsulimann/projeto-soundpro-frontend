@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import deleteButton from "../../../../assets/delete-button.svg";
+import editButton from "../../../../assets/edit-button.svg";
 import "./styles.scss";
 import { createPopper } from "@popperjs/core";
 
@@ -7,9 +8,10 @@ type Props = {
   simbolColor: string;
   className: string;
   onDeleteClick: any;
+  onEditClick: any;
 };
 
-export default function Points3Button({ simbolColor, className , onDeleteClick}: Props) {
+export default function Points3Button({ simbolColor, className , onDeleteClick, onEditClick}: Props) {
   const [isButtonClick, setIsButtonClick] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState(false);
   const botaoRef = useRef<HTMLDivElement>(null);
@@ -23,6 +25,12 @@ export default function Points3Button({ simbolColor, className , onDeleteClick}:
 
   function handleDeleteClick(){
     onDeleteClick();
+    setIsButtonClick(false);
+    setIsHovered(false);
+  }
+  
+  function handleEditClick(){
+    onEditClick();
     setIsButtonClick(false);
     setIsHovered(false);
   }
@@ -113,11 +121,25 @@ export default function Points3Button({ simbolColor, className , onDeleteClick}:
                 onClick={handleDeleteClick}
               >
                 <img
-                  className="options-box-icon"
+                  className="delete-options-box-icon"
                   src={deleteButton}
                   alt="Delete"
                 />
                 <p>Excluir</p>
+              </div>
+              <div
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="edit-div"
+                style={{ background: bgHovered }}
+                onClick={handleEditClick}
+              >
+                <img
+                  className="edit-options-box-icon"
+                  src={editButton}
+                  alt="Edit"
+                />
+                <p>Editar</p>
               </div>
             </div>
           )}
