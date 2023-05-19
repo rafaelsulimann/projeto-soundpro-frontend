@@ -5,7 +5,6 @@ import * as soundService from "../../../services/sound-service";
 import "./styles.scss";
 
 export default function Sounds() {
-  const [audioFile, setAudioFile] = useState<File | null>(null);
   const [count, setCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
 
@@ -14,7 +13,7 @@ export default function Sounds() {
       console.log(response);
       setSounds(response.data.content);
     });
-  }, [audioFile, count]);
+  }, [count]);
 
   function handleDeleteAudioFile(){
     setCount(count + 1);
@@ -34,7 +33,7 @@ export default function Sounds() {
         .insertSound(formData)
         .then((response) => {
           console.log(response.data);
-          setAudioFile(file);
+          setCount(count + 1);
         })
         .catch((error) => {
           console.log(error);

@@ -9,6 +9,7 @@ import Points3Button from "../Icons/Buttons/3Points";
 import WaveIcon from "../Icons/Wave";
 import * as soundService from '../../services/sound-service'
 import './styles.scss'
+import axios from "axios";
 
 type Props = {
   audio: AudioDTO;
@@ -46,6 +47,13 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
     .catch((error) => {
       console.log(error.data);
     })
+  }
+
+  function handleDownloadClick() {
+    const link = document.createElement("a");
+    link.href = audio.audioUrl;
+    link.download = audio.name;
+    link.click();
   }
 
   function handleUpdateSrc(newSrc: string, liked: boolean) {
@@ -100,7 +108,7 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
           <LikeButton simbolColor="#999AA7" className="like-button" />
         )}
           <h4>+</h4>
-          <Points3Button simbolColor="#999AA7" className="options-button" onDeleteClick={handleDeleteClick} onEditClick={handleEditClick}/>
+          <Points3Button simbolColor="#999AA7" className="options-button" onDeleteClick={handleDeleteClick} onEditClick={handleEditClick} onDownloadClick={handleDownloadClick}/>
         </div>
       </div>
     </div>

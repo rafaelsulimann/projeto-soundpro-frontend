@@ -1,35 +1,47 @@
 import { useEffect, useRef, useState } from "react";
-import deleteButton from "../../../../assets/delete-button.svg";
-import editButton from "../../../../assets/edit-button.svg";
-import "./styles.scss";
 import { createPopper } from "@popperjs/core";
+import BoxOption from "../../../BoxOption";
+import deleteIcon from "../../../../assets/delete-button.svg";
+import editIcon from "../../../../assets/edit-button.svg";
+import "./styles.scss";
 
 type Props = {
   simbolColor: string;
   className: string;
   onDeleteClick: any;
   onEditClick: any;
+  onDownloadClick: any
 };
 
-export default function Points3Button({ simbolColor, className , onDeleteClick, onEditClick}: Props) {
+export default function Points3Button({
+  simbolColor,
+  className,
+  onDeleteClick,
+  onEditClick,
+  onDownloadClick
+}: Props) {
   const [isButtonClick, setIsButtonClick] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState(false);
   const botaoRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  const bgHovered = isHovered ? "#2d2d35" : "transparent";
-
   function handleButtonClick() {
     setIsButtonClick(!isButtonClick);
   }
 
-  function handleDeleteClick(){
+  function handleDeleteClick() {
     onDeleteClick();
     setIsButtonClick(false);
     setIsHovered(false);
   }
-  
-  function handleEditClick(){
+
+  function handleDownloadClick() {
+    onDownloadClick();
+    setIsButtonClick(false);
+    setIsHovered(false);
+  }
+
+  function handleEditClick() {
     onEditClick();
     setIsButtonClick(false);
     setIsHovered(false);
@@ -113,34 +125,30 @@ export default function Points3Button({ simbolColor, className , onDeleteClick, 
         <div>
           {isButtonClick && (
             <div ref={boxRef} className="options-box-div">
-              <div
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className="delete-div"
-                style={{ background: bgHovered }}
-                onClick={handleDeleteClick}
-              >
-                <img
-                  className="delete-options-box-icon"
-                  src={deleteButton}
-                  alt="Delete"
-                />
-                <p>Excluir</p>
-              </div>
-              <div
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                className="edit-div"
-                style={{ background: bgHovered }}
-                onClick={handleEditClick}
-              >
-                <img
-                  className="edit-options-box-icon"
-                  src={editButton}
-                  alt="Edit"
-                />
-                <p>Editar</p>
-              </div>
+              <BoxOption
+                optionTextName="Excluir"
+                className={"delete-div"}
+                imgClassName={"delete-option-box-icon"}
+                iconSrc={deleteIcon}
+                iconAltName="Delete"
+                onFunctionClick={handleDeleteClick}
+              />
+              <BoxOption
+                optionTextName="Editar"
+                className={"edit-div"}
+                imgClassName={"edit-option-box-icon"}
+                iconSrc={editIcon}
+                iconAltName="Edit"
+                onFunctionClick={handleEditClick}
+              />
+              <BoxOption
+                optionTextName="Download"
+                className={"edit-div"}
+                imgClassName={"edit-option-box-icon"}
+                iconSrc={editIcon}
+                iconAltName="Download"
+                onFunctionClick={handleDownloadClick}
+              />
             </div>
           )}
         </div>
