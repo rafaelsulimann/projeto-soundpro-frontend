@@ -205,6 +205,7 @@ export default function MusicPlayerBar() {
                   type="range"
                   min="0"
                   max={duration}
+                  step="1.5"
                   value={currentTime}
                   onChange={handleRangeChange}
                   style={{

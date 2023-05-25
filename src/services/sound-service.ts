@@ -50,3 +50,12 @@ export function updateSound(soundId: string, audio: AudioUpdateDTO){
   };
   return requestBackend(config, contextPath);
 }
+
+export function downloadSound(soundId: string){
+  const config: AxiosRequestConfig = {
+    method: "GET",
+    url: `/sounds/download/${soundId}`,
+    responseType: 'blob'
+  };
+  return requestBackend(config, contextPath);
+}

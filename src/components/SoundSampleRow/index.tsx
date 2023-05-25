@@ -50,10 +50,23 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
   }
 
   function handleDownloadClick() {
-    const link = document.createElement("a");
-    link.href = audio.audioUrl;
-    link.download = audio.name;
-    link.click();
+    soundService.downloadSound(audio.id)
+    .then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      const audioName = audio.name + '.mp3';
+      link.href = url;
+      link.setAttribute('download', audioName);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      // Libera o objeto URL
+      window.URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+      console.log(error)
+    })
   }
 
   function handleUpdateSrc(newSrc: string, liked: boolean) {
