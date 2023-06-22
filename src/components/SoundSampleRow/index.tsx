@@ -9,7 +9,6 @@ import Points3Button from "../Icons/Buttons/3Points";
 import WaveIcon from "../Icons/Wave";
 import * as soundService from '../../services/sound-service'
 import './styles.scss'
-import axios from "axios";
 
 type Props = {
   audio: AudioDTO;

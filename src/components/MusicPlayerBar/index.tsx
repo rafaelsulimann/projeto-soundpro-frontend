@@ -3,11 +3,11 @@ import "./styles.scss";
 import { ContextPlayer } from "../../utils/context-player";
 import MusicGifIcon from "../../components/Icons/MusicGif";
 import BackMusicButton from "../../components/Icons/Buttons/BackMusic";
-import RandomMusicButton from "../../components/Icons/Buttons/RandomMusic";
+import RepeatMusicButton from "../Icons/Buttons/RepeatMusic";
 import StopMusicButton from "../../components/Icons/Buttons/StopMusic";
 import PlayMusicButton from "../../components/Icons/Buttons/PlayMusic";
 import NextMusicButton from "../../components/Icons/Buttons/NextMusic";
-import RepeatMusicButton from "../../components/Icons/Buttons/RepeatMusic";
+import RandomMusicButton from "../Icons/Buttons/RandomMusic";
 import MicrofoneButton from "../../components/Icons/Buttons/Microfone";
 import EqualizerButton from "../../components/Icons/Buttons/Equalizer";
 import PlaylistIcon from "../../components/Icons/Playlist";
@@ -154,18 +154,6 @@ export default function MusicPlayerBar() {
     }
   };
 
-  const handleDownload = () => {
-    const audio = audioRef.current;
-    if (audio) {
-      const link = document.createElement("a");
-      link.href = audio.src;
-      link.download = audio.src.split("/").pop() || "audio.mp3";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
-
   return (
     <>
       <div className="music-play-container">
@@ -186,15 +174,15 @@ export default function MusicPlayerBar() {
           </div>
           <div className="center-div">
             <div className="music-buttons">
-              <RandomMusicButton backgroundColor="#60626C" simbolColor="#fff" className="random-button"/>
-              <BackMusicButton backgroundColor="#60626C" simbolColor="#1F1F24" className="back-music-button"/>
+              <RepeatMusicButton backgroundColor="#60626C" simbolColor="#fff" divClassName="div-repeat-button" iconClassName="repeat-button" />
+              <BackMusicButton backgroundColor="#60626C" simbolColor="#1F1F24" divClassName="div-back-music-button" iconClassName="back-music-button"/>
               {isPlaying ? (
-                <StopMusicButton backgroundColor="#60626C" simbolColor="#fff" className="stop-button" onClick={togglePlay}/>
-              ) : (
-                <PlayMusicButton backgroundColor="#60626C" simbolColor="#fff" className="play-button" onClick={togglePlay}/>
-              )}
-              <NextMusicButton backgroundColor="#60626C" simbolColor="#1F1F24" className="next-music-button"/>
-              <RepeatMusicButton backgroundColor="#60626C" simbolColor="#fff" className="repeat-button" />
+                <StopMusicButton backgroundColor="#60626C" simbolColor="#fff" divClassName="div-play-pause-button" iconClassName="stop-button" onClick={togglePlay}/>
+                ) : (
+                  <PlayMusicButton backgroundColor="#60626C" simbolColor="#fff" divClassName="div-play-pause-button" iconClassName="play-button" onClick={togglePlay}/>
+                  )}
+              <NextMusicButton backgroundColor="#60626C" simbolColor="#1F1F24" divClassName="div-next-music-button" iconClassName="next-music-button"/>
+              <RandomMusicButton backgroundColor="#60626C" simbolColor="#fff" divClassName="div-random-button" iconClassName="random-button"/>
             </div>
             <div className="music-time">
               <div className="current-music-time">
@@ -220,8 +208,8 @@ export default function MusicPlayerBar() {
             <div></div>
           </div>
           <div className="right-div">
-            <MicrofoneButton simbolColor="#A2A3B1" className="microfone-button" />
-            <EqualizerButton simbolColor="#A2A3B1" className="eq-button" />
+            <MicrofoneButton simbolColor="#A2A3B1" divClassName="div-microfone-button" iconClassName="microfone-button" />
+            <EqualizerButton simbolColor="#A2A3B1" divClassName="div-eq-button" iconClassName="eq-button" />
             <PlaylistIcon fill="#999AA7" className="user-playlist" />
             {liked ? (
               <LikeButton simbolColor="rgb(166, 54, 54)" className="like-button" />

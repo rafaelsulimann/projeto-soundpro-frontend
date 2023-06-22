@@ -63,31 +63,60 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
-      .random-button {
-        width: 25px;
-        height: auto;
-        margin-right: 20px;
+      .div-random-button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .random-button {
+          cursor: pointer;
+          width: 25px;
+          height: auto;
+        }
       }
-      .back-music-button {
-        width: 30px;
-        height: auto;
-        margin-right: 10px;
+      .div-back-music-button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .back-music-button {
+          cursor: pointer;
+          width: 30px;
+          height: auto;
+          margin-right: 10px;
+        }
       }
-      .play-button,
-      .stop-button {
-        cursor: pointer;
-        width: 40px;
-        height: auto;
-        margin-right: 10px;
+      .div-play-pause-button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .play-button,
+        .stop-button {
+          cursor: pointer;
+          width: 40px;
+          height: auto;
+          margin-right: 10px;
+        }
       }
-      .next-music-button {
-        width: 30px;
-        height: auto;
-        margin-right: 20px;
+      .div-next-music-button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .next-music-button {
+          cursor: pointer;
+          width: 30px;
+          height: auto;
+          margin-right: 20px;
+        }
       }
-      .repeat-button {
-        width: 25px;
-        height: auto;
+      .div-repeat-button{
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .repeat-button {
+          cursor: pointer;
+          width: 25px;
+          height: auto;
+          margin-right: 20px;
+        }
       }
     }
     .music-time {
@@ -151,22 +180,34 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    .microfone-button {
-      width: 13px;
-      @media (min-width: 1220px) {
-        margin-right: 25px;
-      }
-      @media (max-width: 1220px) {
-        margin-right: 15px;
+    .div-microfone-button{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .microfone-button {
+        cursor: pointer;
+        width: 13px;
+        @media (min-width: 1220px) {
+          margin-right: 25px;
+        }
+        @media (max-width: 1220px) {
+          margin-right: 15px;
+        }
       }
     }
-    .eq-button {
-      width: 19px;
-      @media (min-width: 1220px) {
-        margin-right: 25px;
-      }
-      @media (max-width: 1220px) {
-        margin-right: 15px;
+    .div-eq-button{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .eq-button {
+        cursor: pointer;
+        width: 19px;
+        @media (min-width: 1220px) {
+          margin-right: 25px;
+        }
+        @media (max-width: 1220px) {
+          margin-right: 15px;
+        }
       }
     }
     .user-playlist {

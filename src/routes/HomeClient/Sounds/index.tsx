@@ -3,23 +3,38 @@ import { AudioDTO } from "../../../models/audio";
 import SoundSampleRow from "../../../components/SoundSampleRow";
 import * as soundService from "../../../services/sound-service";
 import "./styles.scss";
+import LoadMoreButton from "../../../components/LoadMoreButton";
+
+type QueryParams = {
+  page: number;
+};
 
 export default function Sounds() {
+  const [isLastPage, setIsLastPage] = useState(false);
   const [count, setCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
+  const [queryParams, setQueryParams] = useState<QueryParams>({
+    page: 0,
+  });
 
   useEffect(() => {
-    soundService.findAllSounds(0).then((response) => {
+    soundService.findAllSounds(queryParams.page).then((response) => {
       console.log(response);
-      setSounds(response.data.content);
+      const nextPage = response.data.content;
+      setIsLastPage(response.data.last);
+      setSounds(sounds.concat(nextPage));
     });
-  }, [count]);
+  }, [count, queryParams]);
 
-  function handleDeleteAudioFile(){
+  function handleNextPageClick() {
+    setQueryParams({ ...queryParams, page: queryParams.page + 1 });
+  }
+
+  function handleDeleteAudioFile() {
     setCount(count + 1);
   }
-  
-  function handleUpdateAudioFile(){
+
+  function handleUpdateAudioFile() {
     setCount(count + 1);
   }
 
@@ -76,6 +91,11 @@ export default function Sounds() {
                   key={sound.id}
                 />
               ))}
+          </div>
+          <div className="sounds-load-more-button">
+            {
+              !isLastPage && <LoadMoreButton onClick={handleNextPageClick} />
+            }
           </div>
         </div>
       </div>
