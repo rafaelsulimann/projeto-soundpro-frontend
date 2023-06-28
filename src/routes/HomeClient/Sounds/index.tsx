@@ -1,10 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { AudioDTO } from "../../../models/audio";
 import SoundSampleRow from "../../../components/SoundSampleRow";
+import SearchIcon from "../../../components/Icons/Search";
 import * as soundService from "../../../services/sound-service";
 import "./styles.scss";
-import LoadMoreButton from "../../../components/LoadMoreButton";
-import SearchIcon from "../../../components/Icons/Search";
 
 type QueryParams = {
   page: number;
@@ -14,10 +13,10 @@ type QueryParams = {
 export default function Sounds() {
   const firstEntryRef = useRef(true);
   const isLastPage = useRef(false);
-  const [intersectionObserverCount, setIntersectionObserverCount] = useState(0);
-  const [filteredSounds, setFilteredSounds] = useState<AudioDTO[]>([]);
   const [count, setCount] = useState(0);
+  const [intersectionObserverCount, setIntersectionObserverCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
+  const [filteredSounds, setFilteredSounds] = useState<AudioDTO[]>([]);
   const [inputText, setInputText] = useState("");
   const [queryParams, setQueryParams] = useState<QueryParams>({
     page: 0,
@@ -30,7 +29,11 @@ export default function Sounds() {
       .then((response) => {
         const nextPage = response.data.content;
         isLastPage.current = response.data.last; // Use a função de retorno para obter o valor atualizado
-        setSounds(sounds.concat(nextPage)); // Atualize o estado usando uma função para concatenar corretamente os sons
+        //Filtrar os sons duplicados antes de adicioná-los ao estado
+        const uniqueSounds = nextPage.filter((nextSound: AudioDTO) => {
+          return !sounds.some((sound) => sound.id === nextSound.id);
+        });
+        setSounds((prevSounds) => [...prevSounds, ...uniqueSounds]); // Atualize o estado usando uma função para concatenar corretamente os sons
       });
   }, [count, queryParams]);
 
@@ -43,11 +46,11 @@ export default function Sounds() {
           handleNextPageClick();
         }
       }
-    })
+    });
 
-    const divSentinela = document.querySelector('#sentinela');
+    const divSentinela = document.querySelector("#sentinela");
 
-    if(divSentinela != null){
+    if (divSentinela != null) {
       intersectionObserver.observe(divSentinela);
     }
 
@@ -55,17 +58,18 @@ export default function Sounds() {
   }, [intersectionObserverCount]);
 
   function handleSearch(event: any) {
-    setInputText(event.target.value);
+    const inputTextConst = event.target.value;
+    setInputText(inputTextConst);
     setSounds([]);
     setQueryParams((prevParams) => ({
       ...prevParams,
       page: 0,
-      name: event.target.value,
+      name: inputTextConst,
     }));
-    if(event.target.value == "" || event.target.value == undefined){
+    if (event.target.value == "" || event.target.value == undefined) {
+      firstEntryRef.current = true;
       isLastPage.current = false;
       setIntersectionObserverCount(intersectionObserverCount + 1);
-      firstEntryRef.current = true;
     }
   }
 
