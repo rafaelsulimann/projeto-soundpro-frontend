@@ -29,7 +29,7 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
     soundService.deleteSoundById(audio.id)
     .then(() => {
       console.log(`Sound ${audio.name} deleted successfully`);
-      onDeleteAudioFile();
+      onDeleteAudioFile(audio.id);
     })
     .catch((error) => {
       console.log(error.data);

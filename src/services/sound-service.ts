@@ -5,11 +5,12 @@ import { AudioDTO, AudioUpdateDTO } from "../models/audio";
 
 const contextPath: string = SOUND_CONTEXT;
 
-export function findAllSounds(page: number, size = 12, sort = "name,asc") {
+export function findAllSounds(name: string, page: number, size = 12, sort = "name,asc") {
   const config: AxiosRequestConfig = {
     method: "GET",
     url: "/sounds",
     params: {
+      name,
       page,
       size,
       sort,
