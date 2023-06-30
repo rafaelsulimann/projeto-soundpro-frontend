@@ -38,10 +38,11 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
   
   function handleEditClick(){
     const originalName = audio.name;
-    soundService.updateSound(audio.id, {soundName: "teste", liked: audio.liked})
+    const soundName = "teste"
+    soundService.updateSound(audio.id, {soundName: soundName, liked: audio.liked})
     .then(() => {
       console.log(`Sound ${originalName} updated to name teste`);
-      onEditAudioFile();
+      onEditAudioFile(audio.id, soundName);
     })
     .catch((error) => {
       console.log(error.data);
