@@ -11,11 +11,6 @@ type QueryParams = {
   size: number;
 };
 
-type UpdatedSoundDTO = {
-  id: string;
-  newName: string;
-};
-
 export default function Sounds() {
   const isLastPage = useRef(false);
   const [searchCount, setSearchCount] = useState(0);
@@ -24,17 +19,32 @@ export default function Sounds() {
     AudioDTO[]
   >([]);
   const [intersectionObserverCount, setIntersectionObserverCount] = useState(0);
+  const [insertAudioCount, setInsertAudioCount] = useState(0);
+  const [updateAudioCount, setUpdateAudioCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
-  const [updatedSoundId, setUpdatedSoundId] = useState("");
   const [inputText, setInputText] = useState("");
-  const [updateSoundDTO, setUpdateSoundDTO] = useState<UpdatedSoundDTO>({
+  const [updateSoundDTO, setUpdateSoundDTO] = useState<AudioDTO>({
     id: "",
-    newName: "",
+    name: "",
+    audioUrl: "",
+    creationDate: "",
+    lastUpdateDate: "",
+    soundType: "",
+    liked: false,
   });
   const [queryParams, setQueryParams] = useState<QueryParams>({
     page: 0,
     name: "",
     size: 12,
+  });
+  const [insertAudioDTO, setInsertAudioDTO] = useState<AudioDTO>({
+    id: "",
+    name: "",
+    audioUrl: "",
+    creationDate: "",
+    lastUpdateDate: "",
+    liked: false,
+    soundType: "",
   });
 
   useEffect(() => {
@@ -55,165 +65,675 @@ export default function Sounds() {
             return !sounds.some((sound) => sound.id === nextSound.id);
           });
           const soundsResponse = sounds.concat(uniqueSounds);
-          const soundsResponseSorted = soundsResponse.sort((a, b) => a.name.localeCompare(b.name));
+          const soundsResponseSorted = soundsResponse.sort((a, b) =>
+            a.name.localeCompare(b.name)
+          );
           setSounds(soundsResponseSorted); // Atualize o estado usando uma função para concatenar corretamente os sons
-          setLastResponsePageContent(nextPage.sort((a, b) => a.name.localeCompare(b.name)));
+          setLastResponsePageContent(nextPage);
         });
     }
   }, [nextPageCount]);
 
   useEffect(() => {
-    if (updateSoundDTO.id !== "") {
-      console.log("UPDATED SOUND EFFECT - Query name", queryParams.name);
-      console.log("UPDATED SOUND EFFECT - Query page", queryParams.page);
-      if (inputText !== "" && updateSoundDTO.newName.includes(inputText)) {
-        console.log("PRIMEIRO IF - INPUT TEXT != VAZIO E NEW NAME TIVER AS LETRAS DO INPUT TEXT");
-        if (isLastPage.current) {
-          console.log("PRIMEIRO IF - IS LAST PAGE = TRUE");
-          const soundUpdated: AudioDTO[] = sounds
-            .filter((sound) => sound.id === updateSoundDTO.id)
-            .map((sound) => ({ ...sound, name: updateSoundDTO.newName }));
-          const newSounds = sounds
-            .filter((sound) => sound.id !== updateSoundDTO.id)
-            .concat(soundUpdated)
-            .sort((a, b) => a.name.localeCompare(b.name));
-          setSounds(newSounds);
-          setLastResponsePageContent(newSounds.slice(lastResponsePageContent.length));
+    if (insertAudioCount > 0) {
+      console.log("INSERT AUDIO EFFECT - Query name", queryParams.name);
+      console.log("INSERT AUDIO EFFECT - Query page", queryParams.page);
+      // SEM FILTRO DE TEXTO - SE NÃO TIVER NENHUM SOUND NO BANCO, ELE NAO FAZ NENHUM VALIDAÇÃO OU ORDENAÇÃO, APENAS INCLUI
+      if (inputText === "" && sounds.length === 0) {
+        const newSounds = [...sounds]; // Cria uma cópia do array sounds
+        newSounds.push(insertAudioDTO);
+        setSounds((prevParam) => (prevParam = newSounds));
+        setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+        console.log("New sounds", newSounds);
+        return;
+      }
+      // SEM FILTRO DE TEXTO - SE TIVER SOUNDS, PORÉM FOR MENOR QUE O TAMANHO MÁXIMO POR PÁGINA, ELE APENAS INCLUIR MAS FAZ UMA ORDENAÇÃO ANTES
+      if (inputText === "" && sounds.length < queryParams.size) {
+        const newSounds = [...sounds];
+        newSounds.push(insertAudioDTO);
+        newSounds.sort((a, b) => a.name.localeCompare(b.name));
+        setSounds((prevParam) => (prevParam = newSounds));
+        setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+        return;
+      }
+
+      // SEM FILTRO DE TEXTO - SE TIVER O NÚMERO MÁXIMO DE PÁGINAÇÃO NA LISTA, ENTÃO NÓS VERIFICAMOS SE O NOVO SOUNDS ELE DEVE ESTAR NA PRÓXIMA PÁGINA OU NA ATUAL
+      if (inputText === "" && sounds.length === queryParams.size) {
+        console.log("Entro no igual ao size");
+        const firstAudio = [...sounds].at(0);
+        console.log("FirstAudio", firstAudio);
+        const lastAudio = [...sounds].at(sounds.length - 1);
+        console.log("LastAudio", lastAudio);
+        if (firstAudio && lastAudio) {
+          console.log("FirstAudio e LastAudio existem");
+          const eMaiorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) > 0;
+          const eMenorQueOMaior = insertAudioDTO.name.localeCompare(lastAudio.name) < 0;
+          const eMenorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) < 0;
+          console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+          console.log("eMenorQueOMaior", eMenorQueOMaior);
+          // SE O AUDIO DEVE ESTAR NA PÁGINA ATUAL, NÓS REMOVEMOS O ÚLTIMO ELEMENTO, INSERIMOS ESTE NOVO, E DEPOIS REORDENAMOS EM ORDEM ALFABÉTICA
+          if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+            console.log("O nome do novo sound deve ficar neste tela");
+            const newSounds = [...sounds].slice(0, sounds.length - 1);
+            console.log("New sounds", newSounds);
+            newSounds.push(insertAudioDTO);
+            console.log("New sounds + push", newSounds);
+            newSounds.sort((a, b) => a.name.localeCompare(b.name));
+            console.log("New sounds + sort", newSounds);
+            setSounds((prevParam) => (prevParam = newSounds));
+            console.log("Sounds", sounds);
+            setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+            console.log("LastReponsePageContent", lastResponsePageContent);
+            isLastPage.current = false;
+            setIntersectionObserverCount((prevParam) => prevParam + 1);
+            return;
+          }
+          // SE NÃO, NÓS APENAS SETAMOS QUE NÃO É A ÚLTIMA PÁGINA E DEPOIS INCREMENTAMOS O ESTADO QUE ATIVA A CRIAÇÃO DO SCROLL INFINITO;
+          isLastPage.current = false;
+          setIntersectionObserverCount((prevParam) => prevParam + 1);
           return;
         }
-        if (!isLastPage.current) {
-          // -1 É ANTES
-          // 0 É IGUAL
-          // 1 É DEPOIS
-          console.log("PRIMEIRO IF - IS LAST PAGE = FALSE");
-          const soundsWithoutUpdatedSound = sounds.filter(
-            (sounds) => sounds.id !== updateSoundDTO.id
-          );
-          const firstAudio = soundsWithoutUpdatedSound.at(0);
-          const lastAudio = soundsWithoutUpdatedSound.at(soundsWithoutUpdatedSound.length - 1);
-          if (firstAudio && lastAudio) {
-            if (firstAudio.name.localeCompare(updateSoundDTO.newName) > 0 && lastAudio.name.localeCompare(updateSoundDTO.newName) < 0) {
-              console.log("PRIMEIRO IF - ELE SE ENCAIXA NA ORDEM");
-              const soundUpdated: AudioDTO[] = sounds.filter((sound) => sound.id === updateSoundDTO.id).map((sound) => ({ ...sound, name: updateSoundDTO.newName }));
-              const newSounds = soundsWithoutUpdatedSound.concat(soundUpdated).sort((a, b) => a.name.localeCompare(b.name));
-              const lastPageContentCount = lastResponsePageContent.length;
-              setSounds(newSounds);
-              setLastResponsePageContent(newSounds.slice(-{lastPageContentCount}));
+      }
+
+      // SEM FILTRO DE TEXTO - SE TIVERMOS UM NÚMERO DA LISTA MAIOR DO QUE UMA PÁGINAÇÃO INTEIRA, ENTÃO NÓS VAMOS VERIFICAR SE É A ÚLTIMA PÁGINA OU AINDA FALTAM MAIS PÁGINAS
+      if (inputText === "" && sounds.length > queryParams.size) {
+        // VERIFICANDO SE É A ÚLTIMA PÁGINA
+        if (isLastPage.current) {
+          // VERIFICANDO SE AINDA PODEM SER INSERIDOS ELEMENTOS, OU SEJA, SE AINDA POSSUI ELEMENTOS PARA SER INCLUIDOS NESTE MESMA PÁGINA
+          if (lastResponsePageContent.length < queryParams.size) {
+            console.log("Entro no if de maior doq 12 e menor doq 24");
+            console.log("lasrResponsePageContent", lastResponsePageContent);
+            const newSounds = [...sounds];
+            newSounds.push(insertAudioDTO);
+            newSounds.sort((a, b) => a.name.localeCompare(b.name));
+            setSounds((prevParam) => (prevParam = newSounds));
+            const newLastaPageContentCount = lastResponsePageContent.length + 1;
+            console.log("newLastaPageContentCount", newLastaPageContentCount);
+            const soundsSliced = newSounds.slice(-newLastaPageContentCount);
+            console.log("soundsSliced", soundsSliced);
+            setLastResponsePageContent(soundsSliced);
+            return;
+          }
+          // VERIFICANDO SE DEVE-SE CRIAR UMA NOVA PÁGINA
+          if (lastResponsePageContent.length === queryParams.size) {
+            const firstAudio = [...sounds].at(0);
+            const lastAudio = [...sounds].at(sounds.length - 1);
+            if (firstAudio && lastAudio) {
+              console.log("FirstAudio e LastAudio existem");
+              const eMaiorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) > 0;
+              const eMenorQueOMaior = insertAudioDTO.name.localeCompare(lastAudio.name) < 0;
+              const eMenorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) < 0;
+              console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+              console.log("eMenorQueOMaior", eMenorQueOMaior);
+              // SE O AUDIO DEVE ESTAR NA PÁGINA ATUAL, NÓS REMOVEMOS O ÚLTIMO ELEMENTO, INSERIMOS ESTE NOVO, E DEPOIS REORDENAMOS EM ORDEM ALFABÉTICA
+              if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+                // VERIFICANDO SE O NOVO SOUND DEVE SER INSERIDO NESTA PÁGINA, OU ENVIADO PARA A P´ROXIMA PÁGINA
+                const newSounds = [...sounds].slice(0, sounds.length - 1);
+                newSounds.push(insertAudioDTO);
+                newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                setSounds((prevParam) => (prevParam = newSounds));
+                setLastResponsePageContent((prevParam) =>
+                  (prevParam = newSounds).slice(-queryParams.size)
+                );
+                isLastPage.current = false;
+                setIntersectionObserverCount((prevParam) => prevParam + 1);
+                return;
+              }
+              // CASO ELE PRECISA SER ENVIADO PARA A PRÓXIMA PÁGINA, NÓS VAMOS APENAS SETAR O IS LAST PAGE PARA FALSE, OU SEJA, POSSUI MAIS PÁGINAS PARA A FRENTE, DEPOIS NÓS INCREMENTAMOS PARA HABILITAR O SCROLL INFINITO
+              isLastPage.current = false;
+              setIntersectionObserverCount((prevParam) => prevParam + 1);
               return;
             }
-            console.log("PRIMEIRO IF - ELE NÃO SE ENCAIXA NA ORDEM");
-            soundService
-              .findAllSounds(queryParams.name, queryParams.page, queryParams.size)
-              .then((response) => {
-                const nextPage = response.data.content;
-                isLastPage.current = response.data.last; // Use a função de retorno para obter o valor atualizado
-                // Filtrar os sons duplicados antes de adicioná-los ao estado
-                if (isLastPage.current === false) {
-                  setIntersectionObserverCount((prevParam) => prevParam + 1);
-                }
-                const filteredSounds = sounds.filter((sound: AudioDTO) => {
-                  return !lastResponsePageContent.some((filterSound) => filterSound.id === sound.id);
-                });
-                filteredSounds.concat(nextPage).sort((a, b) => a.name.localeCompare(b.name));
-                setSounds(filteredSounds); // Atualize o estado usando uma função para concatenar corretamente os sons
-                setLastResponsePageContent(nextPage);
-              });
+          }
+        }
+        if (!isLastPage.current) {
+          const firstAudio = [...sounds].at(0);
+          const lastAudio = [...sounds].at(sounds.length - 1);
+          if (firstAudio && lastAudio) {
+            console.log("FirstAudio e LastAudio existem");
+            const eMaiorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) > 0;
+            const eMenorQueOMaior = insertAudioDTO.name.localeCompare(lastAudio.name) < 0;
+            const eMenorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) < 0;
+            console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+            console.log("eMenorQueOMaior", eMenorQueOMaior);
+            if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+              const newSounds = [...sounds].slice(0, sounds.length - 1);
+              newSounds.push(insertAudioDTO);
+              newSounds.sort((a, b) => a.name.localeCompare(b.name));
+              setSounds((prevParam) => (prevParam = newSounds));
+              setLastResponsePageContent((prevParam) =>
+                (prevParam = newSounds).slice(-queryParams.size)
+              );
+              return;
+            }
             return;
           }
         }
       }
-      if(inputText !== "" && !updateSoundDTO.newName.includes(inputText)){
-        console.log("SEGUNDO IF - INPUT TEXT != VAZIO E NEW NAME NÃO TIVER AS LETRAS DO INPUT TEXT");
-        if(isLastPage.current){
-          console.log("SEGUNDO IF - IS LAST PAGE = TRUE");
-          const soundsWithoutUpdatedSound = sounds.filter((sound) => sound.id !== updateSoundDTO.id);
-          setSounds(soundsWithoutUpdatedSound);
-          setLastResponsePageContent(soundsWithoutUpdatedSound.slice(lastResponsePageContent.length - 1));
+
+      const inputTextLower = inputText.toLowerCase();
+      const insertAudioNameLower = insertAudioDTO.name.toLowerCase();
+      const insertAudioNameIncludesInputText = insertAudioNameLower.includes(inputTextLower);
+
+      if (inputText !== "" && insertAudioNameIncludesInputText) {
+        if (sounds.length === 0) {
+          const newSounds = [...sounds];
+          newSounds.push(insertAudioDTO);
+          setSounds((prevParam) => (prevParam = newSounds));
+          setLastResponsePageContent((prevParam) => (prevParam = newSounds));
           return;
         }
-        console.log("SEGUNDO IF - IS LAST PAGE = FALSE");
-        soundService
-              .findAllSounds(queryParams.name, queryParams.page,queryParams.size)
-              .then((response) => {
-                const nextPage = response.data.content;
-                isLastPage.current = response.data.last; // Use a função de retorno para obter o valor atualizado
-                // Filtrar os sons duplicados antes de adicioná-los ao estado
-                if (isLastPage.current === false) {
-                  setIntersectionObserverCount((prevParam) => prevParam + 1);
-                }
-                const filteredSounds = sounds.filter((sound: AudioDTO) => {
-                  return !lastResponsePageContent.some((filterSound) => filterSound.id === sound.id);
-                });
-                filteredSounds.concat(nextPage).sort((a, b) => a.name.localeCompare(b.name));
-                setSounds(filteredSounds); // Atualize o estado usando uma função para concatenar corretamente os sons
-                setLastResponsePageContent(nextPage);
-              });
-        return;
-      }
-      
-      if (inputText == "") {
-        console.log("TERCEITO IF - INPUT TEXT = VAZIO");
-        if(isLastPage.current){
-          console.log("TERCEIRO IF - IS LAST PAGE = TRUE");
-          const soundBeforeUpdated: AudioDTO[] = sounds.filter((sound) => sound.id === updateSoundDTO.id);
-          console.log("soundBeforeUpdated", soundBeforeUpdated);
-          const soundAfterUpdated: AudioDTO[] = soundBeforeUpdated.map(sound => ({...sound, name: updateSoundDTO.newName}));
-          console.log("soundAfterUpdated", soundAfterUpdated);
-          const soundsWithoutUpdatedSound = sounds.filter((sound) => sound.id !== updateSoundDTO.id);
-          console.log("soundsWithoutUpdatedSound", soundsWithoutUpdatedSound);
-          const newSounds = soundsWithoutUpdatedSound.concat(soundAfterUpdated).sort((a, b) => a.name.localeCompare(b.name));
-          console.log("newSounds", newSounds)
-          const lastPageContentCount = lastResponsePageContent.length;
-          console.log("lastPageContentCount", lastPageContentCount);
-          setSounds(newSounds);
-          console.log("Sounds", sounds);
-          setLastResponsePageContent(newSounds.slice(-{lastPageContentCount}));
-          console.log("lastResponsePageContentCount", lastResponsePageContent);
+        if (sounds.length < queryParams.size) {
+          const newSounds = [...sounds];
+          newSounds.push(insertAudioDTO);
+          newSounds.sort((a, b) => a.name.localeCompare(b.name));
+          setSounds((prevParam) => (prevParam = newSounds));
+          setLastResponsePageContent((prevParam) => (prevParam = newSounds));
           return;
         }
-        if(!isLastPage.current){
-          // -1 É ANTES
-          // 0 É IGUAL
-          // 1 É DEPOIS
-          console.log("TERCEIRO IF - IS LAST PAGE = FALSE");
-          const soundsWithoutUpdatedSound = sounds.filter(
-            (sounds) => sounds.id !== updateSoundDTO.id
-          );
-          const firstAudio = soundsWithoutUpdatedSound.at(0);
-          const lastAudio = soundsWithoutUpdatedSound.at(soundsWithoutUpdatedSound.length - 1);
+        if (sounds.length === queryParams.size) {
+          const firstAudio = [...sounds].at(0);
+          const lastAudio = [...sounds].at(sounds.length - 1);
           if (firstAudio && lastAudio) {
-            if (firstAudio.name.localeCompare(updateSoundDTO.newName) > 0 && lastAudio.name.localeCompare(updateSoundDTO.newName) < 0) {
-              console.log("TERCEIRO IF - ELE SE ENCAIXA NA ORDEM");
-              const soundUpdated: AudioDTO[] = sounds.filter((sound) => sound.id === updateSoundDTO.id).map((sound) => ({ ...sound, name: updateSoundDTO.newName }));
-              const newSounds = soundsWithoutUpdatedSound.concat(soundUpdated).sort((a, b) => a.name.localeCompare(b.name));
-              const lastPageContentCount = lastResponsePageContent.length;
-              setSounds(newSounds);
-              setLastResponsePageContent(newSounds.slice(-{lastPageContentCount}));
+            // SE O AUDIO DEVE ESTAR NA PÁGINA ATUAL, NÓS REMOVEMOS O ÚLTIMO ELEMENTO, INSERIMOS ESTE NOVO, E DEPOIS REORDENAMOS EM ORDEM ALFABÉTICA
+            console.log("FirstAudio e LastAudio existem");
+            const eMaiorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) > 0;
+            const eMenorQueOMaior = insertAudioDTO.name.localeCompare(lastAudio.name) < 0;
+            const eMenorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) < 0;
+            console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+            console.log("eMenorQueOMaior", eMenorQueOMaior);
+            if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+              const newSounds = [...sounds].slice(0, sounds.length - 1);
+              newSounds.push(insertAudioDTO);
+              newSounds.sort((a, b) => a.name.localeCompare(b.name));
+              setSounds((prevParam) => (prevParam = newSounds));
+              setLastResponsePageContent(
+                (prevParam) => (prevParam = newSounds)
+              );
+              isLastPage.current = false;
+              setIntersectionObserverCount((prevParam) => prevParam + 1);
               return;
             }
-            console.log("TERCEIRO IF - ELE NÃO SE ENCAIXA NA ORDEM");
+            // SE NÃO, NÓS APENAS SETAMOS QUE NÃO É A ÚLTIMA PÁGINA E DEPOIS INCREMENTAMOS O ESTADO QUE ATIVA A CRIAÇÃO DO SCROLL INFINITO;
+            isLastPage.current = false;
+            setIntersectionObserverCount((prevParam) => prevParam + 1);
+            return;
+          }
+        }
+        if (sounds.length > queryParams.size) {
+          // VERIFICANDO SE É A ÚLTIMA PÁGINA
+          if (isLastPage.current) {
+            // VERIFICANDO SE AINDA PODEM SER INSERIDOS ELEMENTOS, OU SEJA, SE AINDA POSSUI ELEMENTOS PARA SER INCLUIDOS NESTE MESMA PÁGINA
+            if (lastResponsePageContent.length < queryParams.size) {
+              console.log("Entro no if de maior doq 12 e menor doq 24");
+              console.log("lasrResponsePageContent", lastResponsePageContent);
+              const newSounds = [...sounds];
+              newSounds.push(insertAudioDTO);
+              newSounds.sort((a, b) => a.name.localeCompare(b.name));
+              setSounds((prevParam) => (prevParam = newSounds));
+              const newLastaPageContentCount =
+                lastResponsePageContent.length + 1;
+              console.log("newLastaPageContentCount", newLastaPageContentCount);
+              const soundsSliced = newSounds.slice(-newLastaPageContentCount);
+              console.log("soundsSliced", soundsSliced);
+              setLastResponsePageContent(soundsSliced);
+              return;
+            }
+            // VERIFICANDO SE DEVE-SE CRIAR UMA NOVA PÁGINA
+            if (lastResponsePageContent.length === queryParams.size) {
+              const firstAudio = [...sounds].at(0);
+              const lastAudio = [...sounds].at(sounds.length - 1);
+              if (firstAudio && lastAudio) {
+                console.log("FirstAudio e LastAudio existem");
+                const eMaiorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) > 0;
+                const eMenorQueOMaior = insertAudioDTO.name.localeCompare(lastAudio.name) < 0;
+                const eMenorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) < 0;
+                console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+                console.log("eMenorQueOMaior", eMenorQueOMaior);
+                // SE O AUDIO DEVE ESTAR NA PÁGINA ATUAL, NÓS REMOVEMOS O ÚLTIMO ELEMENTO, INSERIMOS ESTE NOVO, E DEPOIS REORDENAMOS EM ORDEM ALFABÉTICA
+                if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+                  // VERIFICANDO SE O NOVO SOUND DEVE SER INSERIDO NESTA PÁGINA, OU ENVIADO PARA A P´ROXIMA PÁGINA
+                  const newSounds = [...sounds].slice(0, sounds.length - 1);
+                  newSounds.push(insertAudioDTO);
+                  newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                  setSounds((prevParam) => (prevParam = newSounds));
+                  setLastResponsePageContent((prevParam) =>
+                    (prevParam = newSounds).slice(-queryParams.size)
+                  );
+                  isLastPage.current = false;
+                  setIntersectionObserverCount((prevParam) => prevParam + 1);
+                  return;
+                }
+                // CASO ELE PRECISA SER ENVIADO PARA A PRÓXIMA PÁGINA, NÓS VAMOS APENAS SETAR O IS LAST PAGE PARA FALSE, OU SEJA, POSSUI MAIS PÁGINAS PARA A FRENTE, DEPOIS NÓS INCREMENTAMOS PARA HABILITAR O SCROLL INFINITO
+                isLastPage.current = false;
+                setIntersectionObserverCount((prevParam) => prevParam + 1);
+                return;
+              }
+            }
+          }
+          if (!isLastPage.current) {
+            const firstAudio = [...sounds].at(0);
+            const lastAudio = [...sounds].at(sounds.length - 1);
+            if (firstAudio && lastAudio) {
+              console.log("FirstAudio e LastAudio existem");
+              const eMaiorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) > 0;
+              const eMenorQueOMaior = insertAudioDTO.name.localeCompare(lastAudio.name) < 0;
+              const eMenorQueOMenor = insertAudioDTO.name.localeCompare(firstAudio.name) < 0;
+              console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+              console.log("eMenorQueOMaior", eMenorQueOMaior);
+              if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+                const newSounds = [...sounds].slice(0, sounds.length - 1);
+                newSounds.push(insertAudioDTO);
+                newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                setSounds((prevParam) => (prevParam = newSounds));
+                setLastResponsePageContent((prevParam) =>
+                  (prevParam = newSounds).slice(-queryParams.size)
+                );
+                return;
+              }
+              return;
+            }
+          }
+        }
+      }
+      if (inputText !== "" && !insertAudioNameIncludesInputText) {
+        return;
+      }
+    }
+  }, [insertAudioCount]);
+
+  useEffect(() => {
+    if (updateAudioCount > 0) {
+      console.log("updateSoundDTO", updateSoundDTO);
+      console.log("Entrou no Updated Effect")
+      // SEM FILTRO DE TEXTO - SE TIVER SOUNDS, PORÉM FOR MENOR QUE O TAMANHO MÁXIMO POR PÁGINA, ELE APENAS INCLUIR MAS FAZ UMA ORDENAÇÃO ANTES
+      if (inputText === "" && sounds.length < queryParams.size) {
+        console.log("Entrou no primeiro if")
+        const newSounds = [...sounds].filter((sounds) => sounds.id !== updateSoundDTO.id);
+        console.log("New sounds", newSounds);
+        newSounds.push(updateSoundDTO);
+        console.log("New sounds + push", newSounds);
+        if(sounds.length === 1){
+          console.log("Entrou no sounds igual a 1");
+          setSounds((prevParam) => (prevParam = newSounds));
+          console.log("Sounds", sounds);
+          setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+          console.log("LastResponsePageContent", lastResponsePageContent);
+          return;
+        }
+        console.log("Não entrou no if do sounds igual a 1");
+        newSounds.sort((a, b) => a.name.localeCompare(b.name));
+        console.log("New Sounds + sorted", newSounds);
+        setSounds((prevParam) => (prevParam = newSounds));
+        console.log("Sounds", sounds);
+        setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+        console.log("LastResponsePageContent", lastResponsePageContent);
+        return;
+      }
+      if (inputText === "" && sounds.length === queryParams.size) {
+        if (isLastPage.current) {
+          const newSounds = [...sounds].filter((sounds) => sounds.id !== updateSoundDTO.id);
+          newSounds.push(updateSoundDTO);
+          newSounds.sort((a, b) => a.name.localeCompare(b.name));
+          setSounds((prevParam) => (prevParam = newSounds));
+          setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+          return;
+        }
+        const firstAudio = [...sounds].at(0);
+        const lastAudio = [...sounds].at(sounds.length - 1);
+        if (firstAudio && lastAudio) {
+          console.log("FirstAudio e LastAudio existem");
+          const eMaiorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) > 0;
+          const eMenorQueOMaior = updateSoundDTO.name.localeCompare(lastAudio.name) < 0;
+          const eMenorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) < 0;
+          console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+          console.log("eMenorQueOMaior", eMenorQueOMaior);
+          console.log("eMenorQueOMenor", eMenorQueOMenor);
+          if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+            console.log("Esta entrando no if do menor com maior")
+            const newSounds = [...sounds].filter(
+              (sounds) => sounds.id !== updateSoundDTO.id
+            );
+            newSounds.push(updateSoundDTO);
+            newSounds.sort((a, b) => a.name.localeCompare(b.name));
+            setSounds((prevParam) => (prevParam = newSounds));
+            setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+            return;
+          } else{
+            console.log("Entrou no else")
+            console.log("Enviando requisição", queryParams);
             soundService
               .findAllSounds(queryParams.name, queryParams.page, queryParams.size)
               .then((response) => {
-                const nextPage = response.data.content;
-                isLastPage.current = response.data.last; // Use a função de retorno para obter o valor atualizado
-                // Filtrar os sons duplicados antes de adicioná-los ao estado
-                if (isLastPage.current === false) {
-                  setIntersectionObserverCount((prevParam) => prevParam + 1);
+                console.log("Response UPDATE", response.data.content)
+                const newSounds = response.data.content;
+                setSounds((prevParam) => (prevParam = newSounds));
+                console.log("Sounds", sounds);
+                setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+                console.log("LastResponsePageContent", lastResponsePageContent);
+              });
+              return;
+          }
+        }
+      }
+      if (inputText === "" && sounds.length > queryParams.size) {
+        // VERIFICANDO SE É A ÚLTIMA PÁGINA
+        if (isLastPage.current) {
+          // VERIFICANDO SE AINDA PODEM SER INSERIDOS ELEMENTOS, OU SEJA, SE AINDA POSSUI ELEMENTOS PARA SER INCLUIDOS NESTE MESMA PÁGINA
+          if (lastResponsePageContent.length <= queryParams.size) {
+            console.log("Entro no if de maior doq 12 e menor doq 24");
+            console.log("lasrResponsePageContent", lastResponsePageContent);
+            const newSounds = [...sounds].filter(
+              (sounds) => sounds.id !== updateSoundDTO.id
+            );
+            newSounds.push(updateSoundDTO);
+            newSounds.sort((a, b) => a.name.localeCompare(b.name));
+            setSounds((prevParam) => (prevParam = newSounds));
+            setLastResponsePageContent((prevParam) =>
+              (prevParam = newSounds).slice(-lastResponsePageContent.length)
+            );
+            return;
+          }
+        }
+        if (!isLastPage.current) {
+          const firstAudio = [...sounds].at(0);
+          const lastAudio = [...sounds].at(sounds.length - 1);
+          if (firstAudio && lastAudio) {
+            console.log("FirstAudio e LastAudio existem");
+            const eMaiorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) > 0;
+            const eMenorQueOMaior = updateSoundDTO.name.localeCompare(lastAudio.name) < 0;
+            const eMenorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) < 0;
+            console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+            console.log("eMenorQueOMaior", eMenorQueOMaior);
+            if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+              const newSounds = [...sounds].filter(
+                (sounds) => sounds.id !== updateSoundDTO.id
+              );
+              newSounds.push(updateSoundDTO);
+              newSounds.sort((a, b) => a.name.localeCompare(b.name));
+              setSounds((prevParam) => (prevParam = newSounds));
+              setLastResponsePageContent((prevParam) =>(prevParam = newSounds).slice(-queryParams.size));
+              return;
+            }
+            console.log("Request", queryParams)
+            soundService
+              .findAllSounds(
+                queryParams.name,
+                queryParams.page,
+                queryParams.size
+              )
+              .then((response) => {
+                console.log("Response", response.data.content);
+                const newLastPageResponseContent: AudioDTO[] = response.data.content;
+                console.log("newLastPageResponseContent", newLastPageResponseContent);
+                const updatedSoundFiltered = newLastPageResponseContent.filter((sound: AudioDTO) => {
+                  return !lastResponsePageContent.some(
+                    (filterSound) => filterSound.id === sound.id
+                    );
+                  }).at(0);
+                  console.log("updatedSoundFiltered", updatedSoundFiltered)
+                  if (updatedSoundFiltered) {
+                    console.log("Entrou no if do soundFiltered")
+                    const newSounds = [...sounds].filter(
+                      (sounds) => sounds.id !== updateSoundDTO.id
+                    );
+                  console.log("New Sounds", newSounds);
+                  newSounds.push(updatedSoundFiltered);
+                  console.log("New sounds + push", newSounds);
+                  newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                  console.log("New sounds + sort", newSounds);
+                  setSounds((prevParam) => (prevParam = newSounds));
+                  console.log("Sounds", [...sounds]);
+                  setLastResponsePageContent((prevParam) => (prevParam = newLastPageResponseContent));
+                  console.log("LastResponsePageContent", [...lastResponsePageContent]);
                 }
-                const filteredSounds = sounds.filter((sound: AudioDTO) => {
-                  return !lastResponsePageContent.some((filterSound) => filterSound.id === sound.id);
-                });
-                filteredSounds.concat(nextPage).sort((a, b) => a.name.localeCompare(b.name));
-                setSounds(filteredSounds); // Atualize o estado usando uma função para concatenar corretamente os sons
-                setLastResponsePageContent(nextPage);
+                return;
+              });
+          }
+        }
+      }
+
+      const inputTextLower = inputText.toLowerCase();
+      const updateSoundNameLower = updateSoundDTO.name.toLowerCase();
+      const updateSoundNameIncludesInputText = updateSoundNameLower.includes(inputTextLower);
+
+      if (inputText !== "" && updateSoundNameIncludesInputText) {
+        console.log("Entro no if input text diferente de vazio e o nome do update sound inclui este inputText")
+        if (sounds.length < queryParams.size) {
+          console.log("Entrou no primeior if")
+          const newSounds = [...sounds].filter((sounds) => sounds.id !== updateSoundDTO.id);
+          console.log("New sounds", newSounds);
+          newSounds.push(updateSoundDTO);
+          console.log("New sounds + push", newSounds);
+          if(sounds.length === 1){
+            console.log("entro no if igual a 1")
+            setSounds((prevParam) => (prevParam = newSounds));
+            setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+            return;
+          }
+          newSounds.sort((a, b) => a.name.localeCompare(b.name));
+          setSounds((prevParam) => (prevParam = newSounds));
+          setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+          return;
+        }
+        if (sounds.length === queryParams.size) {
+          if (isLastPage.current) {
+            const newSounds = [...sounds].filter(
+              (sounds) => sounds.id !== updateSoundDTO.id
+            );
+            newSounds.push(updateSoundDTO);
+            newSounds.sort((a, b) => a.name.localeCompare(b.name));
+            setSounds((prevParam) => (prevParam = newSounds));
+            setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+            return;
+          }
+          const firstAudio = [...sounds].at(0);
+          const lastAudio = [...sounds].at(sounds.length - 1);
+          if (firstAudio && lastAudio) {
+            console.log("FirstAudio e LastAudio existem");
+            const eMaiorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) > 0;
+            const eMenorQueOMaior = updateSoundDTO.name.localeCompare(lastAudio.name) < 0;
+            const eMenorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) < 0;
+            console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+            console.log("eMenorQueOMaior", eMenorQueOMaior);
+            if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+              const newSounds = [...sounds].filter(
+                (sounds) => sounds.id !== updateSoundDTO.id
+              );
+              newSounds.push(updateSoundDTO);
+              newSounds.sort((a, b) => a.name.localeCompare(b.name));
+              setSounds((prevParam) => (prevParam = newSounds));
+              setLastResponsePageContent(
+                (prevParam) => (prevParam = newSounds)
+              );
+              return;
+            }
+            soundService
+              .findAllSounds(
+                queryParams.name,
+                queryParams.page,
+                queryParams.size
+              )
+              .then((response) => {
+                const newSounds = response.data.content;
+                setSounds((prevParam) => (prevParam = newSounds));
+                setLastResponsePageContent(
+                  (prevParam) => (prevParam = newSounds)
+                );
               });
             return;
+          }
+        }
+        if (sounds.length > queryParams.size) {
+          // VERIFICANDO SE É A ÚLTIMA PÁGINA
+          if (isLastPage.current) {
+            // VERIFICANDO SE AINDA PODEM SER INSERIDOS ELEMENTOS, OU SEJA, SE AINDA POSSUI ELEMENTOS PARA SER INCLUIDOS NESTE MESMA PÁGINA
+            if (lastResponsePageContent.length <= queryParams.size) {
+              console.log("Entro no if de maior doq 12 e menor doq 24");
+              console.log("lasrResponsePageContent", lastResponsePageContent);
+              const newSounds = [...sounds].filter(
+                (sounds) => sounds.id !== updateSoundDTO.id
+              );
+              newSounds.push(updateSoundDTO);
+              newSounds.sort((a, b) => a.name.localeCompare(b.name));
+              setSounds((prevParam) => (prevParam = newSounds));
+              setLastResponsePageContent((prevParam) =>
+                (prevParam = newSounds).slice(-lastResponsePageContent.length)
+              );
+              return;
+            }
+          }
+          if (!isLastPage.current) {
+            const firstAudio = [...sounds].at(0);
+            const lastAudio = [...sounds].at(sounds.length - 1);
+            if (firstAudio && lastAudio) {
+              console.log("FirstAudio e LastAudio existem");
+              const eMaiorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) > 0;
+              const eMenorQueOMaior = updateSoundDTO.name.localeCompare(lastAudio.name) < 0;
+              const eMenorQueOMenor = updateSoundDTO.name.localeCompare(firstAudio.name) < 0;
+              console.log("eMaiorQueOMenor", eMaiorQueOMenor);
+              console.log("eMenorQueOMaior", eMenorQueOMaior);
+              if (eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor) {
+                const newSounds = [...sounds].filter(
+                  (sounds) => sounds.id !== updateSoundDTO.id
+                );
+                newSounds.push(updateSoundDTO);
+                newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                setSounds((prevParam) => (prevParam = newSounds));
+                setLastResponsePageContent((prevParam) =>
+                  (prevParam = newSounds).slice(-queryParams.size)
+                );
+                return;
+              }
+              soundService
+                .findAllSounds(
+                  queryParams.name,
+                  queryParams.page,
+                  queryParams.size
+                )
+                .then((response) => {
+                  const newLastPageResponseContent: AudioDTO[] =
+                    response.data.content;
+                  const updatedSoundFiltered = newLastPageResponseContent
+                    .filter((sound: AudioDTO) => {
+                      return !lastResponsePageContent.some(
+                        (filterSound) => filterSound.id === sound.id
+                      );
+                    })
+                    .at(0);
+                  if (updatedSoundFiltered) {
+                    const newSounds = [...sounds].filter(
+                      (sounds) => sounds.id !== updateSoundDTO.id
+                    );
+                    newSounds.push(updatedSoundFiltered);
+                    newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                    setSounds((prevParam) => (prevParam = newSounds));
+                    setLastResponsePageContent(
+                      (prevParam) => (prevParam = newLastPageResponseContent)
+                    );
+                  }
+                  return;
+                });
+            }
+          }
+        }
+      }
+      if (inputText !== "" && !updateSoundNameIncludesInputText) {
+        if (sounds.length < queryParams.size) {
+          const newSounds = [...sounds].filter(
+            (sounds) => sounds.id !== updateSoundDTO.id
+          );
+          setSounds((prevParam) => (prevParam = newSounds));
+          setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+          return;
+        }
+        if (sounds.length === queryParams.size) {
+          if (isLastPage.current) {
+            const newSounds = [...sounds].filter(
+              (sounds) => sounds.id !== updateSoundDTO.id
+            );
+            setSounds((prevParam) => (prevParam = newSounds));
+            setLastResponsePageContent((prevParam) => (prevParam = newSounds));
+            return;
+          }
+          soundService
+            .findAllSounds(queryParams.name, queryParams.page, queryParams.size)
+            .then((response) => {
+              const newLastPageResponseContent: AudioDTO[] =
+                response.data.content;
+              const updatedSoundFiltered = newLastPageResponseContent
+                .filter((sound: AudioDTO) => {
+                  return !lastResponsePageContent.some(
+                    (filterSound) => filterSound.id === sound.id
+                  );
+                })
+                .at(0);
+              if (updatedSoundFiltered) {
+                const newSounds = [...sounds].filter(
+                  (sounds) => sounds.id !== updateSoundDTO.id
+                );
+                newSounds.push(updatedSoundFiltered);
+                newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                setSounds((prevParam) => (prevParam = newSounds));
+                setLastResponsePageContent(
+                  (prevParam) => (prevParam = newLastPageResponseContent)
+                );
+              }
+              return;
+            });
+        }
+        if (sounds.length > queryParams.size) {
+          // VERIFICANDO SE É A ÚLTIMA PÁGINA
+          if (isLastPage.current) {
+            // VERIFICANDO SE AINDA PODEM SER INSERIDOS ELEMENTOS, OU SEJA, SE AINDA POSSUI ELEMENTOS PARA SER INCLUIDOS NESTE MESMA PÁGINA
+            if (lastResponsePageContent.length <= queryParams.size) {
+              console.log("Entro no if de maior doq 12 e menor doq 24");
+              console.log("lasrResponsePageContent", lastResponsePageContent);
+              const newSounds = [...sounds].filter(
+                (sounds) => sounds.id !== updateSoundDTO.id
+              );
+              setSounds((prevParam) => (prevParam = newSounds));
+              setLastResponsePageContent((prevParam) =>
+                (prevParam = newSounds).slice(-lastResponsePageContent.length - 1)
+              );
+              return;
+            }
+          }
+          if (!isLastPage.current) {
+            soundService
+              .findAllSounds(
+                queryParams.name,
+                queryParams.page,
+                queryParams.size
+              )
+              .then((response) => {
+                const newLastPageResponseContent: AudioDTO[] =
+                  response.data.content;
+                const updatedSoundFiltered = newLastPageResponseContent
+                  .filter((sound: AudioDTO) => {
+                    return !lastResponsePageContent.some(
+                      (filterSound) => filterSound.id === sound.id
+                    );
+                  })
+                  .at(0);
+                if (updatedSoundFiltered) {
+                  const newSounds = [...sounds].filter(
+                    (sounds) => sounds.id !== updateSoundDTO.id
+                  );
+                  newSounds.push(updatedSoundFiltered);
+                  newSounds.sort((a, b) => a.name.localeCompare(b.name));
+                  setSounds((prevParam) => (prevParam = newSounds));
+                  setLastResponsePageContent(
+                    (prevParam) => (prevParam = newLastPageResponseContent)
+                  );
+                }
+                return;
+              });
           }
         }
       }
     }
-  }, [updateSoundDTO]);
+  }, [updateAudioCount]);
 
   useEffect(() => {
     console.log("SEARCH COUNT EFFECT - Query name", queryParams.name);
@@ -227,9 +747,15 @@ export default function Sounds() {
           setIntersectionObserverCount((prevParam) => prevParam + 1);
         }
         const soundsResponse: AudioDTO[] = response.data.content;
-        const soundResponseSorted = soundsResponse.sort((a, b) => a.name.localeCompare(b.name));
-        setSounds(soundResponseSorted); // Atualize o estado usando uma função para concatenar corretamente os sons
+        console.log("soundsResponse", soundsResponse);
+        const soundResponseSorted = soundsResponse.sort((a, b) =>
+          a.name.localeCompare(b.name)
+        );
+        console.log("soundResponseSorted", soundResponseSorted);
+        setSounds((prevParam) => (prevParam = soundResponseSorted)); // Atualize o estado usando uma função para concatenar corretamente os sons
+        console.log("Sounds", sounds);
         setLastResponsePageContent(soundResponseSorted);
+        console.log("lastResponsePageContent", lastResponsePageContent);
       });
   }, [searchCount]);
 
@@ -288,15 +814,9 @@ export default function Sounds() {
     setSounds(soundsWithoutDeletedSound);
   }
 
-  function handleUpdateAudioFile(
-    updatedSoundId: string,
-    updateSoundNewName: string
-  ) {
-    setUpdateSoundDTO((prevParams) => ({
-      ...prevParams,
-      id: updatedSoundId,
-      newName: updateSoundNewName,
-    }));
+  function handleUpdateAudioFile(updateSound: AudioDTO) {
+    setUpdateSoundDTO((prevParam) => prevParam = updateSound);
+    setUpdateAudioCount((prevParam) => prevParam + 1);
   }
 
   function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -309,7 +829,8 @@ export default function Sounds() {
         .insertSound(formData)
         .then((response) => {
           console.log(response.data);
-          setNextPageCount((prevParam) => prevParam + 1);
+          setInsertAudioDTO(response.data);
+          setInsertAudioCount((prevParam) => prevParam + 1);
         })
         .catch((error) => {
           console.log(error);

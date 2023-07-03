@@ -38,11 +38,14 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
   
   function handleEditClick(){
     const originalName = audio.name;
-    const soundName = "teste"
+    const soundName = "zatura"
     soundService.updateSound(audio.id, {soundName: soundName, liked: audio.liked})
-    .then(() => {
+    .then((response) => {
+      console.log("Response updateSound", response.data);
       console.log(`Sound ${originalName} updated to name teste`);
-      onEditAudioFile(audio.id, soundName);
+      const newUpdatedSound: AudioDTO = response.data;
+      setBlobSrc(newUpdatedSound.audioUrl);
+      onEditAudioFile(newUpdatedSound);
     })
     .catch((error) => {
       console.log(error.data);
