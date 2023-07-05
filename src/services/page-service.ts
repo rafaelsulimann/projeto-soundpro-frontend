@@ -1,8 +1,92 @@
-import { PageReloadDTO, UseType } from "../models/page";
+import { AxiosPromise } from "axios";
+import { Dispatch, MutableRefObject, SetStateAction } from "react";
 
-export function reloadPage<T extends { name: string, id: string }>(
-  pageReloadDTO: PageReloadDTO<T>
-) {
+export enum UseType {
+  INSERT,
+  UPDATE
+}
+
+export type QueryParams = {
+  page: number;
+  name: string;
+  size: number;
+};
+
+export type PageReloadDTO<T> = {
+  objects: T[];
+  setObjects: Dispatch<SetStateAction<T[]>>;
+  newObject: T;
+  lastResponsePageContent: T[];
+  setLastResponsePageContent: Dispatch<SetStateAction<T[]>>;
+  isLastPageRef: MutableRefObject<boolean>;
+  setIntersectionObserverCount: Dispatch<SetStateAction<number>>;
+  findAllWithPageable: (name: string, page: number, size: number) => AxiosPromise<any>;
+  useType: UseType;
+  inputText: string;
+  queryParams: QueryParams;
+};
+
+export type PageNextDTO<T> = {
+  objects: T[];
+  setObjects: Dispatch<SetStateAction<T[]>>;
+  setLastResponsePageContent: Dispatch<SetStateAction<T[]>>;
+  isLastPageRef: MutableRefObject<boolean>;
+  setIntersectionObserverCount: Dispatch<SetStateAction<number>>;
+  findAllWithPageable: (name: string, page: number, size: number) => AxiosPromise<any>;
+  queryParams: QueryParams
+}
+
+export type PageSearchDTO<T> = {
+  setObjects: Dispatch<SetStateAction<T[]>>;
+  setLastResponsePageContent: Dispatch<SetStateAction<T[]>>;
+  isLastPageRef: MutableRefObject<boolean>;
+  setIntersectionObserverCount: Dispatch<SetStateAction<number>>;
+  findAllWithPageable: (name: string, page: number, size: number) => AxiosPromise<any>;
+  queryParams: QueryParams
+}
+
+export type PageNextClickDTO = {
+  setQueryParams: Dispatch<SetStateAction<QueryParams>>;
+  setNextPageCount: Dispatch<SetStateAction<number>>;
+}
+
+//RELOAD PAGE SCENARIES
+
+//1 - INSERT AUDIO
+const IATI0OLI0 = "INSERT AUDIO - Text igual a 0 e objects length igual a 0";
+const IATI0OLMEQS = "INSERT AUDIO - Text igual a 0 e objects length menor que query size";
+const IATI0OLIQS = "INSERT AUDIO - Text igual a 0 e objects length igual que query size";
+const IATI0OLMAQSILPLPLMEQS = "INSERT AUDIO - Text igual a 0, objects length maior que query size, é a última página, last page length menor que query size";
+const IATI0OLMAQSILPLPLIQS = "INSERT AUDIO - Text igual a 0, objects length maior que query size, é a última página, last page length igual que query size";
+const IATI0OLMAQSNILP = "INSERT AUDIO - Text igual a 0, objects length maior que query size, mas não é a última página";
+const IATD0NIITOLI0 = "INSERT AUDIO - Text diferente de 0, name inclui input text e objects length igual a 0";
+const IATD0NIITOLMEQS = "INSERT AUDIO - Text diferente de 0, name inclui input text e objects length menor que query size";
+const IATD0NIITOLIQS = "INSERT AUDIO - Text diferente de 0, name inclui input text e objects length igual a query size";
+const IATD0NIITOLMAQSILPLPLMEQS = "INSERT AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size, é a última página e last page length menor que query size";
+const IATD0NIITOLMAQSILPLPLIQS = "INSERT AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size, é a última página e last page length igual que query size";
+const IATD0NIITOLMAQSNILP = "INSERT AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size e não é a última página";
+const IATD0NNIIT = "INSERT AUDIO - Text diferente de 0 e name não inclui input text";
+
+//2 - UPDATE AUDIO
+const UATI0OLMEQS = "UPDATE AUDIO - Text igual a 0 e objects length igual a 0";
+const UATI0OLMEQSOLI1 = "UPDATE AUDIO - Text igual a 0 e objects length igual a 0 e objects length igual a 1";
+const UATI0OLIQS = "UPDATE AUDIO - Text igual a 0 e objects length menor que query size";
+const UATI0OLIQSILP = "UPDATE AUDIO - Text igual a 0, objects length igual que query size e é a última página";
+const UATI0OLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text igual a 0, objects length maior que query size, é a última página, last page length menor ou igual que query size";
+const UATI0OLMAQSNILP = "UPDATE AUDIO - Text igual a 0, objects length maior que query size, mas não é a última página";
+const UATD0NIITOLMEQS = "UPDATE AUDIO - Text diferente de 0, name inclui input text e objects length menor que query size";
+const UATD0NIITOLMEQSOLI1 = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length menor que query size e objects length igual a 1";
+const UATD0NIITOLIQS = "UPDATE AUDIO - Text diferente de 0, name inclui input text e objects length igual a query size";
+const UATD0NIITOLIQSILP = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length igual a query size e é a última página";
+const UATD0NIITOLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size, é a última página e last page length menor ou igual que query size";
+const UATD0NIITOLMAQSNILP = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size e não é a última página";
+const UATD0NNIITOLMEQS = "UPDATE AUDIO - Text diferente de 0, name não inclui input text e objects length menor que query size";
+const UATD0NNIITOLIQSILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length igual que query size e é a última página";
+const UATD0NNIITOLIQSNILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length igual que query size e não é a última página";
+const UATD0NNIITOLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length maior que query size, é a última página e last page length é menor ou igual que query size";
+const UATD0NNIITOLMAQSNILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length maior que query size e não é a última página";
+
+export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO: PageReloadDTO<T>) {
   const inputTextLower = pageReloadDTO.inputText.toLowerCase();
   const newObjectNameLower = pageReloadDTO.newObject.name.toLowerCase();
   const newObjectNameIncludesInputText = newObjectNameLower.includes(inputTextLower);
@@ -365,38 +449,63 @@ function validateReloadScenaryType(
   return "";
 }
 
-//RELOAD PAGE SCENARIES
+export function createInfinityScroll(pageNextClickDTO: PageNextClickDTO, observerClassName: string) {
+  const intersectionObserver = new IntersectionObserver((entries) => {
+    if (entries.some((entry) => entry.isIntersecting)) {
+      handleNextPageClick(pageNextClickDTO);
+    }
+  });
 
-//1 - INSERT AUDIO
-const IATI0OLI0 = "INSERT AUDIO - Text igual a 0 e objects length igual a 0";
-const IATI0OLMEQS = "INSERT AUDIO - Text igual a 0 e objects length menor que query size";
-const IATI0OLIQS = "INSERT AUDIO - Text igual a 0 e objects length igual que query size";
-const IATI0OLMAQSILPLPLMEQS = "INSERT AUDIO - Text igual a 0, objects length maior que query size, é a última página, last page length menor que query size";
-const IATI0OLMAQSILPLPLIQS = "INSERT AUDIO - Text igual a 0, objects length maior que query size, é a última página, last page length igual que query size";
-const IATI0OLMAQSNILP = "INSERT AUDIO - Text igual a 0, objects length maior que query size, mas não é a última página";
-const IATD0NIITOLI0 = "INSERT AUDIO - Text diferente de 0, name inclui input text e objects length igual a 0";
-const IATD0NIITOLMEQS = "INSERT AUDIO - Text diferente de 0, name inclui input text e objects length menor que query size";
-const IATD0NIITOLIQS = "INSERT AUDIO - Text diferente de 0, name inclui input text e objects length igual a query size";
-const IATD0NIITOLMAQSILPLPLMEQS = "INSERT AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size, é a última página e last page length menor que query size";
-const IATD0NIITOLMAQSILPLPLIQS = "INSERT AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size, é a última página e last page length igual que query size";
-const IATD0NIITOLMAQSNILP = "INSERT AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size e não é a última página";
-const IATD0NNIIT = "INSERT AUDIO - Text diferente de 0 e name não inclui input text";
+  const divSentinela = document.querySelector(`#${observerClassName}`);
 
-//2 - UPDATE AUDIO
-const UATI0OLMEQS = "UPDATE AUDIO - Text igual a 0 e objects length igual a 0";
-const UATI0OLMEQSOLI1 = "UPDATE AUDIO - Text igual a 0 e objects length igual a 0 e objects length igual a 1";
-const UATI0OLIQS = "UPDATE AUDIO - Text igual a 0 e objects length menor que query size";
-const UATI0OLIQSILP = "UPDATE AUDIO - Text igual a 0, objects length igual que query size e é a última página";
-const UATI0OLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text igual a 0, objects length maior que query size, é a última página, last page length menor ou igual que query size";
-const UATI0OLMAQSNILP = "UPDATE AUDIO - Text igual a 0, objects length maior que query size, mas não é a última página";
-const UATD0NIITOLMEQS = "UPDATE AUDIO - Text diferente de 0, name inclui input text e objects length menor que query size";
-const UATD0NIITOLMEQSOLI1 = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length menor que query size e objects length igual a 1";
-const UATD0NIITOLIQS = "UPDATE AUDIO - Text diferente de 0, name inclui input text e objects length igual a query size";
-const UATD0NIITOLIQSILP = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length igual a query size e é a última página";
-const UATD0NIITOLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size, é a última página e last page length menor ou igual que query size";
-const UATD0NIITOLMAQSNILP = "UPDATE AUDIO - Text diferente de 0, name inclui input text, objects length maior a query size e não é a última página";
-const UATD0NNIITOLMEQS = "UPDATE AUDIO - Text diferente de 0, name não inclui input text e objects length menor que query size";
-const UATD0NNIITOLIQSILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length igual que query size e é a última página";
-const UATD0NNIITOLIQSNILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length igual que query size e não é a última página";
-const UATD0NNIITOLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length maior que query size, é a última página e last page length é menor ou igual que query size";
-const UATD0NNIITOLMAQSNILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length maior que query size e não é a última página";
+  if (divSentinela != null) {
+    intersectionObserver.observe(divSentinela);
+  }
+
+  return () => intersectionObserver.disconnect();
+}
+
+export function loadNextPage<T extends { name: string, id: string }>(pageNextDTO: PageNextDTO<T>){
+  pageNextDTO
+  .findAllWithPageable(pageNextDTO.queryParams.name, pageNextDTO.queryParams.page, pageNextDTO.queryParams.size)
+  .then((response) => {
+    const nextPage: T[] = response.data.content;
+    pageNextDTO.isLastPageRef.current = response.data.last; // Use a função de retorno para obter o valor atualiza
+    
+    if (pageNextDTO.isLastPageRef.current === false) {
+      pageNextDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+    }
+    const uniqueSounds = nextPage.filter((nextSound: T) => {
+      return ![...pageNextDTO.objects].some((sound) => sound.id === nextSound.id);
+    });
+    const soundsResponse = [...pageNextDTO.objects].concat(uniqueSounds);
+    const soundsResponseSorted = soundsResponse.sort((a, b) => a.name.localeCompare(b.name));
+    pageNextDTO.setObjects(soundsResponseSorted); // Atualize o estado usando uma função para concatenar corretamente os sons
+    pageNextDTO.setLastResponsePageContent(nextPage);
+  })
+  .catch(error => {
+  });
+}
+
+export function searchPage<T extends { name: string, id: string }>(pageSearchDTO: PageSearchDTO<T>){
+  pageSearchDTO
+  .findAllWithPageable(pageSearchDTO.queryParams.name, pageSearchDTO.queryParams.page, pageSearchDTO.queryParams.size)
+  .then((response) => {
+    pageSearchDTO.isLastPageRef.current = response.data.last; // Use a função de retorno para obter o valor atualizad
+    
+    if (pageSearchDTO.isLastPageRef.current === false) {
+      pageSearchDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+    }
+    
+    const soundsResponse: T[] = response.data.content;
+    const soundResponseSorted = soundsResponse.sort((a, b) => a.name.localeCompare(b.name))
+    
+    pageSearchDTO.setObjects((prevParam) => (prevParam = soundResponseSorted)); // Atualize o estado usando uma função para concatenar corretamente os sons
+    pageSearchDTO.setLastResponsePageContent(soundResponseSorted);
+  });
+}
+
+function handleNextPageClick(pageNextClickDTO: PageNextClickDTO){
+  pageNextClickDTO.setQueryParams((prevParams) => ({ ...prevParams, page: prevParams.page + 1}));
+  pageNextClickDTO.setNextPageCount((prevParam) => prevParam + 1);
+}
