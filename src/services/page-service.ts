@@ -8,9 +8,14 @@ export enum UseType {
 
 export type QueryParams = {
   page: number;
-  name: string;
   size: number;
+  sort: string;
 };
+
+export enum SortType {
+  ASC,
+  DESC
+}
 
 export type PageReloadDTO<T> = {
   objects: T[];
@@ -20,9 +25,9 @@ export type PageReloadDTO<T> = {
   setLastResponsePageContent: Dispatch<SetStateAction<T[]>>;
   isLastPageRef: MutableRefObject<boolean>;
   setIntersectionObserverCount: Dispatch<SetStateAction<number>>;
-  findAllWithPageable: (name: string, page: number, size: number) => AxiosPromise<any>;
+  findAllWithPageable: (page: number, size: number) => AxiosPromise<any>;
   useType: UseType;
-  inputText: string;
+  searchText: string;
   queryParams: QueryParams;
 };
 
@@ -32,7 +37,7 @@ export type PageNextDTO<T> = {
   setLastResponsePageContent: Dispatch<SetStateAction<T[]>>;
   isLastPageRef: MutableRefObject<boolean>;
   setIntersectionObserverCount: Dispatch<SetStateAction<number>>;
-  findAllWithPageable: (name: string, page: number, size: number) => AxiosPromise<any>;
+  findAllWithPageable: (page: number, size: number) => AxiosPromise<any>;
   queryParams: QueryParams
 }
 
@@ -41,7 +46,7 @@ export type PageSearchDTO<T> = {
   setLastResponsePageContent: Dispatch<SetStateAction<T[]>>;
   isLastPageRef: MutableRefObject<boolean>;
   setIntersectionObserverCount: Dispatch<SetStateAction<number>>;
-  findAllWithPageable: (name: string, page: number, size: number) => AxiosPromise<any>;
+  findAllWithPageable: (page: number, size: number) => AxiosPromise<any>;
   queryParams: QueryParams
 }
 
@@ -86,11 +91,18 @@ const UATD0NNIITOLIQSNILP = "UPDATE AUDIO - Text diferente de 0, name não inclu
 const UATD0NNIITOLMAQSILPLPLMEOIQS = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length maior que query size, é a última página e last page length é menor ou igual que query size";
 const UATD0NNIITOLMAQSNILP = "UPDATE AUDIO - Text diferente de 0, name não inclui input text,objects length maior que query size e não é a última página";
 
-export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO: PageReloadDTO<T>) {
-  const inputTextLower = pageReloadDTO.inputText.toLowerCase();
-  const newObjectNameLower = pageReloadDTO.newObject.name.toLowerCase();
-  const newObjectNameIncludesInputText = newObjectNameLower.includes(inputTextLower);
-  const scenaryType: string = validateReloadScenaryType(pageReloadDTO.useType, pageReloadDTO.inputText, pageReloadDTO.objects.length, pageReloadDTO.queryParams.size, pageReloadDTO.isLastPageRef.current, pageReloadDTO.lastResponsePageContent.length, newObjectNameIncludesInputText);
+export function reloadPage<T extends { id: any }, K extends keyof T, J extends keyof T>(pageReloadDTO: PageReloadDTO<T>, filterAttribute: J, sortAttribute: K, sortOrder: SortType) {
+  const hasTextValue: boolean = validateHasTextValue(pageReloadDTO.searchText, filterAttribute);
+  
+  const scenaryType: string = validateReloadScenaryType(
+    pageReloadDTO.useType,
+    pageReloadDTO.searchText,
+    pageReloadDTO.objects.length,
+    pageReloadDTO.queryParams.size,
+    pageReloadDTO.isLastPageRef.current,
+    pageReloadDTO.lastResponsePageContent.length,
+    hasTextValue
+  );
 
   switch (scenaryType) {
     case IATI0OLI0:
@@ -104,7 +116,7 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
     case IATD0NIITOLMEQS:
       const newObjectsIATI0OLMEQS = [...pageReloadDTO.objects]; // Cria uma cópia do array sounds
       newObjectsIATI0OLMEQS.push(pageReloadDTO.newObject);
-      newObjectsIATI0OLMEQS.sort((a, b) => a.name.localeCompare(b.name));
+      newObjectsIATI0OLMEQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
       pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMEQS));
       pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsIATI0OLMEQS));
       break;
@@ -121,61 +133,49 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
     case UATD0NIITOLIQSILP:
       const newObjectsUATI0OLMEQS = [...pageReloadDTO.objects].filter((object) => object.id !== pageReloadDTO.newObject.id);
       newObjectsUATI0OLMEQS.push(pageReloadDTO.newObject);
-      newObjectsUATI0OLMEQS.sort((a, b) => a.name.localeCompare(b.name));
+      newObjectsUATI0OLMEQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
       pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLMEQS));
       pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsUATI0OLMEQS));
       break;
     case IATI0OLIQS:
     case IATD0NIITOLIQS:
-      const firstAudioIATI0OLIQS = [...pageReloadDTO.objects].at(0);
-      const lastAudioIATI0OLIQS = [...pageReloadDTO.objects].at([...pageReloadDTO.objects].length - 1);
-      if (firstAudioIATI0OLIQS && lastAudioIATI0OLIQS) {
-        const eMaiorQueOMenorIATI0OLIQS = pageReloadDTO.newObject.name.localeCompare(firstAudioIATI0OLIQS.name) > 0;
-        const eMenorQueOMaiorIATI0OLIQS = pageReloadDTO.newObject.name.localeCompare(lastAudioIATI0OLIQS.name) < 0;
-        const eMenorQueOMenorIATI0OLIQS = pageReloadDTO.newObject.name.localeCompare(firstAudioIATI0OLIQS.name) < 0;
-        if ((eMaiorQueOMenorIATI0OLIQS && eMenorQueOMaiorIATI0OLIQS) || eMenorQueOMenorIATI0OLIQS) {
-          const newObjectsIATI0OLIQS = [...pageReloadDTO.objects].slice(0, [...pageReloadDTO.objects].length - 1);
-          newObjectsIATI0OLIQS.push(pageReloadDTO.newObject);
-          newObjectsIATI0OLIQS.sort((a, b) => a.name.localeCompare(b.name));
-          pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLIQS));
-          pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsIATI0OLIQS));
-          pageReloadDTO.isLastPageRef.current = false;
-          pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
-          break;
-        }
+      const objectNeedStayInPageIATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      if (objectNeedStayInPageIATI0OLIQS) {
+        const newObjectsIATI0OLIQS = [...pageReloadDTO.objects].slice(0, [...pageReloadDTO.objects].length - 1);
+        newObjectsIATI0OLIQS.push(pageReloadDTO.newObject);
+        newObjectsIATI0OLIQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
+        pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLIQS));
+        pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsIATI0OLIQS));
         pageReloadDTO.isLastPageRef.current = false;
         pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
         break;
       }
+      pageReloadDTO.isLastPageRef.current = false;
+      pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+      break;
     case UATI0OLIQS:
     case UATD0NIITOLIQS:
-      const firstAudioUATI0OLIQS = [...pageReloadDTO.objects].at(0);
-      const lastAudioUATI0OLIQS = [...pageReloadDTO.objects].at([...pageReloadDTO.objects].length - 1);
-      if (firstAudioUATI0OLIQS && lastAudioUATI0OLIQS) {
-        const eMaiorQueOMenorUATI0OLIQS = pageReloadDTO.newObject.name.localeCompare(firstAudioUATI0OLIQS.name) > 0;
-        const eMenorQueOMaiorUATI0OLIQS = pageReloadDTO.newObject.name.localeCompare(lastAudioUATI0OLIQS.name) < 0;
-        const eMenorQueOMenorUATI0OLIQS = pageReloadDTO.newObject.name.localeCompare(firstAudioUATI0OLIQS.name) < 0;
-        if ((eMaiorQueOMenorUATI0OLIQS && eMenorQueOMaiorUATI0OLIQS) || eMenorQueOMenorUATI0OLIQS) {
-          const newObjectsUATI0OLIQS = [...pageReloadDTO.objects].filter((sounds) => sounds.id !== pageReloadDTO.newObject.id);
-          newObjectsUATI0OLIQS.push(pageReloadDTO.newObject);
-          newObjectsUATI0OLIQS.sort((a, b) => a.name.localeCompare(b.name));
-          pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLIQS));
-          pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsUATI0OLIQS));
-          break;
-        }
-        pageReloadDTO.findAllWithPageable(pageReloadDTO.queryParams.name, pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
-          .then((response: any) => {
-            const newObjectsUATI0OLIQS: T[] = response.data.content;
-            pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLIQS));
-            pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsUATI0OLIQS));
-          });
+      const objectNeedStayInPageUATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      if (objectNeedStayInPageUATI0OLIQS) {
+        const newObjectsUATI0OLIQS = [...pageReloadDTO.objects].filter((sounds) => sounds.id !== pageReloadDTO.newObject.id);
+        newObjectsUATI0OLIQS.push(pageReloadDTO.newObject);
+        newObjectsUATI0OLIQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
+        pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLIQS));
+        pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsUATI0OLIQS));
         break;
       }
+      pageReloadDTO.findAllWithPageable(pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
+        .then((response: any) => {
+          const newObjectsUATI0OLIQS: T[] = response.data.content;
+          pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLIQS));
+          pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsUATI0OLIQS));
+        });
+      break;
     case IATI0OLMAQSILPLPLMEQS:
     case IATD0NIITOLMAQSILPLPLMEQS:
       const newObjectsIATI0OLMAQSILPLPLMEQS = [...pageReloadDTO.objects];
       newObjectsIATI0OLMAQSILPLPLMEQS.push(pageReloadDTO.newObject);
-      newObjectsIATI0OLMAQSILPLPLMEQS.sort((a, b) => a.name.localeCompare(b.name));
+      newObjectsIATI0OLMAQSILPLPLMEQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
       pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMAQSILPLPLMEQS));
       const newLastaPageContentCountIATI0OLMAQSILPLPLMEQS = pageReloadDTO.lastResponsePageContent.length + 1;
       const soundsSlicedIATI0OLMAQSILPLPLMEQS = newObjectsIATI0OLMAQSILPLPLMEQS.slice(-newLastaPageContentCountIATI0OLMAQSILPLPLMEQS);
@@ -185,82 +185,64 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
     case UATD0NIITOLMAQSILPLPLMEOIQS:
       const newSoundsUATI0OLMAQSILPLPLMEOIQS = [...pageReloadDTO.objects].filter((object) => object.id !== pageReloadDTO.newObject.id);
       newSoundsUATI0OLMAQSILPLPLMEOIQS.push(pageReloadDTO.newObject);
-      newSoundsUATI0OLMAQSILPLPLMEOIQS.sort((a, b) => a.name.localeCompare(b.name));
+      newSoundsUATI0OLMAQSILPLPLMEOIQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
       pageReloadDTO.setObjects((prevParam) => (prevParam = newSoundsUATI0OLMAQSILPLPLMEOIQS));
       pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newSoundsUATI0OLMAQSILPLPLMEOIQS).slice(-pageReloadDTO.lastResponsePageContent.length));
       break;
     case IATI0OLMAQSILPLPLIQS:
     case IATD0NIITOLMAQSILPLPLIQS:
-      const firstAudioIATI0OLMAQSILPLPLIQS = [...pageReloadDTO.objects].at(0);
-      const lastAudioIATI0OLMAQSILPLPLIQS = [...pageReloadDTO.objects].at(pageReloadDTO.objects.length - 1);
-      if (firstAudioIATI0OLMAQSILPLPLIQS && lastAudioIATI0OLMAQSILPLPLIQS) {
-        const eMaiorQueOMenorIATI0OLMAQSILPLPLIQS = pageReloadDTO.newObject.name.localeCompare(firstAudioIATI0OLMAQSILPLPLIQS.name) > 0;
-        const eMenorQueOMaiorIATI0OLMAQSILPLPLIQS = pageReloadDTO.newObject.name.localeCompare(lastAudioIATI0OLMAQSILPLPLIQS.name) < 0;
-        const eMenorQueOMenorIATI0OLMAQSILPLPLIQS = pageReloadDTO.newObject.name.localeCompare(firstAudioIATI0OLMAQSILPLPLIQS.name) < 0;
-        if (eMaiorQueOMenorIATI0OLMAQSILPLPLIQS && eMenorQueOMaiorIATI0OLMAQSILPLPLIQS || eMenorQueOMenorIATI0OLMAQSILPLPLIQS) {
-          const newObjectsIATI0OLMAQSILPLPLIQS = [...pageReloadDTO.objects].slice(0, pageReloadDTO.objects.length - 1);
-          newObjectsIATI0OLMAQSILPLPLIQS.push(pageReloadDTO.newObject);
-          newObjectsIATI0OLMAQSILPLPLIQS.sort((a, b) => a.name.localeCompare(b.name));
-          pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMAQSILPLPLIQS));
-          pageReloadDTO.setLastResponsePageContent((prevParam) =>(prevParam = newObjectsIATI0OLMAQSILPLPLIQS).slice(-pageReloadDTO.queryParams.size));
-          pageReloadDTO.isLastPageRef.current = false;
-          pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
-          break;
-        }
+      const objectNeedStayInPageIATI0OLMAQSILPLPLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      if (objectNeedStayInPageIATI0OLMAQSILPLPLIQS) {
+        const newObjectsIATI0OLMAQSILPLPLIQS = [...pageReloadDTO.objects].slice(0, pageReloadDTO.objects.length - 1);
+        newObjectsIATI0OLMAQSILPLPLIQS.push(pageReloadDTO.newObject);
+        newObjectsIATI0OLMAQSILPLPLIQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
+        pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMAQSILPLPLIQS));
+        pageReloadDTO.setLastResponsePageContent((prevParam) =>(prevParam = newObjectsIATI0OLMAQSILPLPLIQS).slice(-pageReloadDTO.queryParams.size));
         pageReloadDTO.isLastPageRef.current = false;
         pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
         break;
       }
+      pageReloadDTO.isLastPageRef.current = false;
+      pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+      break;
     case IATI0OLMAQSNILP:
     case IATD0NIITOLMAQSNILP:
-      const firstAudioIATI0OLMAQSNILP = [...pageReloadDTO.objects].at(0);
-      const lastAudioIATI0OLMAQSNILP = [...pageReloadDTO.objects].at(pageReloadDTO.objects.length - 1);
-      if (firstAudioIATI0OLMAQSNILP && lastAudioIATI0OLMAQSNILP) {
-        const eMaiorQueOMenorIATI0OLMAQSNILP = pageReloadDTO.newObject.name.localeCompare(firstAudioIATI0OLMAQSNILP.name) > 0;
-        const eMenorQueOMaiorIATI0OLMAQSNILP = pageReloadDTO.newObject.name.localeCompare(lastAudioIATI0OLMAQSNILP.name) < 0;
-        const eMenorQueOMenorIATI0OLMAQSNILP = pageReloadDTO.newObject.name.localeCompare(firstAudioIATI0OLMAQSNILP.name) < 0;
-        if (eMaiorQueOMenorIATI0OLMAQSNILP && eMenorQueOMaiorIATI0OLMAQSNILP || eMenorQueOMenorIATI0OLMAQSNILP) {
-          const newObjectsIATI0OLMAQSNILP = [...pageReloadDTO.objects].slice(0, pageReloadDTO.objects.length - 1);
-          newObjectsIATI0OLMAQSNILP.push(pageReloadDTO.newObject);
-          newObjectsIATI0OLMAQSNILP.sort((a, b) => a.name.localeCompare(b.name));
-          pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMAQSNILP));
-          pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsIATI0OLMAQSNILP).slice(-pageReloadDTO.queryParams.size));
-          break;
-        }
+      const objectNeedStayInPageIATI0OLMAQSNILP = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      if (objectNeedStayInPageIATI0OLMAQSNILP) {
+        const newObjectsIATI0OLMAQSNILP = [...pageReloadDTO.objects].slice(0, pageReloadDTO.objects.length - 1);
+        newObjectsIATI0OLMAQSNILP.push(pageReloadDTO.newObject);
+        newObjectsIATI0OLMAQSNILP.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
+        pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMAQSNILP));
+        pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsIATI0OLMAQSNILP).slice(-pageReloadDTO.queryParams.size));
         break;
       }
+      break;
     case UATI0OLMAQSNILP:
     case UATD0NIITOLMAQSNILP:
-      const firstAudioUATI0OLMAQSNILP = [...pageReloadDTO.objects].at(0);
-      const lastAudioUATI0OLMAQSNILP = [...pageReloadDTO.objects].at(pageReloadDTO.objects.length - 1);
-      if (firstAudioUATI0OLMAQSNILP && lastAudioUATI0OLMAQSNILP) {
-        const eMaiorQueOMenorUATI0OLMAQSNILP = pageReloadDTO.newObject.name.localeCompare(firstAudioUATI0OLMAQSNILP.name) > 0;
-        const eMenorQueOMaiorUATI0OLMAQSNILP = pageReloadDTO.newObject.name.localeCompare(lastAudioUATI0OLMAQSNILP.name) < 0;
-        const eMenorQueOMenorUATI0OLMAQSNILP = pageReloadDTO.newObject.name.localeCompare(firstAudioUATI0OLMAQSNILP.name) < 0;
-        if (eMaiorQueOMenorUATI0OLMAQSNILP && eMenorQueOMaiorUATI0OLMAQSNILP || eMenorQueOMenorUATI0OLMAQSNILP) {
-          const newObjectsUATI0OLMAQSNILP = [...pageReloadDTO.objects].filter((object) => object.id !== pageReloadDTO.newObject.id);
-          newObjectsUATI0OLMAQSNILP.push(pageReloadDTO.newObject);
-          newObjectsUATI0OLMAQSNILP.sort((a, b) => a.name.localeCompare(b.name));
-          pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLMAQSNILP));
-          pageReloadDTO.setLastResponsePageContent((prevParam) =>(prevParam = newObjectsUATI0OLMAQSNILP).slice(-pageReloadDTO.queryParams.size));
-          break;
-        }
-        pageReloadDTO.findAllWithPageable(pageReloadDTO.queryParams.name, pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
-          .then((response: any) => {
-            const newLastPageResponseContentUATI0OLMAQSNILP: T[] = response.data.content;
-            const updatedSoundFilteredUATI0OLMAQSNILP = newLastPageResponseContentUATI0OLMAQSNILP.filter((object: T) => {
-              return !pageReloadDTO.lastResponsePageContent.some((filterSound) => filterSound.id === object.id);
-              }).at(0);
-              if (updatedSoundFilteredUATI0OLMAQSNILP) {
-              const newObjectsUATI0OLMAQSNILP = [...pageReloadDTO.objects].filter((sounds) => sounds.id !== pageReloadDTO.newObject.id);
-              newObjectsUATI0OLMAQSNILP.push(updatedSoundFilteredUATI0OLMAQSNILP);
-              newObjectsUATI0OLMAQSNILP.sort((a, b) => a.name.localeCompare(b.name));
-              pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLMAQSNILP));
-              pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newLastPageResponseContentUATI0OLMAQSNILP));
-            }
-        });
+      const objectNeedStayInPageUATI0OLMAQSNILP = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      if (objectNeedStayInPageUATI0OLMAQSNILP) {
+        const newObjectsUATI0OLMAQSNILP = [...pageReloadDTO.objects].filter((object) => object.id !== pageReloadDTO.newObject.id);
+        newObjectsUATI0OLMAQSNILP.push(pageReloadDTO.newObject);
+        newObjectsUATI0OLMAQSNILP.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
+        pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLMAQSNILP));
+        pageReloadDTO.setLastResponsePageContent((prevParam) =>(prevParam = newObjectsUATI0OLMAQSNILP).slice(-pageReloadDTO.queryParams.size));
         break;
       }
+      pageReloadDTO.findAllWithPageable(pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
+        .then((response: any) => {
+          const newLastPageResponseContentUATI0OLMAQSNILP: T[] = response.data.content;
+          const updatedSoundFilteredUATI0OLMAQSNILP = newLastPageResponseContentUATI0OLMAQSNILP.filter((object: T) => {
+            return !pageReloadDTO.lastResponsePageContent.some((filterSound) => filterSound.id === object.id);
+            }).at(0);
+            if (updatedSoundFilteredUATI0OLMAQSNILP) {
+            const newObjectsUATI0OLMAQSNILP = [...pageReloadDTO.objects].filter((sounds) => sounds.id !== pageReloadDTO.newObject.id);
+            newObjectsUATI0OLMAQSNILP.push(updatedSoundFilteredUATI0OLMAQSNILP);
+            newObjectsUATI0OLMAQSNILP.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
+            pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATI0OLMAQSNILP));
+            pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newLastPageResponseContentUATI0OLMAQSNILP));
+          }
+      });
+      break;
     case IATD0NNIIT:
       break;
     case UATD0NNIITOLMEQS:
@@ -271,7 +253,7 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
       break;
     case UATD0NNIITOLIQSNILP:
       pageReloadDTO
-      .findAllWithPageable(pageReloadDTO.queryParams.name, pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
+      .findAllWithPageable(pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
       .then((response) => {
         const newLastPageResponseContentUATD0NNIITOLIQSNILP: T[] = response.data.content;
         const updatedSoundFilteredUATD0NNIITOLIQSNILP = newLastPageResponseContentUATD0NNIITOLIQSNILP.filter((object: T) => {
@@ -280,7 +262,7 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
         if (updatedSoundFilteredUATD0NNIITOLIQSNILP) {
           const newObjectsUATD0NNIITOLIQSNILP = [...pageReloadDTO.objects].filter((object) => object.id !== pageReloadDTO.newObject.id);
           newObjectsUATD0NNIITOLIQSNILP.push(updatedSoundFilteredUATD0NNIITOLIQSNILP);
-          newObjectsUATD0NNIITOLIQSNILP.sort((a, b) => a.name.localeCompare(b.name));
+          newObjectsUATD0NNIITOLIQSNILP.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
           pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsUATD0NNIITOLIQSNILP));
           pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newLastPageResponseContentUATD0NNIITOLIQSNILP));
         }
@@ -293,7 +275,7 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
       break;
     case UATD0NNIITOLMAQSNILP:
       pageReloadDTO
-      .findAllWithPageable(pageReloadDTO.queryParams.name, pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
+      .findAllWithPageable(pageReloadDTO.queryParams.page, pageReloadDTO.queryParams.size)
       .then((response) => {
         const newLastPageResponseContentUATD0NNIITOLMAQSNILP: T[] =response.data.content;
         const updatedSoundFilteredUATD0NNIITOLMAQSNILP = newLastPageResponseContentUATD0NNIITOLMAQSNILP.filter((object: T) => {
@@ -302,7 +284,7 @@ export function reloadPage<T extends { name: string, id: string }>(pageReloadDTO
         if (updatedSoundFilteredUATD0NNIITOLMAQSNILP) {
           const newSoundsUATD0NNIITOLMAQSNILP = [...pageReloadDTO.objects].filter((sounds) => sounds.id !== pageReloadDTO.newObject.id);
           newSoundsUATD0NNIITOLMAQSNILP.push(updatedSoundFilteredUATD0NNIITOLMAQSNILP);
-          newSoundsUATD0NNIITOLMAQSNILP.sort((a, b) => a.name.localeCompare(b.name));
+          newSoundsUATD0NNIITOLMAQSNILP.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
           pageReloadDTO.setObjects((prevParam) => (prevParam = newSoundsUATD0NNIITOLMAQSNILP));
           pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newLastPageResponseContentUATD0NNIITOLMAQSNILP));
         }
@@ -465,9 +447,9 @@ export function createInfinityScroll(pageNextClickDTO: PageNextClickDTO, observe
   return () => intersectionObserver.disconnect();
 }
 
-export function loadNextPage<T extends { name: string, id: string }>(pageNextDTO: PageNextDTO<T>){
+export function loadNextPage<T extends {id: string}, K extends keyof T>(pageNextDTO: PageNextDTO<T>, sortAttribute: K, sortOrder: SortType){
   pageNextDTO
-  .findAllWithPageable(pageNextDTO.queryParams.name, pageNextDTO.queryParams.page, pageNextDTO.queryParams.size)
+  .findAllWithPageable(pageNextDTO.queryParams.page, pageNextDTO.queryParams.size)
   .then((response) => {
     const nextPage: T[] = response.data.content;
     pageNextDTO.isLastPageRef.current = response.data.last; // Use a função de retorno para obter o valor atualiza
@@ -479,7 +461,7 @@ export function loadNextPage<T extends { name: string, id: string }>(pageNextDTO
       return ![...pageNextDTO.objects].some((sound) => sound.id === nextSound.id);
     });
     const soundsResponse = [...pageNextDTO.objects].concat(uniqueSounds);
-    const soundsResponseSorted = soundsResponse.sort((a, b) => a.name.localeCompare(b.name));
+    const soundsResponseSorted = soundsResponse.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
     pageNextDTO.setObjects(soundsResponseSorted); // Atualize o estado usando uma função para concatenar corretamente os sons
     pageNextDTO.setLastResponsePageContent(nextPage);
   })
@@ -487,9 +469,9 @@ export function loadNextPage<T extends { name: string, id: string }>(pageNextDTO
   });
 }
 
-export function searchPage<T extends { name: string, id: string }>(pageSearchDTO: PageSearchDTO<T>){
+export function searchPage<T extends { id: string }, K extends keyof T>(pageSearchDTO: PageSearchDTO<T>, sortAttribute: K, sortOrder: SortType){
   pageSearchDTO
-  .findAllWithPageable(pageSearchDTO.queryParams.name, pageSearchDTO.queryParams.page, pageSearchDTO.queryParams.size)
+  .findAllWithPageable(pageSearchDTO.queryParams.page, pageSearchDTO.queryParams.size)
   .then((response) => {
     pageSearchDTO.isLastPageRef.current = response.data.last; // Use a função de retorno para obter o valor atualizad
     
@@ -498,7 +480,7 @@ export function searchPage<T extends { name: string, id: string }>(pageSearchDTO
     }
     
     const soundsResponse: T[] = response.data.content;
-    const soundResponseSorted = soundsResponse.sort((a, b) => a.name.localeCompare(b.name))
+    const soundResponseSorted = soundsResponse.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder))
     
     pageSearchDTO.setObjects((prevParam) => (prevParam = soundResponseSorted)); // Atualize o estado usando uma função para concatenar corretamente os sons
     pageSearchDTO.setLastResponsePageContent(soundResponseSorted);
@@ -509,3 +491,68 @@ function handleNextPageClick(pageNextClickDTO: PageNextClickDTO){
   pageNextClickDTO.setQueryParams((prevParams) => ({ ...prevParams, page: prevParams.page + 1}));
   pageNextClickDTO.setNextPageCount((prevParam) => prevParam + 1);
 }
+
+function compareValues(a: any, b: any, sortOrder: SortType) {
+
+  if (a === b) {
+    return 0;
+  }
+
+  if (typeof a === "string" && typeof b === "string") {
+    return sortOrder === SortType.ASC ? a.localeCompare(b) : b.localeCompare(a);
+  }
+
+  if (a instanceof Date && b instanceof Date) {
+    return sortOrder === SortType.ASC ? (a.getTime() - b.getTime()) : (b.getTime() - a.getTime());
+  }
+
+  if (typeof a === "number" && typeof b === "number") {
+    return sortOrder === SortType.ASC ? (a - b) : (b - a);
+  }
+
+  // Outros tipos de comparação podem ser adicionados conforme necessário
+  return 0;
+}
+function validateHasTextValue(searchText: string, filterAttribute: any): boolean {
+  if (typeof filterAttribute === 'string') {
+    const attributeValueLower = filterAttribute.toLowerCase();
+    const inputTextLower = searchText.toLowerCase();
+    return attributeValueLower.includes(inputTextLower);
+  } 
+  if (typeof filterAttribute === 'number') {
+    const attributeValueString = filterAttribute.toString();
+    return searchText.startsWith(attributeValueString);
+  } 
+  return false;
+}
+
+function validateObjectNeedStayInPage<T, K extends keyof T>(firstObject: T, lastObject: T, newObject: T, sortAttribute: K): boolean {
+  if (typeof sortAttribute === 'string') {
+    const firstObjectValueLower = (firstObject[sortAttribute] as unknown as string).toLowerCase();
+    const lastObjectValueLower = (lastObject[sortAttribute] as unknown as string).toLowerCase();
+    const newObjectValueLower = (newObject[sortAttribute] as unknown as string).toLowerCase();
+    const eMaiorQueOMenor = newObjectValueLower.localeCompare(firstObjectValueLower) > 0;
+    const eMenorQueOMaior = newObjectValueLower.localeCompare(lastObjectValueLower) < 0;
+    const eMenorQueOMenor = newObjectValueLower.localeCompare(firstObjectValueLower) < 0;
+    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
+  } 
+  else if (typeof sortAttribute === 'number') {
+    const firstObjectValue = firstObject[sortAttribute] as unknown as number;
+    const lastObjectValue = lastObject[sortAttribute] as unknown as number;
+    const newObjectValue = newObject[sortAttribute] as unknown as number;
+    const eMaiorQueOMenor = newObjectValue > firstObjectValue;
+    const eMenorQueOMaior = newObjectValue < lastObjectValue;
+    const eMenorQueOMenor = newObjectValue < firstObjectValue;
+    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
+  } else if (sortAttribute instanceof Date) {
+    const firstObjectDate = firstObject[sortAttribute] as unknown as Date;
+    const lastObjectDate = lastObject[sortAttribute] as unknown as Date;
+    const newObjectDate = newObject[sortAttribute] as unknown as Date;
+    const eMaiorQueOMenor = newObjectDate > firstObjectDate;
+    const eMenorQueOMaior = newObjectDate < lastObjectDate;
+    const eMenorQueOMenor = newObjectDate < firstObjectDate;
+    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
+  }
+  return false;
+}
+

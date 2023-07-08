@@ -5,7 +5,7 @@ import SearchIcon from "../../../components/Icons/Search";
 import * as soundService from "../../../services/sound-service";
 import * as pageService from '../../../services/page-service'
 import "./styles.scss";
-import { PageNextClickDTO, PageNextDTO, PageReloadDTO, PageSearchDTO, QueryParams, UseType } from "../../../services/page-service";
+import { PageNextClickDTO, PageNextDTO, PageReloadDTO, PageSearchDTO, QueryParams, SortType, UseType } from "../../../services/page-service";
 
 export default function Sounds() {
   const isLastPage = useRef(false);
@@ -17,7 +17,15 @@ export default function Sounds() {
   const [insertAudioCount, setInsertAudioCount] = useState(0);
   const [updateAudioCount, setUpdateAudioCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
-  const [inputText, setInputText] = useState("");
+  const [searchText, setSearchText] = useState<string>("");
+  const [filterAttribute, setFilterAttribute] = useState<keyof AudioDTO>("name");
+  const [sortAttribute, setSortAttribute] = useState<keyof AudioDTO>("name");
+  const [sortType, setSortType] = useState<SortType>(SortType.ASC);
+  const [queryParams, setQueryParams] = useState<QueryParams>(() => ({
+    page: 0,
+    size: 12,
+    sort: `${sortAttribute},${sortType === SortType.ASC ? "asc" : "desc"}`
+  }));
   const [updateSoundDTO, setUpdateSoundDTO] = useState<AudioDTO>({
     id: "",
     name: "",
@@ -26,11 +34,6 @@ export default function Sounds() {
     lastUpdateDate: "",
     soundType: "",
     liked: false,
-  });
-  const [queryParams, setQueryParams] = useState<QueryParams>({
-    page: 0,
-    name: "",
-    size: 12,
   });
   const [insertAudioDTO, setInsertAudioDTO] = useState<AudioDTO>({
     id: "",
@@ -50,10 +53,10 @@ export default function Sounds() {
         setLastResponsePageContent: setLastResponsePageContent,
         isLastPageRef: isLastPage,
         setIntersectionObserverCount:setIntersectionObserverCount,
-        findAllWithPageable: (name, page, size) => soundService.findAllSounds(name, page, size),
+        findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
         queryParams: queryParams
       }
-      pageService.loadNextPage(pageNextDTO);
+      pageService.loadNextPage(pageNextDTO, sortAttribute, sortType);
     }
   }, [nextPageCount]);
 
@@ -67,12 +70,12 @@ export default function Sounds() {
         setLastResponsePageContent: setLastResponsePageContent,
         isLastPageRef: isLastPage,
         setIntersectionObserverCount: setIntersectionObserverCount,
-        findAllWithPageable: (name, page, size) => soundService.findAllSounds(name, page, size),
+        findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
         useType: UseType.INSERT,
-        inputText: inputText,
+        searchText: searchText,
         queryParams: queryParams,
       };
-      pageService.reloadPage(pageReloadDTO);
+      pageService.reloadPage(pageReloadDTO, filterAttribute, sortAttribute, sortType);
     }
   }, [insertAudioCount]);
 
@@ -86,12 +89,12 @@ export default function Sounds() {
         setLastResponsePageContent: setLastResponsePageContent,
         isLastPageRef: isLastPage,
         setIntersectionObserverCount: setIntersectionObserverCount,
-        findAllWithPageable: (name, page, size) => soundService.findAllSounds(name, page, size),
+        findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
         useType: UseType.UPDATE,
-        inputText: inputText,
+        searchText: searchText,
         queryParams: queryParams,
       };
-      pageService.reloadPage(pageReloadDTO);
+      pageService.reloadPage(pageReloadDTO, filterAttribute, sortAttribute, sortType);
     }
   }, [updateAudioCount]);
 
@@ -101,10 +104,10 @@ export default function Sounds() {
       setLastResponsePageContent: setLastResponsePageContent,
       isLastPageRef: isLastPage,
       setIntersectionObserverCount: setIntersectionObserverCount,
-      findAllWithPageable: (name, page, size) => soundService.findAllSounds(name, page, size),
+      findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
       queryParams: queryParams
     }
-    pageService.searchPage(pageSearchDTO);
+    pageService.searchPage(pageSearchDTO, sortAttribute, sortType);
   }, [searchCount]);
 
   useEffect(() => {
@@ -119,7 +122,7 @@ export default function Sounds() {
 
   function handleSearch(event: any) {
     isLastPage.current = true;
-    setInputText(event.target.value);
+    setSearchText(event.target.value);
     setQueryParams((prevParams) => ({...prevParams, page: 0, name: event.target.value,}));
     setSearchCount((prevParam) => prevParam + 1);
   }
@@ -162,7 +165,7 @@ export default function Sounds() {
           <div className="search-bar-form-div">
             <SearchIcon fill="#999aa7" className="search-bar-icon" />
             <input
-              value={inputText}
+              value={searchText}
               type="text"
               placeholder="Procurar"
               onChange={handleSearch}
