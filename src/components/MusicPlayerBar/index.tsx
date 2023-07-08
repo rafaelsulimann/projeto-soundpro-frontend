@@ -108,7 +108,6 @@ export default function MusicPlayerBar() {
     const newTime = e.target.valueAsNumber;
     if (audioRef.current) {
       audioRef.current.currentTime = newTime;
-      setCurrentTime(newTime);
     }
   };
 
@@ -197,7 +196,7 @@ export default function MusicPlayerBar() {
                   type="range"
                   min="0"
                   max={duration}
-                  step="1.5"
+                  step="1"
                   value={currentTime}
                   onChange={handleRangeChange}
                   style={{
