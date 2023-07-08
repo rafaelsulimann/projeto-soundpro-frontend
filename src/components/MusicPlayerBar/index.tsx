@@ -63,6 +63,10 @@ export default function MusicPlayerBar() {
       setIsPlaying(false);
     }
     const handleKeyPress = (event: KeyboardEvent) => {
+      const isInputFocused = ['input', 'textarea'].includes((event.target as HTMLElement).tagName.toLowerCase());
+      if (isInputFocused) {
+        return; // Ignorar o evento
+      }
       if (event.code === "Space") {
         event.preventDefault(); 
         if (audioRef.current?.paused) {
