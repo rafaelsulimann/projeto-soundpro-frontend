@@ -44,12 +44,23 @@ header:hover{
 }
 
 .box-hover {
-  background-color: #26262d;
+  background-color: #37373c;
   padding: 6px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
+  animation-name: slide;
+  animation-duration: 0.2s;
+}
+
+@keyframes slide {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 
