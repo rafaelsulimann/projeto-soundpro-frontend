@@ -45,7 +45,7 @@ header:hover{
 
 .box-hover {
   background-color: #37373c;
-  padding: 6px;
+  padding: 7px;
   border-radius: 4px;
   display: flex;
   align-items: center;
@@ -63,5 +63,15 @@ header:hover{
   }
 }
 
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
 
+th {
+  border-bottom: 1px solid #8382892c;
+}
 
+td{
+  padding: 10px 0px;
+}

@@ -3,28 +3,39 @@ import { AudioDTO } from "../../../models/audio";
 import SoundSampleRow from "../../../components/SoundSampleRow";
 import SearchIcon from "../../../components/Icons/Search";
 import * as soundService from "../../../services/sound-service";
-import * as pageService from '../../../services/page-service'
+import * as pageService from "../../../services/page-service";
 import "./styles.scss";
-import { PageNextClickDTO, PageNextDTO, PageReloadDTO, PageSearchDTO, QueryParams, SortType, UseType } from "../../../services/page-service";
+import {
+  PageNextClickDTO,
+  PageNextDTO,
+  PageReloadDTO,
+  PageSearchDTO,
+  QueryParams,
+  SortType,
+  UseType,
+} from "../../../services/page-service";
 
 export default function Sounds() {
   const isLastPage = useRef(false);
-  const [observerClassName] = useState("sentinela")
+  const [observerClassName] = useState("sentinela");
   const [searchCount, setSearchCount] = useState(0);
   const [nextPageCount, setNextPageCount] = useState(0);
-  const [lastResponsePageContent, setLastResponsePageContent] = useState<AudioDTO[]>([]);
+  const [lastResponsePageContent, setLastResponsePageContent] = useState<
+    AudioDTO[]
+  >([]);
   const [intersectionObserverCount, setIntersectionObserverCount] = useState(0);
   const [insertAudioCount, setInsertAudioCount] = useState(0);
   const [updateAudioCount, setUpdateAudioCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-  const [filterAttribute, setFilterAttribute] = useState<keyof AudioDTO>("name");
+  const [filterAttribute, setFilterAttribute] =
+    useState<keyof AudioDTO>("name");
   const [sortAttribute, setSortAttribute] = useState<keyof AudioDTO>("name");
   const [sortType, setSortType] = useState<SortType>(SortType.ASC);
   const [queryParams, setQueryParams] = useState<QueryParams>(() => ({
     page: 0,
     size: 12,
-    sort: `${sortAttribute},${sortType === SortType.ASC ? "asc" : "desc"}`
+    sort: `${sortAttribute},${sortType === SortType.ASC ? "asc" : "desc"}`,
   }));
   const [updateSoundDTO, setUpdateSoundDTO] = useState<AudioDTO>({
     id: "",
@@ -52,10 +63,11 @@ export default function Sounds() {
         setObjects: setSounds,
         setLastResponsePageContent: setLastResponsePageContent,
         isLastPageRef: isLastPage,
-        setIntersectionObserverCount:setIntersectionObserverCount,
-        findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
-        queryParams: queryParams
-      }
+        setIntersectionObserverCount: setIntersectionObserverCount,
+        findAllWithPageable: (page, size) =>
+          soundService.findAllSounds(searchText, page, size, queryParams.sort),
+        queryParams: queryParams,
+      };
       pageService.loadNextPage(pageNextDTO, sortAttribute, sortType);
     }
   }, [nextPageCount]);
@@ -70,12 +82,18 @@ export default function Sounds() {
         setLastResponsePageContent: setLastResponsePageContent,
         isLastPageRef: isLastPage,
         setIntersectionObserverCount: setIntersectionObserverCount,
-        findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
+        findAllWithPageable: (page, size) =>
+          soundService.findAllSounds(searchText, page, size, queryParams.sort),
         useType: UseType.INSERT,
         searchText: searchText,
         queryParams: queryParams,
       };
-      pageService.reloadPage(pageReloadDTO, filterAttribute, sortAttribute, sortType);
+      pageService.reloadPage(
+        pageReloadDTO,
+        filterAttribute,
+        sortAttribute,
+        sortType
+      );
     }
   }, [insertAudioCount]);
 
@@ -89,12 +107,18 @@ export default function Sounds() {
         setLastResponsePageContent: setLastResponsePageContent,
         isLastPageRef: isLastPage,
         setIntersectionObserverCount: setIntersectionObserverCount,
-        findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
+        findAllWithPageable: (page, size) =>
+          soundService.findAllSounds(searchText, page, size, queryParams.sort),
         useType: UseType.UPDATE,
         searchText: searchText,
         queryParams: queryParams,
       };
-      pageService.reloadPage(pageReloadDTO, filterAttribute, sortAttribute, sortType);
+      pageService.reloadPage(
+        pageReloadDTO,
+        filterAttribute,
+        sortAttribute,
+        sortType
+      );
     }
   }, [updateAudioCount]);
 
@@ -104,18 +128,19 @@ export default function Sounds() {
       setLastResponsePageContent: setLastResponsePageContent,
       isLastPageRef: isLastPage,
       setIntersectionObserverCount: setIntersectionObserverCount,
-      findAllWithPageable: (page, size) => soundService.findAllSounds(searchText, page, size, queryParams.sort),
-      queryParams: queryParams
-    }
+      findAllWithPageable: (page, size) =>
+        soundService.findAllSounds(searchText, page, size, queryParams.sort),
+      queryParams: queryParams,
+    };
     pageService.searchPage(pageSearchDTO, sortAttribute, sortType);
   }, [searchCount]);
 
   useEffect(() => {
     if (intersectionObserverCount > 0) {
-      const pageNextClickDTO: PageNextClickDTO ={
+      const pageNextClickDTO: PageNextClickDTO = {
         setQueryParams: setQueryParams,
-        setNextPageCount: setNextPageCount
-      }
+        setNextPageCount: setNextPageCount,
+      };
       pageService.createInfinityScroll(pageNextClickDTO, observerClassName);
     }
   }, [intersectionObserverCount]);
@@ -123,7 +148,11 @@ export default function Sounds() {
   function handleSearch(event: any) {
     isLastPage.current = true;
     setSearchText(event.target.value);
-    setQueryParams((prevParams) => ({...prevParams, page: 0, name: event.target.value,}));
+    setQueryParams((prevParams) => ({
+      ...prevParams,
+      page: 0,
+      name: event.target.value,
+    }));
     setSearchCount((prevParam) => prevParam + 1);
   }
 
@@ -132,12 +161,14 @@ export default function Sounds() {
   }
 
   function handleDeleteAudioFile(deletedSoundId: string) {
-    const soundsWithoutDeletedSound = sounds.filter((sound) => sound.id !== deletedSoundId);
+    const soundsWithoutDeletedSound = sounds.filter(
+      (sound) => sound.id !== deletedSoundId
+    );
     setSounds(soundsWithoutDeletedSound);
   }
 
   function handleUpdateAudioFile(updateSound: AudioDTO) {
-    setUpdateSoundDTO((prevParam) => prevParam = updateSound);
+    setUpdateSoundDTO((prevParam) => (prevParam = updateSound));
     setUpdateAudioCount((prevParam) => prevParam + 1);
   }
 
@@ -195,18 +226,33 @@ export default function Sounds() {
               />
             </label>
           </div>
-          <div className="sound-samples-dashboard">
-            {sounds.map((sound) => (
-              <SoundSampleRow
-                audio={sound}
-                onDeleteAudioFile={handleDeleteAudioFile}
-                onEditAudioFile={handleUpdateAudioFile}
-                key={sound.id}
-              />
-            ))}
-          </div>
-          {!isLastPage.current && <div id={observerClassName}></div>}
+          <table className="sample-dashboard-table">
+            <thead className="sample-dashboard-table-header">
+              <tr className="sample-dashboard-table-header-row">
+                <th className="id id-header">
+                  <h4>#</h4>
+                </th>
+                <th className="name name-header">
+                  <h4>Nome</h4>
+                </th>
+                <th className="like like-header"></th>
+                <th className="add add-header"></th>
+                <th className="options options-header"></th>
+              </tr>
+            </thead>
+            <tbody className="sample-dashboard-table-body">
+              {sounds.map((sound) => (
+                    <SoundSampleRow
+                      audio={sound}
+                      onDeleteAudioFile={handleDeleteAudioFile}
+                      onEditAudioFile={handleUpdateAudioFile}
+                      key={sound.id}
+                    />
+                  ))}
+            </tbody>
+          </table>
         </div>
+        {!isLastPage.current && <div id={observerClassName}></div>}
       </div>
     </section>
   );

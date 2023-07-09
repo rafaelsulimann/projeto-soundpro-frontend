@@ -7,8 +7,8 @@ import PlayRowButton from "../Icons/Buttons/PlayRow";
 import LikeButton from "../Icons/Buttons/Like";
 import Points3Button from "../Icons/Buttons/3Points";
 import WaveIcon from "../Icons/Wave";
-import * as soundService from '../../services/sound-service'
-import './styles.scss'
+import * as soundService from "../../services/sound-service";
+import "./styles.scss";
 
 type Props = {
   audio: AudioDTO;
@@ -16,8 +16,13 @@ type Props = {
   onEditAudioFile: any;
 };
 
-export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioFile}: Props) {
-  const { src, setSrc, isPlaying, setIsPlaying, setLiked} = useContext(ContextPlayer);
+export default function SoundSampleRow({
+  audio,
+  onDeleteAudioFile,
+  onEditAudioFile,
+}: Props) {
+  const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
+    useContext(ContextPlayer);
   const [isHovered, setIsHovered] = useState(false);
   const [blobSrc, setBlobSrc] = useState<string>("");
 
@@ -25,51 +30,54 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
     setBlobSrc(audio.audioUrl);
   }, []);
 
-  function handleDeleteClick(){
-    soundService.deleteSoundById(audio.id)
-    .then(() => {
-      console.log(`Sound ${audio.name} deleted successfully`);
-      onDeleteAudioFile(audio.id);
-    })
-    .catch((error) => {
-      console.log(error.data);
-    })
+  function handleDeleteClick() {
+    soundService
+      .deleteSoundById(audio.id)
+      .then(() => {
+        console.log(`Sound ${audio.name} deleted successfully`);
+        onDeleteAudioFile(audio.id);
+      })
+      .catch((error) => {
+        console.log(error.data);
+      });
   }
-  
-  function handleEditClick(){
+
+  function handleEditClick() {
     const originalName = audio.name;
-    const soundName = "zatura"
-    soundService.updateSound(audio.id, {soundName: soundName, liked: audio.liked})
-    .then((response) => {
-      console.log("Response updateSound", response.data);
-      console.log(`Sound ${originalName} updated to name teste`);
-      const newUpdatedSound: AudioDTO = response.data;
-      setBlobSrc(newUpdatedSound.audioUrl);
-      onEditAudioFile(newUpdatedSound);
-    })
-    .catch((error) => {
-      console.log(error.data);
-    })
+    const soundName = "zatura";
+    soundService
+      .updateSound(audio.id, { soundName: soundName, liked: audio.liked })
+      .then((response) => {
+        console.log("Response updateSound", response.data);
+        console.log(`Sound ${originalName} updated to name teste`);
+        const newUpdatedSound: AudioDTO = response.data;
+        setBlobSrc(newUpdatedSound.audioUrl);
+        onEditAudioFile(newUpdatedSound);
+      })
+      .catch((error) => {
+        console.log(error.data);
+      });
   }
 
   function handleDownloadClick() {
-    soundService.downloadSound(audio.id)
-    .then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      const audioName = audio.name + '.mp3';
-      link.href = url;
-      link.setAttribute('download', audioName);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    soundService
+      .downloadSound(audio.id)
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        const audioName = audio.name + ".mp3";
+        link.href = url;
+        link.setAttribute("download", audioName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
 
-      // Libera o objeto URL
-      window.URL.revokeObjectURL(url);
-    })
-    .catch(error => {
-      console.log(error)
-    })
+        // Libera o objeto URL
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   }
 
   function handleUpdateSrc(newSrc: string, liked: boolean) {
@@ -93,40 +101,67 @@ export default function SoundSampleRow({ audio , onDeleteAudioFile, onEditAudioF
   }
 
   return (
-    <div
+    <tr
       className="sounds-samples-row"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="sounds-samples-row-sound first-sound">
-        <img className="sample-image" src={soundImg} alt="soundImg" />
-        <div className="play-pause-button">
-          {src === `${blobSrc}` ? (
-            isPlaying ? (
-              <PauseRowButton simbolColor="#fc9700" className="pause-button" blobSrc={blobSrc} liked={audio.liked} onClick={handleUpdateSrc}/>
-            ) : (
-              <PlayRowButton simbolColor="#fc9700" className="play-button" blobSrc={blobSrc} liked={audio.liked} onClick={handleUpdateSrc}/>
-            )
-          ) : isHovered && src !== `${audio?.audioUrl}` ? (
-            <PlayRowButton simbolColor="#fc9700" className="play-button" blobSrc={blobSrc} liked={audio.liked} onClick={handleUpdateSrc}/>
+      <td className="play-pause-button first-td">
+        {src === `${blobSrc}` ? (
+          isPlaying ? (
+            <PauseRowButton
+              simbolColor="#fc9700"
+              className="pause-button"
+              blobSrc={blobSrc}
+              liked={audio.liked}
+              onClick={handleUpdateSrc}
+            />
           ) : (
-            <WaveIcon simbolColor="#999AA7" className="wave-music-icon" />
-          )}
-        </div>
-
-        <div className="sound-infos">
-          <h3>{audio?.name}</h3>
-        </div>
-        <div className="sounds-samples-buttons">
+            <PlayRowButton
+              simbolColor="#fc9700"
+              className="play-button"
+              blobSrc={blobSrc}
+              liked={audio.liked}
+              onClick={handleUpdateSrc}
+            />
+          )
+        ) : isHovered && src !== `${audio?.audioUrl}` ? (
+          <PlayRowButton
+            simbolColor="#fc9700"
+            className="play-button"
+            blobSrc={blobSrc}
+            liked={audio.liked}
+            onClick={handleUpdateSrc}
+          />
+        ) : (
+          <WaveIcon simbolColor="#999AA7" className="wave-music-icon" />
+        )}
+      </td>
+      <td className="sound-infos">
+       <div className="sound-infos-div">
+         <img src={soundImg} alt="soundImg" />
+         <h3>{audio?.name}</h3>
+       </div>
+      </td>
+      <td className="sounds-samples-buttons">
         {audio.liked ? (
           <LikeButton simbolColor="rgb(166, 54, 54)" className="like-button" />
         ) : (
           <LikeButton simbolColor="#999AA7" className="like-button" />
         )}
-          <h4>+</h4>
-          <Points3Button simbolColor="#999AA7" className="options-button" onDeleteClick={handleDeleteClick} onEditClick={handleEditClick} onDownloadClick={handleDownloadClick}/>
-        </div>
-      </div>
-    </div>
+      </td>
+      <td className="sounds-samples-buttons">
+       <h4>+</h4>
+      </td>
+      <td className="sounds-samples-buttons last-td">
+        <Points3Button
+          simbolColor="#999AA7"
+          className="options-button"
+          onDeleteClick={handleDeleteClick}
+          onEditClick={handleEditClick}
+          onDownloadClick={handleDownloadClick}
+        />
+      </td>
+    </tr>
   );
 }

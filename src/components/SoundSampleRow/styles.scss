@@ -1,57 +1,54 @@
 .sounds-samples-row {
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid var(--line-gray-color);
-  .sounds-samples-row-sound {
-    padding: 15px;
-    background-color: var(--music-dashboard-background-color);
-    width: 100%;
-    display: flex;
-    align-items: center;
-    .sample-image {
+  width: 100%;
+  background-color: transparent;
+  .first-td {
+    border-radius: 5px 0px 0px 5px;
+  }
+  .last-td {
+    border-radius: 0px 5px 5px 0px;
+  }
+  .play-pause-button {
+    .wave-music-icon {
+      width: 20px;
+    }
+  }
+  .sound-infos {
+    background-color: transparent;
+    // background-color: #19191e;
+    margin-right: 20px;
+    .sound-infos-div {
       display: flex;
       align-items: center;
-      justify-content: center;
-      width: 100px;
-      border-radius: 5px;
-    }
-    .play-pause-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 111px;
-    }
-    .sound-infos {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: start;
-      justify-content: center;
-      margin-right: 20px;
-      h3 {
-        font-size: 18px;
-        font-weight: 400;
-      }
-      .sound-infos-categories {
-        display: flex;
-        h4 {
-          font-weight: 400;
-          font-size: 16px;
-          margin-right: 10px;
-        }
-      }
-    }
-    .sounds-samples-buttons {
-      display: flex;
-      align-items: center;
-      justify-content: end;
-      h4 {
-        font-size: 40px;
-        font-weight: 400;
-        color: var(--gray-light-color);
+      img {
+        width: 45px;
+        height: 45px;
         margin-right: 20px;
+        border-radius: 4px;
       }
+      h3 {
+        font-size: 16px;
+        font-weight: 400;
+      }
+    }
+  }
+  .sounds-samples-buttons {
+    background-color: transparent;
+    // background-color: #19191e;
+    text-align: center;
+    vertical-align: middle;
+    h4 {
+      height: 45px;
+      font-size: 30px;
+      color: var(--gray-light-color);
+      margin-right: 20px;
+    }
+    .like-button {
+      width: 20px;
+      height: auto;
+    }
+    .options-button-container {
+      height: auto;
+      width: 10px;
     }
   }
 }

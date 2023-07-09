@@ -46,7 +46,7 @@ export default function StopMusicButton({
           {
             name: "offset",
             options: {
-              offset: [-11, -80],
+              offset: [-10.5, -81],
             },
           },
         ],
