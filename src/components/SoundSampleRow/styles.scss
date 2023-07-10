@@ -33,22 +33,24 @@
   }
   .sounds-samples-buttons {
     background-color: transparent;
-    // background-color: #19191e;
-    text-align: center;
-    vertical-align: middle;
-    h4 {
-      height: 45px;
-      font-size: 30px;
-      color: var(--gray-light-color);
-      margin-right: 20px;
-    }
-    .like-button {
-      width: 20px;
-      height: auto;
-    }
-    .options-button-container {
-      height: auto;
-      width: 10px;
-    }
+      h4 {
+        width: 100%;
+        height: 45px;
+        font-size: 30px;
+        color: var(--gray-light-color);
+      }
+      .like-button-div{
+        .like-button {
+          width: 20px;
+          height: auto;
+        }
+      }
+      .options-button-container{
+        width: 100%;
+        .options-button {
+          width: 100%;
+          height: 20px;
+        }
+      }
   }
 }

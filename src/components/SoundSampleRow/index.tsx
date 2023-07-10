@@ -145,13 +145,17 @@ export default function SoundSampleRow({
       </td>
       <td className="sounds-samples-buttons">
         {audio.liked ? (
-          <LikeButton simbolColor="rgb(166, 54, 54)" className="like-button" />
+          <div className="like-button-div">
+            <LikeButton simbolColor="rgb(166, 54, 54)" className="like-button" />
+          </div>
         ) : (
-          <LikeButton simbolColor="#999AA7" className="like-button" />
+          <div className="like-button-div">
+            <LikeButton simbolColor="#999AA7" className="like-button" />
+          </div>
         )}
       </td>
       <td className="sounds-samples-buttons">
-       <h4>+</h4>
+        <h4>+</h4>
       </td>
       <td className="sounds-samples-buttons last-td">
         <Points3Button
