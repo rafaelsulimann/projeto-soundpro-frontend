@@ -100,11 +100,16 @@ export default function SoundSampleRow({
     }
   }
 
+  const bgSoundRowHoverColor = isHovered ? 'var(--line-gray-color)' : 'transparent';
+
   return (
     <tr
       className="sounds-samples-row"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      style={{
+        background: bgSoundRowHoverColor
+      }}
     >
       <td className="play-pause-button first-td">
         {src === `${blobSrc}` ? (
