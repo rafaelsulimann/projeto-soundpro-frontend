@@ -155,7 +155,7 @@ export default function SoundSampleRow({
           </div>
         ) : (
           <div className="like-button-div">
-            <LikeButton simbolColor="#999AA7" className="like-button" />
+            <LikeButton simbolColor="var(--orange-color)" className="like-button" />
           </div>
         )}
       </td>

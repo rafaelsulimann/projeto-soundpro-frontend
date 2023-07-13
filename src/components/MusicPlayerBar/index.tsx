@@ -32,6 +32,8 @@ export default function MusicPlayerBar() {
 
   const [primeiraRenderizacao, setPrimeiraRenderizacao] = useState(true);
   const [primeiraRenderizacaoIsPlaying, setPrimeiraRenderizacaoIsPlaying] = useState(true);
+  const [isTimeBarHovered, setIsTimeBarHovered] = useState(false);
+  const [isVolumeBarHovered, setIsVolumeBarHovered] = useState(false);
 
   useEffect(() => {
     if (primeiraRenderizacaoIsPlaying) {
@@ -89,10 +91,16 @@ export default function MusicPlayerBar() {
   }
 
   const percentage = updateProgressPercentage();
-  const bgGradientProgress = `linear-gradient(to right, #fc9700 0%, #fc9700 ${
+  const bgGradientProgress = isTimeBarHovered ? `linear-gradient(to right, #fc9700 0%, #fc9700 ${
+    percentage < 70 && percentage > 0 ? percentage + 1 : percentage
+  }%, #2d2d33 0%, #2d2d33 100%)` : `linear-gradient(to right, #fff 0%, #fff ${
     percentage < 70 && percentage > 0 ? percentage + 1 : percentage
   }%, #2d2d33 0%, #2d2d33 100%)`;
-  const bgGradientVolume = `linear-gradient(to right, #fc9700 0%, #fc9700 ${
+  const bgGradientVolume = isVolumeBarHovered ? `linear-gradient(to right, #fc9700 0%, #fc9700 ${
+    (volume * 100 < 90 && volume > 0) || volume * 100 > 90
+      ? volume * 100
+      : volume * 100 - 10
+  }%, #2d2d33 0%, #2d2d33 100%)` : `linear-gradient(to right, #fff 0%, #fff ${
     (volume * 100 < 90 && volume > 0) || volume * 100 > 90
       ? volume * 100
       : volume * 100 - 10
@@ -157,6 +165,22 @@ export default function MusicPlayerBar() {
     }
   };
 
+  function handleIsTimeBarHoveredMouseEnter(){
+    setIsTimeBarHovered(true);
+  }
+
+  function handleIsTimeBarHoveredMouseLeave(){
+    setIsTimeBarHovered(false);
+  }
+
+  function handleIsVolumeBarHoveredMouseEnter(){
+    setIsVolumeBarHovered(true);
+  }
+
+  function handleIsVolumeBarHoveredMouseLeave(){
+    setIsVolumeBarHovered(false);
+  }
+
   return (
     <>
       <div className="music-play-container">
@@ -199,6 +223,8 @@ export default function MusicPlayerBar() {
                   step="1"
                   value={currentTime}
                   onChange={handleRangeChange}
+                  onMouseEnter={handleIsTimeBarHoveredMouseEnter}
+                  onMouseLeave={handleIsTimeBarHoveredMouseLeave}
                   style={{
                     background: bgGradientProgress,
                   }}
@@ -220,7 +246,7 @@ export default function MusicPlayerBar() {
               <LikeButton simbolColor="#999AA7" className="like-button" />
             )}
             <div className="volume-div">
-              <VolumeButton simbolColor="#FC9700" className="volume-button" />
+              <VolumeButton simbolColor={isVolumeBarHovered ? '#FC9700' : '#fff'} className="volume-button" onMouseEnter={handleIsVolumeBarHoveredMouseEnter} onMouseLeave={handleIsVolumeBarHoveredMouseLeave}/>
               <div className="volume-bar">
                 <input
                   type="range"
@@ -229,6 +255,8 @@ export default function MusicPlayerBar() {
                   step="0.01"
                   value={volume}
                   onChange={handleVolumeInput}
+                  onMouseEnter={handleIsVolumeBarHoveredMouseEnter}
+                  onMouseLeave={handleIsVolumeBarHoveredMouseLeave}
                   style={{ background: bgGradientVolume }}
                 />
               </div>

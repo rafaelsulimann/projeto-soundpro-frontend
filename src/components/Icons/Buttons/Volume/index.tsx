@@ -1,9 +1,20 @@
 type Props = {
   simbolColor: string;
   className: string;
+  onMouseEnter?: any;
+  onMouseLeave?: any
 };
 
-export default function VolumeButton({ simbolColor, className }: Props) {
+export default function VolumeButton({ simbolColor, className, onMouseEnter, onMouseLeave }: Props) {
+
+  function handleMouseEnter(){
+    onMouseEnter();
+  }
+
+  function handleMouseLeave(){
+    onMouseLeave();
+  }
+
   return (
     <svg
       width="28"
@@ -13,6 +24,8 @@ export default function VolumeButton({ simbolColor, className }: Props) {
       stroke={simbolColor}
       xmlns="http://www.w3.org/2000/svg"
       className={className}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <path
         d="M23 12C27.6667 12 27.6667 21 23 21"
