@@ -46,7 +46,7 @@ export default function PlayMusicButton({
           {
             name: "offset",
             options: {
-              offset: [-2.5, -81],
+              offset: [0, -81],
             },
           },
         ],

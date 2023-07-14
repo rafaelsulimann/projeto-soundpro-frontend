@@ -9,17 +9,20 @@ import Points3Button from "../Icons/Buttons/3Points";
 import WaveIcon from "../Icons/Wave";
 import * as soundService from "../../services/sound-service";
 import "./styles.scss";
+import MusicGifIcon from "../Icons/MusicGif";
 
 type Props = {
   audio: AudioDTO;
   onDeleteAudioFile: any;
   onEditAudioFile: any;
+  index: number;
 };
 
 export default function SoundSampleRow({
   audio,
   onDeleteAudioFile,
   onEditAudioFile,
+  index
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
@@ -114,16 +117,20 @@ export default function SoundSampleRow({
       <td className="play-pause-button first-td">
         {src === `${blobSrc}` ? (
           isPlaying ? (
-            <PauseRowButton
-              simbolColor="#fc9700"
-              className="pause-button"
-              blobSrc={blobSrc}
-              liked={audio.liked}
-              onClick={handleUpdateSrc}
-            />
+            isHovered ? (
+              <PauseRowButton
+                simbolColor="var(--purple-color)"
+                className="pause-button"
+                blobSrc={blobSrc}
+                liked={audio.liked}
+                onClick={handleUpdateSrc}
+              />
+            ) : (
+              <MusicGifIcon stroke="var(--purple-color)" className="music-gif" />
+            )
           ) : (
             <PlayRowButton
-              simbolColor="#fc9700"
+              simbolColor="var(--purple-color)"
               className="play-button"
               blobSrc={blobSrc}
               liked={audio.liked}
@@ -132,14 +139,14 @@ export default function SoundSampleRow({
           )
         ) : isHovered && src !== `${audio?.audioUrl}` ? (
           <PlayRowButton
-            simbolColor="#fc9700"
+            simbolColor="var(--purple-color)"
             className="play-button"
             blobSrc={blobSrc}
             liked={audio.liked}
             onClick={handleUpdateSrc}
           />
         ) : (
-          <WaveIcon simbolColor="#999AA7" className="wave-music-icon" />
+          index
         )}
       </td>
       <td className="sound-infos">
@@ -155,7 +162,7 @@ export default function SoundSampleRow({
           </div>
         ) : (
           <div className="like-button-div">
-            <LikeButton simbolColor="var(--orange-color)" className="like-button" />
+            <LikeButton simbolColor="var(--purple-color)" className="like-button" />
           </div>
         )}
       </td>

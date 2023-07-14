@@ -5,8 +5,8 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 20px;
+    
     .search-bar-form-div {
-      border: 1px solid var(--line-gray-color);
       display: flex;
       justify-content: center;
       align-items: center;
@@ -35,7 +35,7 @@
   }
   .sounds-navigation {
     .first-navigation {
-      color: var(--orange-color);
+      color: var(--purple-color);
     }
     display: flex;
     align-items: center;
@@ -64,10 +64,10 @@
         justify-content: center;
         width: 100px;
         height: 30px;
-        background-color: var(--green-color);
+        background-color: var(--purple-color);
         //background-color: #238636;
-        //color: #fff;
-        color: #000;
+        color: #fff;
+        // color: #000;
         font-size: 16px;
         font-weight: 700;
         border: 1px solid #000;
@@ -78,7 +78,7 @@
         }
       }
       .new-button:hover {
-        background-color: #3bea78;
+        background-color: #8e00ed;
         //background-color: #2ea043;
       }
     }
@@ -98,7 +98,7 @@
             width: 5%;
           }
           .name-header {
-            width: 80%;
+            width: 81%;
             text-align: left;
           }
           .like-header {
@@ -108,7 +108,7 @@
             width: 5%;
           }
           .options-header {
-            width: 5%;
+            width: 4%;
           }
         }
       }

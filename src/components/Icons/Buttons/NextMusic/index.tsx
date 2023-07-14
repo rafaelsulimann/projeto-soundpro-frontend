@@ -44,7 +44,7 @@ export default function NextMusicButton({
           {
             name: "offset",
             options: {
-              offset: [-20, -75],
+              offset: [-15, -75],
             },
           },
         ],

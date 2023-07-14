@@ -42,7 +42,7 @@ export default function EqualizerButton({
           {
             name: "offset",
             options: {
-              offset: [-30, -86],
+              offset: [-24, -86],
             },
           },
         ],

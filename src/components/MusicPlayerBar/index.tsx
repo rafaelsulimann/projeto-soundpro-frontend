@@ -91,12 +91,12 @@ export default function MusicPlayerBar() {
   }
 
   const percentage = updateProgressPercentage();
-  const bgGradientProgress = isTimeBarHovered ? `linear-gradient(to right, #fc9700 0%, #fc9700 ${
+  const bgGradientProgress = isTimeBarHovered ? `linear-gradient(to right, var(--purple-color) 0%, var(--purple-color) ${
     percentage < 70 && percentage > 0 ? percentage + 1 : percentage
   }%, #2d2d33 0%, #2d2d33 100%)` : `linear-gradient(to right, #fff 0%, #fff ${
     percentage < 70 && percentage > 0 ? percentage + 1 : percentage
   }%, #2d2d33 0%, #2d2d33 100%)`;
-  const bgGradientVolume = isVolumeBarHovered ? `linear-gradient(to right, #fc9700 0%, #fc9700 ${
+  const bgGradientVolume = isVolumeBarHovered ? `linear-gradient(to right, var(--purple-color) 0%, var(--purple-color) ${
     (volume * 100 < 90 && volume > 0) || volume * 100 > 90
       ? volume * 100
       : volume * 100 - 10
@@ -197,7 +197,8 @@ export default function MusicPlayerBar() {
         <div className="music-player-bar-container">
           <div className="left-div">
             <div className="album-photo"></div>
-            <MusicGifIcon stroke="var(--orange-color)" className="music-gif" />
+            <MusicGifIcon stroke="var(--purple-color)" className="music-gif" />
+            {/* <Teste /> */}
           </div>
           <div className="center-div">
             <div className="music-buttons">
@@ -246,7 +247,7 @@ export default function MusicPlayerBar() {
               <LikeButton simbolColor="#999AA7" className="like-button" />
             )}
             <div className="volume-div">
-              <VolumeButton simbolColor={isVolumeBarHovered ? '#FC9700' : '#fff'} className="volume-button" onMouseEnter={handleIsVolumeBarHoveredMouseEnter} onMouseLeave={handleIsVolumeBarHoveredMouseLeave}/>
+              <VolumeButton simbolColor={isVolumeBarHovered ? 'var(--purple-color)' : '#fff'} className="volume-button" onMouseEnter={handleIsVolumeBarHoveredMouseEnter} onMouseLeave={handleIsVolumeBarHoveredMouseLeave}/>
               <div className="volume-bar">
                 <input
                   type="range"

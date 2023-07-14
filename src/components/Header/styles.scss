@@ -12,7 +12,9 @@
       width: 35px !important;
       height: auto;
       //fill: rgb(136, 0, 255);
-      fill: #884bfd;
+      // fill: #884bfd;
+      fill: var(--purple-color);
+      // fill: #00f9fd;
       // fill: #8969c3;
       //fill: #A836D9;
       .rect {

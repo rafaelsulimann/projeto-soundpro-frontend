@@ -17,6 +17,7 @@ import {
 
 export default function Sounds() {
   const isLastPage = useRef(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [observerClassName] = useState("sentinela");
   const [searchCount, setSearchCount] = useState(0);
   const [nextPageCount, setNextPageCount] = useState(0);
@@ -161,10 +162,12 @@ export default function Sounds() {
   }
 
   function handleDeleteAudioFile(deletedSoundId: string) {
+    console.log("Entrou no delete")
     const soundsWithoutDeletedSound = sounds.filter(
       (sound) => sound.id !== deletedSoundId
     );
-    setSounds(soundsWithoutDeletedSound);
+    console.log("soundsWithoutDeletedSound", soundsWithoutDeletedSound);
+    setSounds((prevParam) => prevParam = soundsWithoutDeletedSound);
   }
 
   function handleUpdateAudioFile(updateSound: AudioDTO) {
@@ -189,17 +192,29 @@ export default function Sounds() {
     }
   }
 
+  function handleFocused(){
+    setIsFocused(true);
+  }
+
+  function handleBlur() {
+    setIsFocused(false);
+  }
+
+  const searchBarBorderColor = isFocused ? '1px solid var(--border-gray-color)' : '1px solid var(--line-gray-color)'
+
   return (
     <section className="sounds-section">
       <div className="sounds-container">
         <form className="search-bar-form" onSubmit={handleSubmit}>
-          <div className="search-bar-form-div">
+          <div className="search-bar-form-div" style={{border: searchBarBorderColor}}>
             <SearchIcon fill="#999aa7" className="search-bar-icon" />
             <input
               value={searchText}
               type="text"
               placeholder="Procurar"
               onChange={handleSearch}
+              onFocus={handleFocused}
+              onBlur={handleBlur}
               className="search-bar-input"
             />
           </div>
@@ -241,11 +256,12 @@ export default function Sounds() {
               </tr>
             </thead>
             <tbody className="sample-dashboard-table-body">
-              {sounds.map((sound) => (
+              {sounds.map((sound, index) => (
                     <SoundSampleRow
                       audio={sound}
                       onDeleteAudioFile={handleDeleteAudioFile}
                       onEditAudioFile={handleUpdateAudioFile}
+                      index={index + 1}
                       key={sound.id}
                     />
                   ))}
