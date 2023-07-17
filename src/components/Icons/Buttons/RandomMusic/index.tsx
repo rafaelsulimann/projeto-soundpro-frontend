@@ -44,7 +44,7 @@ export default function RandomMusicButton({
           {
             name: "offset",
             options: {
-              offset: [-60, -73],
+              offset: [-70, -73],
             },
           },
         ],

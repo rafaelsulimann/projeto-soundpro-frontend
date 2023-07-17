@@ -21,16 +21,13 @@ export default function Sounds() {
   const [observerClassName] = useState("sentinela");
   const [searchCount, setSearchCount] = useState(0);
   const [nextPageCount, setNextPageCount] = useState(0);
-  const [lastResponsePageContent, setLastResponsePageContent] = useState<
-    AudioDTO[]
-  >([]);
+  const [lastResponsePageContent, setLastResponsePageContent] = useState<AudioDTO[]>([]);
   const [intersectionObserverCount, setIntersectionObserverCount] = useState(0);
   const [insertAudioCount, setInsertAudioCount] = useState(0);
   const [updateAudioCount, setUpdateAudioCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-  const [filterAttribute, setFilterAttribute] =
-    useState<keyof AudioDTO>("name");
+  const [filterAttribute, setFilterAttribute] = useState<keyof AudioDTO>("name");
   const [sortAttribute, setSortAttribute] = useState<keyof AudioDTO>("name");
   const [sortType, setSortType] = useState<SortType>(SortType.ASC);
   const [queryParams, setQueryParams] = useState<QueryParams>(() => ({

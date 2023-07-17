@@ -44,7 +44,7 @@ export default function RepeatMusicButton({
           {
             name: "offset",
             options: {
-              offset: [-16, -72],
+              offset: [-19, -72],
             },
           },
         ],

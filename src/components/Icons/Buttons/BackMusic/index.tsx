@@ -44,7 +44,7 @@ export default function BackMusicButton({
           {
             name: "offset",
             options: {
-              offset: [-10, -75],
+              offset: [-13, -74],
             },
           },
         ],

@@ -42,7 +42,7 @@ export default function MicrofoneButton({
           {
             name: "offset",
             options: {
-              offset: [-32, -86],
+              offset: [-36, -86],
             },
           },
         ],

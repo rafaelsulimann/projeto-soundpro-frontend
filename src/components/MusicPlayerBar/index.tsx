@@ -66,7 +66,10 @@ export default function MusicPlayerBar() {
     }
     const handleKeyPress = (event: KeyboardEvent) => {
       const isInputFocused = ['input', 'textarea'].includes((event.target as HTMLElement).tagName.toLowerCase());
-      if (isInputFocused) {
+      const isVolumeInput = (event.target as HTMLElement).id === "volume-bar";
+      const isMusicTimeInput = (event.target as HTMLElement).id === "music-time-bar";
+
+      if (isInputFocused && !isVolumeInput && !isMusicTimeInput) {
         return; // Ignorar o evento
       }
       if (event.code === "Space") {
@@ -91,12 +94,12 @@ export default function MusicPlayerBar() {
   }
 
   const percentage = updateProgressPercentage();
-  const bgGradientProgress = isTimeBarHovered ? `linear-gradient(to right, var(--purple-color) 0%, var(--purple-color) ${
+  const bgGradientProgress = isTimeBarHovered ? `linear-gradient(to right, var(--orange-color) 0%, var(--orange-color) ${
     percentage < 70 && percentage > 0 ? percentage + 1 : percentage
   }%, #2d2d33 0%, #2d2d33 100%)` : `linear-gradient(to right, #fff 0%, #fff ${
     percentage < 70 && percentage > 0 ? percentage + 1 : percentage
   }%, #2d2d33 0%, #2d2d33 100%)`;
-  const bgGradientVolume = isVolumeBarHovered ? `linear-gradient(to right, var(--purple-color) 0%, var(--purple-color) ${
+  const bgGradientVolume = isVolumeBarHovered ? `linear-gradient(to right, var(--orange-color) 0%, var(--orange-color) ${
     (volume * 100 < 90 && volume > 0) || volume * 100 > 90
       ? volume * 100
       : volume * 100 - 10
@@ -197,8 +200,7 @@ export default function MusicPlayerBar() {
         <div className="music-player-bar-container">
           <div className="left-div">
             <div className="album-photo"></div>
-            <MusicGifIcon stroke="var(--purple-color)" className="music-gif" />
-            {/* <Teste /> */}
+            <MusicGifIcon stroke="var(--orange-color)" className="music-gif" />
           </div>
           <div className="center-div">
             <div className="music-buttons">
@@ -218,6 +220,7 @@ export default function MusicPlayerBar() {
               </div>
               <div className="music-time-bar">
                 <input
+                  id="music-time-bar"
                   type="range"
                   min="0"
                   max={duration}
@@ -247,9 +250,10 @@ export default function MusicPlayerBar() {
               <LikeButton simbolColor="#999AA7" className="like-button" />
             )}
             <div className="volume-div">
-              <VolumeButton simbolColor={isVolumeBarHovered ? 'var(--purple-color)' : '#fff'} className="volume-button" onMouseEnter={handleIsVolumeBarHoveredMouseEnter} onMouseLeave={handleIsVolumeBarHoveredMouseLeave}/>
+              <VolumeButton simbolColor={isVolumeBarHovered ? 'var(--orange-color)' : '#fff'} className="volume-button" onMouseEnter={handleIsVolumeBarHoveredMouseEnter} onMouseLeave={handleIsVolumeBarHoveredMouseLeave}/>
               <div className="volume-bar">
                 <input
+                  id="volume-bar"
                   type="range"
                   min="0"
                   max="1"

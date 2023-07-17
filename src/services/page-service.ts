@@ -139,7 +139,7 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
       break;
     case IATI0OLIQS:
     case IATD0NIITOLIQS:
-      const objectNeedStayInPageIATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      const objectNeedStayInPageIATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute], sortAttribute);
       if (objectNeedStayInPageIATI0OLIQS) {
         const newObjectsIATI0OLIQS = [...pageReloadDTO.objects].slice(0, [...pageReloadDTO.objects].length - 1);
         newObjectsIATI0OLIQS.push(pageReloadDTO.newObject);
@@ -155,7 +155,7 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
       break;
     case UATI0OLIQS:
     case UATD0NIITOLIQS:
-      const objectNeedStayInPageUATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      const objectNeedStayInPageUATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute], sortAttribute);
       if (objectNeedStayInPageUATI0OLIQS) {
         const newObjectsUATI0OLIQS = [...pageReloadDTO.objects].filter((sounds) => sounds.id !== pageReloadDTO.newObject.id);
         newObjectsUATI0OLIQS.push(pageReloadDTO.newObject);
@@ -191,7 +191,7 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
       break;
     case IATI0OLMAQSILPLPLIQS:
     case IATD0NIITOLMAQSILPLPLIQS:
-      const objectNeedStayInPageIATI0OLMAQSILPLPLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      const objectNeedStayInPageIATI0OLMAQSILPLPLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute], sortAttribute);
       if (objectNeedStayInPageIATI0OLMAQSILPLPLIQS) {
         const newObjectsIATI0OLMAQSILPLPLIQS = [...pageReloadDTO.objects].slice(0, pageReloadDTO.objects.length - 1);
         newObjectsIATI0OLMAQSILPLPLIQS.push(pageReloadDTO.newObject);
@@ -207,7 +207,7 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
       break;
     case IATI0OLMAQSNILP:
     case IATD0NIITOLMAQSNILP:
-      const objectNeedStayInPageIATI0OLMAQSNILP = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      const objectNeedStayInPageIATI0OLMAQSNILP = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute], sortAttribute);
       if (objectNeedStayInPageIATI0OLMAQSNILP) {
         const newObjectsIATI0OLMAQSNILP = [...pageReloadDTO.objects].slice(0, pageReloadDTO.objects.length - 1);
         newObjectsIATI0OLMAQSNILP.push(pageReloadDTO.newObject);
@@ -219,7 +219,7 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
       break;
     case UATI0OLMAQSNILP:
     case UATD0NIITOLMAQSNILP:
-      const objectNeedStayInPageUATI0OLMAQSNILP = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute]);
+      const objectNeedStayInPageUATI0OLMAQSNILP = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute], sortAttribute);
       if (objectNeedStayInPageUATI0OLMAQSNILP) {
         const newObjectsUATI0OLMAQSNILP = [...pageReloadDTO.objects].filter((object) => object.id !== pageReloadDTO.newObject.id);
         newObjectsUATI0OLMAQSNILP.push(pageReloadDTO.newObject);
@@ -526,8 +526,8 @@ function validateHasTextValue(searchText: string, filterAttribute: any): boolean
   return false;
 }
 
-function validateObjectNeedStayInPage<T, K extends keyof T>(firstObject: T, lastObject: T, newObject: T, sortAttribute: K): boolean {
-  if (typeof sortAttribute === 'string') {
+function validateObjectNeedStayInPage<T, K extends keyof T, L extends keyof T>(firstObject: T, lastObject: T, newObject: T, sortAttributeValue: K, sortAttribute: L): boolean {
+  if (typeof sortAttributeValue === 'string') {
     const firstObjectValueLower = (firstObject[sortAttribute] as unknown as string).toLowerCase();
     const lastObjectValueLower = (lastObject[sortAttribute] as unknown as string).toLowerCase();
     const newObjectValueLower = (newObject[sortAttribute] as unknown as string).toLowerCase();
@@ -535,16 +535,15 @@ function validateObjectNeedStayInPage<T, K extends keyof T>(firstObject: T, last
     const eMenorQueOMaior = newObjectValueLower.localeCompare(lastObjectValueLower) < 0;
     const eMenorQueOMenor = newObjectValueLower.localeCompare(firstObjectValueLower) < 0;
     return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
-  } 
-  else if (typeof sortAttribute === 'number') {
-    const firstObjectValue = firstObject[sortAttribute] as unknown as number;
-    const lastObjectValue = lastObject[sortAttribute] as unknown as number;
-    const newObjectValue = newObject[sortAttribute] as unknown as number;
+  } else if (typeof sortAttributeValue === 'number') {
+    const firstObjectValue = Number(firstObject[sortAttribute]);
+    const lastObjectValue = Number(lastObject[sortAttribute]);
+    const newObjectValue = Number(newObject[sortAttribute]);
     const eMaiorQueOMenor = newObjectValue > firstObjectValue;
     const eMenorQueOMaior = newObjectValue < lastObjectValue;
     const eMenorQueOMenor = newObjectValue < firstObjectValue;
-    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
-  } else if (sortAttribute instanceof Date) {
+    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor;
+  } else if (sortAttributeValue instanceof Date) {
     const firstObjectDate = firstObject[sortAttribute] as unknown as Date;
     const lastObjectDate = lastObject[sortAttribute] as unknown as Date;
     const newObjectDate = newObject[sortAttribute] as unknown as Date;
@@ -555,4 +554,6 @@ function validateObjectNeedStayInPage<T, K extends keyof T>(firstObject: T, last
   }
   return false;
 }
+
+
 

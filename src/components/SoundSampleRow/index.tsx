@@ -119,18 +119,18 @@ export default function SoundSampleRow({
           isPlaying ? (
             isHovered ? (
               <PauseRowButton
-                simbolColor="var(--purple-color)"
+                simbolColor="var(--orange-color)"
                 className="pause-button"
                 blobSrc={blobSrc}
                 liked={audio.liked}
                 onClick={handleUpdateSrc}
               />
             ) : (
-              <MusicGifIcon stroke="var(--purple-color)" className="music-gif" />
+              <MusicGifIcon stroke="var(--orange-color)" className="music-gif" />
             )
           ) : (
             <PlayRowButton
-              simbolColor="var(--purple-color)"
+              simbolColor="var(--orange-color)"
               className="play-button"
               blobSrc={blobSrc}
               liked={audio.liked}
@@ -139,7 +139,7 @@ export default function SoundSampleRow({
           )
         ) : isHovered && src !== `${audio?.audioUrl}` ? (
           <PlayRowButton
-            simbolColor="var(--purple-color)"
+            simbolColor="var(--orange-color)"
             className="play-button"
             blobSrc={blobSrc}
             liked={audio.liked}
@@ -162,7 +162,7 @@ export default function SoundSampleRow({
           </div>
         ) : (
           <div className="like-button-div">
-            <LikeButton simbolColor="var(--purple-color)" className="like-button" />
+            <LikeButton simbolColor="var(--orange-color)" className="like-button" />
           </div>
         )}
       </td>
