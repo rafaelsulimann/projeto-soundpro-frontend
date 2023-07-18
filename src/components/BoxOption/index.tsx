@@ -20,7 +20,8 @@ export default function BoxOption({
   const [isHovered, setIsHovered] = useState(false);
   const bgHovered = isHovered ? "#2d2d35" : "transparent";
 
-  function handleClick() {
+  function handleClick(event: any) {
+    event.stopPropagation();
     onFunctionClick();
   }
 
@@ -32,7 +33,7 @@ export default function BoxOption({
         className != null && className != "" ? className : "option-div"
       }
       style={{ background: bgHovered }}
-      onClick={handleClick}
+      onClick={(event: any) => handleClick(event)}
     >
       <img
         className={

@@ -22,7 +22,7 @@ export default function PauseRowButton({
       viewBox="0 0 38 41"
       fill={simbolColor}
       xmlns="http://www.w3.org/2000/svg"
-      onClick={() => onClick(blobSrc, liked)}
+      onClick={(event: any) => onClick(event, blobSrc, liked)}
       className={className}
     >
       <rect width="14" height="41" rx="7" />

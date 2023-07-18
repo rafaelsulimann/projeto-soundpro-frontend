@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ContextPlayer } from "../../utils/context-player";
 import { AudioDTO } from "../../models/audio";
 import soundImg from "../../assets/capa-pack.png";
@@ -9,6 +9,9 @@ import Points3Button from "../Icons/Buttons/3Points";
 import * as soundService from "../../services/sound-service";
 import "./styles.scss";
 import MusicGifIcon from "../Icons/MusicGif";
+import BoxOption from "../BoxOption";
+import deleteIcon from "../../assets/delete-button.svg";
+import editIcon from "../../assets/edit-button.svg";
 
 type Props = {
   audio: AudioDTO;
@@ -25,18 +28,21 @@ export default function SoundSampleRow({
   onEditAudioFile,
   onClick,
   index,
-  isSelected
+  isSelected,
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
   const [isHovered, setIsHovered] = useState(false);
   const [blobSrc, setBlobSrc] = useState<string>("");
+  const [isRightButtonClick, setIsRightButtonClick] = useState<boolean>(false);
+  const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     setBlobSrc(audio.audioUrl);
   }, []);
 
   function handleDeleteClick() {
+    setIsRightButtonClick(false);
     soundService
       .deleteSoundById(audio.id)
       .then(() => {
@@ -51,6 +57,7 @@ export default function SoundSampleRow({
   function handleEditClick() {
     const originalName = audio.name;
     const soundName = "zatura";
+    setIsRightButtonClick(false);
     soundService
       .updateSound(audio.id, { soundName: soundName, liked: audio.liked })
       .then((response) => {
@@ -66,6 +73,7 @@ export default function SoundSampleRow({
   }
 
   function handleDownloadClick() {
+    setIsRightButtonClick(false);
     soundService
       .downloadSound(audio.id)
       .then((response) => {
@@ -86,7 +94,8 @@ export default function SoundSampleRow({
       });
   }
 
-  function handleUpdateSrc(newSrc: string, liked: boolean) {
+  function handleUpdateSrc(event: any, newSrc: string, liked: boolean) {
+    event.stopPropagation();
     if (src === "" || src === undefined) {
       setSrc(newSrc);
       setLiked(liked);
@@ -106,56 +115,95 @@ export default function SoundSampleRow({
     }
   }
 
-  function handleRowClick(){
-    onClick(audio);
-    if(isSelected){
-      setIsHovered(true);
+  function handleRowClick() {
+    if(isRightButtonClick){
+      setIsRightButtonClick(false);
+      setRightClickPosition({ x: 0, y: 0 });
+      onClick(audio);
+    } else {
+      if(isSelected){
+        console.log("Entrou no if do is this sound selected")
+        setIsRightButtonClick(false);
+        setRightClickPosition({ x: 0, y: 0 });
+        onClick(audio);
+      } else {
+        console.log("não entrou no if do is this sound selected")
+        setIsRightButtonClick(false);
+        setRightClickPosition({ x: 0, y: 0 });
+        onClick(audio);
+      }
     }
-    setIsHovered(false);
   }
 
-  function handleRowMouseEnterHover(){
-    if(isSelected){
-      return;
-    }
+  function handleRowMouseEnterHover() {
     setIsHovered(true);
   }
 
-  function handleRowMouseLeaveHover(){
-    if(isSelected){
-      return;
-    }
+  function handleRowMouseLeaveHover() {
     setIsHovered(false);
   }
 
-  const bgSoundRowHoverColor = isHovered ? 'var(--line-gray-color)' : 'transparent';
-  const bgSoundRowSelectedColor = isSelected ? 'var(--gray-light-color)' : 'transparent';
+  function handleRightClick(event: React.MouseEvent<HTMLTableRowElement>) {
+    event.preventDefault();
+    if(!isSelected){
+      onClick(audio);
+      setIsHovered(false);
+    }
+    setRightClickPosition({ x: event.clientX, y: event.clientY });
+    if(isRightButtonClick){
+      return;
+    }
+    setIsRightButtonClick(!isRightButtonClick);
+  }
+
+  const bgSoundRowHoverColor = isHovered
+    ? "var(--line-gray-color)"
+    : "transparent";
+  const bgSoundRowSelectedColor = isSelected
+    ? "var(--gray-light-color)"
+    : "transparent";
 
   return (
-    <tr
-      className="sounds-samples-row"
-      onMouseEnter={handleRowMouseEnterHover}
-      onMouseLeave={handleRowMouseLeaveHover}
-      onClick={handleRowClick}
-      style={{
-        background: isHovered ? bgSoundRowHoverColor : bgSoundRowSelectedColor
-      }}
-    >
-      <td className="play-pause-button first-td">
-        {src === `${blobSrc}` ? (
-          isPlaying ? (
-            isHovered ? (
-              <PauseRowButton
+    <>
+      <tr
+        className="sounds-samples-row"
+        onMouseEnter={handleRowMouseEnterHover}
+        onMouseLeave={handleRowMouseLeaveHover}
+        onClick={handleRowClick}
+        onContextMenu={handleRightClick}
+        style={{
+          background: isSelected
+            ? bgSoundRowSelectedColor
+            : bgSoundRowHoverColor
+        }}
+      >
+        <td className="play-pause-button first-td">
+          {src === `${blobSrc}` ? (
+            isPlaying ? (
+              isHovered ? (
+                <PauseRowButton
+                  simbolColor="var(--orange-color)"
+                  className="pause-button"
+                  blobSrc={blobSrc}
+                  liked={audio.liked}
+                  onClick={handleUpdateSrc}
+                />
+              ) : (
+                <MusicGifIcon
+                  stroke="var(--orange-color)"
+                  className="music-gif"
+                />
+              )
+            ) : (
+              <PlayRowButton
                 simbolColor="var(--orange-color)"
-                className="pause-button"
+                className="play-button"
                 blobSrc={blobSrc}
                 liked={audio.liked}
                 onClick={handleUpdateSrc}
               />
-            ) : (
-              <MusicGifIcon stroke="var(--orange-color)" className="music-gif" />
             )
-          ) : (
+          ) : isHovered && src !== `${audio?.audioUrl}` ? (
             <PlayRowButton
               simbolColor="var(--orange-color)"
               className="play-button"
@@ -163,48 +211,83 @@ export default function SoundSampleRow({
               liked={audio.liked}
               onClick={handleUpdateSrc}
             />
-          )
-        ) : isHovered && src !== `${audio?.audioUrl}` ? (
-          <PlayRowButton
-            simbolColor="var(--orange-color)"
-            className="play-button"
-            blobSrc={blobSrc}
-            liked={audio.liked}
-            onClick={handleUpdateSrc}
+          ) : (
+            index
+          )}
+        </td>
+        <td className="sound-infos">
+          <div className="sound-infos-div">
+            <img src={soundImg} alt="soundImg" />
+            <h3>{audio?.name}</h3>
+          </div>
+        </td>
+        <td className="sounds-samples-buttons">
+          {audio.liked ? (
+            <div className="like-button-div">
+              <LikeButton
+                simbolColor="rgb(166, 54, 54)"
+                className="like-button"
+              />
+            </div>
+          ) : (
+            <div className="like-button-div">
+              <LikeButton
+                simbolColor="var(--orange-color)"
+                className="like-button"
+              />
+            </div>
+          )}
+        </td>
+        <td className="sounds-samples-buttons">
+          <h4>+</h4>
+        </td>
+        <td className="sounds-samples-buttons last-td">
+          <Points3Button
+            simbolColor="#999AA7"
+            className="options-button"
+            onDeleteClick={handleDeleteClick}
+            onEditClick={handleEditClick}
+            onDownloadClick={handleDownloadClick}
           />
-        ) : (
-          index
-        )}
-      </td>
-      <td className="sound-infos">
-       <div className="sound-infos-div">
-         <img src={soundImg} alt="soundImg" />
-         <h3>{audio?.name}</h3>
-       </div>
-      </td>
-      <td className="sounds-samples-buttons">
-        {audio.liked ? (
-          <div className="like-button-div">
-            <LikeButton simbolColor="rgb(166, 54, 54)" className="like-button" />
+        </td>
+      </tr>
+      <div>
+        {isRightButtonClick && rightClickPosition && isSelected &&(
+          <div
+            className="options-box-div"
+            style={{
+              position: "absolute",
+              top: rightClickPosition.y,
+              left: rightClickPosition.x,
+            }}
+          >
+            <BoxOption
+              optionTextName="Excluir"
+              className={"delete-div"}
+              imgClassName={"delete-option-box-icon"}
+              iconSrc={deleteIcon}
+              iconAltName="Delete"
+              onFunctionClick={handleDeleteClick}
+            />
+            <BoxOption
+              optionTextName="Editar"
+              className={"edit-div"}
+              imgClassName={"edit-option-box-icon"}
+              iconSrc={editIcon}
+              iconAltName="Edit"
+              onFunctionClick={handleEditClick}
+            />
+            <BoxOption
+              optionTextName="Download"
+              className={"edit-div"}
+              imgClassName={"edit-option-box-icon"}
+              iconSrc={editIcon}
+              iconAltName="Download"
+              onFunctionClick={handleDownloadClick}
+            />
           </div>
-        ) : (
-          <div className="like-button-div">
-            <LikeButton simbolColor="var(--orange-color)" className="like-button" />
-          </div>
         )}
-      </td>
-      <td className="sounds-samples-buttons">
-        <h4>+</h4>
-      </td>
-      <td className="sounds-samples-buttons last-td">
-        <Points3Button
-          simbolColor="#999AA7"
-          className="options-button"
-          onDeleteClick={handleDeleteClick}
-          onEditClick={handleEditClick}
-          onDownloadClick={handleDownloadClick}
-        />
-      </td>
-    </tr>
+      </div>
+    </>
   );
 }

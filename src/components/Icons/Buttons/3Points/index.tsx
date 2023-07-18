@@ -25,7 +25,8 @@ export default function Points3Button({
   const botaoRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  function handleButtonClick() {
+  function handleButtonClick(event: any) {
+    event.stopPropagation();
     setIsButtonClick(!isButtonClick);
   }
 
@@ -34,13 +35,13 @@ export default function Points3Button({
     setIsButtonClick(false);
     setIsHovered(false);
   }
-
+  
   function handleDownloadClick() {
     onDownloadClick();
     setIsButtonClick(false);
     setIsHovered(false);
   }
-
+  
   function handleEditClick() {
     onEditClick();
     setIsButtonClick(false);
@@ -95,7 +96,7 @@ export default function Points3Button({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className={className}
-          onClick={handleButtonClick}
+          onClick={(event:any) => handleButtonClick(event)}
         >
           <circle
             cx="3"

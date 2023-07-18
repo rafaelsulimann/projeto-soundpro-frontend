@@ -16,7 +16,7 @@ export default function PlayRowButton({simbolColor, className, onClick, blobSrc,
       viewBox="0 0 58 70"
       fill={simbolColor}
       xmlns="http://www.w3.org/2000/svg"
-      onClick={() => onClick(blobSrc, liked)}
+      onClick={(event: any) => onClick(event, blobSrc, liked)}
       className={className}
     >
       <path d="M0 66.7981V2.81699C0 0.615093 2.4159 -0.732909 4.2896 0.423591L56.122 32.414C57.903 33.5129 57.903 36.1018 56.122 37.2007L4.2897 69.1911C2.4159 70.3471 0 69.0001 0 66.7981Z" />
