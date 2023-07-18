@@ -11,6 +11,8 @@ type Props = {
   onDeleteClick: any;
   onEditClick: any;
   onDownloadClick: any
+  onButtonClick: any;
+  isButtonClick: boolean;
 };
 
 export default function Points3Button({
@@ -18,33 +20,34 @@ export default function Points3Button({
   className,
   onDeleteClick,
   onEditClick,
-  onDownloadClick
+  onDownloadClick,
+  onButtonClick,
+  isButtonClick
 }: Props) {
-  const [isButtonClick, setIsButtonClick] = useState<boolean>(false);
   const [isHovered, setIsHovered] = useState(false);
   const botaoRef = useRef<HTMLDivElement>(null);
   const boxRef = useRef<HTMLDivElement>(null);
 
   function handleButtonClick(event: any) {
     event.stopPropagation();
-    setIsButtonClick(!isButtonClick);
+    onButtonClick(!isButtonClick);
   }
-
+  
   function handleDeleteClick() {
     onDeleteClick();
-    setIsButtonClick(false);
+    onButtonClick(false);
     setIsHovered(false);
   }
   
   function handleDownloadClick() {
     onDownloadClick();
-    setIsButtonClick(false);
+    onButtonClick(false);
     setIsHovered(false);
   }
   
   function handleEditClick() {
     onEditClick();
-    setIsButtonClick(false);
+    onButtonClick(false);
     setIsHovered(false);
   }
 
@@ -76,7 +79,7 @@ export default function Points3Button({
         !botaoRef.current?.contains(event.target as Node)
       ) {
         // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
-        setIsButtonClick(false);
+        onButtonClick(false);
       }
     }
 

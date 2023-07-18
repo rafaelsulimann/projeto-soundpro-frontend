@@ -36,6 +36,7 @@ export default function SoundSampleRow({
   const [blobSrc, setBlobSrc] = useState<string>("");
   const [isRightButtonClick, setIsRightButtonClick] = useState<boolean>(false);
   const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
+  const [isPoints3Click, setIsPoints3Click] = useState<boolean>(false);
 
   useEffect(() => {
     setBlobSrc(audio.audioUrl);
@@ -96,6 +97,9 @@ export default function SoundSampleRow({
 
   function handleUpdateSrc(event: any, newSrc: string, liked: boolean) {
     event.stopPropagation();
+    if(isPoints3Click){
+      setIsPoints3Click(false);
+    }
     if (src === "" || src === undefined) {
       setSrc(newSrc);
       setLiked(liked);
@@ -154,6 +158,10 @@ export default function SoundSampleRow({
       return;
     }
     setIsRightButtonClick(!isRightButtonClick);
+  }
+
+  function handlePoints3ButtonClick(newValueIsPoints3Click: boolean){
+    setIsPoints3Click(newValueIsPoints3Click);
   }
 
   const bgSoundRowHoverColor = isHovered
@@ -248,6 +256,8 @@ export default function SoundSampleRow({
             onDeleteClick={handleDeleteClick}
             onEditClick={handleEditClick}
             onDownloadClick={handleDownloadClick}
+            onButtonClick={handlePoints3ButtonClick}
+            isButtonClick={isPoints3Click}
           />
         </td>
       </tr>
