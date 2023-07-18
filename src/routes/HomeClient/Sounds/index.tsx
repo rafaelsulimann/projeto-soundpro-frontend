@@ -17,6 +17,15 @@ import {
 
 export default function Sounds() {
   const isLastPage = useRef(false);
+  const [selectSingleSound, setSelectSingleSound] = useState<AudioDTO>({
+    id: "",
+    name: "",
+    audioUrl: "",
+    creationDate: "",
+    lastUpdateDate: "",
+    soundType: "",
+    liked: false,
+  });
   const [isFocused, setIsFocused] = useState(false);
   const [observerClassName] = useState("sentinela");
   const [searchCount, setSearchCount] = useState(0);
@@ -197,6 +206,22 @@ export default function Sounds() {
     setIsFocused(false);
   }
 
+  function handleSelectSound(audio: AudioDTO) {
+    if (selectSingleSound.id === audio.id) {
+      setSelectSingleSound({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdateDate: "",
+        soundType: "",
+        liked: false,
+      }); 
+    } else {
+      setSelectSingleSound(audio); // Define o ID do novo Sound selecionado
+    }
+  }
+
   const searchBarBorderColor = isFocused ? '1px solid var(--border-gray-color)' : '1px solid var(--line-gray-color)'
 
   return (
@@ -258,8 +283,10 @@ export default function Sounds() {
                       audio={sound}
                       onDeleteAudioFile={handleDeleteAudioFile}
                       onEditAudioFile={handleUpdateAudioFile}
+                      onClick={handleSelectSound}
                       index={index + 1}
                       key={sound.id}
+                      isSelected={selectSingleSound.id === sound.id}
                     />
                   ))}
             </tbody>

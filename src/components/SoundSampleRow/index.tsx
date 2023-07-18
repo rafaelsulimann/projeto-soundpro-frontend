@@ -6,7 +6,6 @@ import PauseRowButton from "../Icons/Buttons/PauseRow";
 import PlayRowButton from "../Icons/Buttons/PlayRow";
 import LikeButton from "../Icons/Buttons/Like";
 import Points3Button from "../Icons/Buttons/3Points";
-import WaveIcon from "../Icons/Wave";
 import * as soundService from "../../services/sound-service";
 import "./styles.scss";
 import MusicGifIcon from "../Icons/MusicGif";
@@ -15,14 +14,18 @@ type Props = {
   audio: AudioDTO;
   onDeleteAudioFile: any;
   onEditAudioFile: any;
+  onClick: any;
   index: number;
+  isSelected: boolean;
 };
 
 export default function SoundSampleRow({
   audio,
   onDeleteAudioFile,
   onEditAudioFile,
-  index
+  onClick,
+  index,
+  isSelected
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
@@ -103,15 +106,39 @@ export default function SoundSampleRow({
     }
   }
 
+  function handleRowClick(){
+    onClick(audio);
+    if(isSelected){
+      setIsHovered(true);
+    }
+    setIsHovered(false);
+  }
+
+  function handleRowMouseEnterHover(){
+    if(isSelected){
+      return;
+    }
+    setIsHovered(true);
+  }
+
+  function handleRowMouseLeaveHover(){
+    if(isSelected){
+      return;
+    }
+    setIsHovered(false);
+  }
+
   const bgSoundRowHoverColor = isHovered ? 'var(--line-gray-color)' : 'transparent';
+  const bgSoundRowSelectedColor = isSelected ? 'var(--gray-light-color)' : 'transparent';
 
   return (
     <tr
       className="sounds-samples-row"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={handleRowMouseEnterHover}
+      onMouseLeave={handleRowMouseLeaveHover}
+      onClick={handleRowClick}
       style={{
-        background: bgSoundRowHoverColor
+        background: isHovered ? bgSoundRowHoverColor : bgSoundRowSelectedColor
       }}
     >
       <td className="play-pause-button first-td">

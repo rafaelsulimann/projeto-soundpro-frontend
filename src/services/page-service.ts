@@ -535,15 +535,15 @@ function validateObjectNeedStayInPage<T, K extends keyof T, L extends keyof T>(f
     const eMenorQueOMaior = newObjectValueLower.localeCompare(lastObjectValueLower) < 0;
     const eMenorQueOMenor = newObjectValueLower.localeCompare(firstObjectValueLower) < 0;
     return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
-  } else if (typeof sortAttributeValue === 'number') {
-    const firstObjectValue = Number(firstObject[sortAttribute]);
-    const lastObjectValue = Number(lastObject[sortAttribute]);
-    const newObjectValue = Number(newObject[sortAttribute]);
+  } else if (typeof sortAttribute === 'number') {
+    const firstObjectValue = firstObject[sortAttribute] as unknown as number;
+    const lastObjectValue = lastObject[sortAttribute] as unknown as number;
+    const newObjectValue = newObject[sortAttribute] as unknown as number;
     const eMaiorQueOMenor = newObjectValue > firstObjectValue;
     const eMenorQueOMaior = newObjectValue < lastObjectValue;
     const eMenorQueOMenor = newObjectValue < firstObjectValue;
-    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor;
-  } else if (sortAttributeValue instanceof Date) {
+    return eMaiorQueOMenor && eMenorQueOMaior || eMenorQueOMenor ? true : false;
+  } else if (sortAttribute instanceof Date) {
     const firstObjectDate = firstObject[sortAttribute] as unknown as Date;
     const lastObjectDate = lastObject[sortAttribute] as unknown as Date;
     const newObjectDate = newObject[sortAttribute] as unknown as Date;
