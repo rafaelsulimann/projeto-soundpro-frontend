@@ -20,6 +20,7 @@ type Props = {
   onClick: any;
   index: number;
   isSelected: boolean;
+  scrollRowHoveredId: string;
 };
 
 export default function SoundSampleRow({
@@ -29,6 +30,7 @@ export default function SoundSampleRow({
   onClick,
   index,
   isSelected,
+  scrollRowHoveredId
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
@@ -37,10 +39,25 @@ export default function SoundSampleRow({
   const [isRightButtonClick, setIsRightButtonClick] = useState<boolean>(false);
   const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
   const [isPoints3Click, setIsPoints3Click] = useState<boolean>(false);
+  const [firstRenderCount, setFirstRenderCount] = useState(0);
+  const trRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
     setBlobSrc(audio.audioUrl);
   }, []);
+
+  useEffect(() => {
+    if(firstRenderCount === 0){
+      setFirstRenderCount(1);
+      return;
+    } else{
+      if(scrollRowHoveredId === audio.id){
+        setIsHovered(true);
+      } else {
+        setIsHovered(false);
+      }
+    }
+  }, [scrollRowHoveredId])
 
   function handleDeleteClick() {
     setIsRightButtonClick(false);
@@ -151,7 +168,6 @@ export default function SoundSampleRow({
     event.preventDefault();
     if(!isSelected){
       onClick(audio);
-      setIsHovered(false);
     }
     setRightClickPosition({ x: event.clientX, y: event.clientY });
     if(isRightButtonClick){
@@ -174,6 +190,9 @@ export default function SoundSampleRow({
   return (
     <>
       <tr
+        id={"sounds-samples-row"}
+        ref={trRef}
+        data-id={audio.id}
         className="sounds-samples-row"
         onMouseEnter={handleRowMouseEnterHover}
         onMouseLeave={handleRowMouseLeaveHover}

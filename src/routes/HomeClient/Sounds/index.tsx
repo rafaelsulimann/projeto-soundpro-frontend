@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AudioDTO } from "../../../models/audio";
 import SoundSampleRow from "../../../components/SoundSampleRow";
 import SearchIcon from "../../../components/Icons/Search";
@@ -14,6 +14,7 @@ import {
   SortType,
   UseType,
 } from "../../../services/page-service";
+import { ContextPlayer } from "../../../utils/context-player";
 
 export default function Sounds() {
   const isLastPage = useRef(false);
@@ -62,6 +63,30 @@ export default function Sounds() {
     liked: false,
     soundType: "",
   });
+
+  const [scrollRowHoveredId, setScrollRowHoveredId] = useState<string>("");
+
+  const { isPlaying } = useContext(ContextPlayer);
+
+  useEffect(() => {
+    if(!isPlaying){
+      window.onwheel = function(event: WheelEvent) {
+        handleWheel(event);
+      }
+    }
+  }, [isPlaying]);
+
+  function handleWheel(event: WheelEvent) {
+    const mouseX = event.clientX;
+    const mouseY = event.clientY;
+    const currentElement = document.elementFromPoint(mouseX, mouseY);
+    const trElement = currentElement?.closest("tr");
+
+    if (trElement?.dataset.id) {
+      const trId = trElement.dataset.id;
+      setScrollRowHoveredId(trId);
+    }
+  }
 
   useEffect(() => {
     if (nextPageCount > 0) {
@@ -287,6 +312,7 @@ export default function Sounds() {
                       index={index + 1}
                       key={sound.id}
                       isSelected={selectSingleSound.id === sound.id}
+                      scrollRowHoveredId={scrollRowHoveredId}
                     />
                   ))}
             </tbody>
