@@ -50,12 +50,16 @@ export default function SoundSampleRow({
     if(firstRenderCount === 0){
       setFirstRenderCount(1);
       return;
-    } else{
-      if(scrollRowHoveredId === audio.id){
+    } 
+    if(scrollRowHoveredId === audio.id){
+      if(!isHovered){
         setIsHovered(true);
-      } else {
-        setIsHovered(false);
       }
+      return;
+    } 
+    if(isHovered){
+      setIsHovered(false);
+      return;
     }
   }, [scrollRowHoveredId])
 

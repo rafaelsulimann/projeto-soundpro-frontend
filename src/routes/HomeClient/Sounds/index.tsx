@@ -31,13 +31,16 @@ export default function Sounds() {
   const [observerClassName] = useState("sentinela");
   const [searchCount, setSearchCount] = useState(0);
   const [nextPageCount, setNextPageCount] = useState(0);
-  const [lastResponsePageContent, setLastResponsePageContent] = useState<AudioDTO[]>([]);
+  const [lastResponsePageContent, setLastResponsePageContent] = useState<
+    AudioDTO[]
+  >([]);
   const [intersectionObserverCount, setIntersectionObserverCount] = useState(0);
   const [insertAudioCount, setInsertAudioCount] = useState(0);
   const [updateAudioCount, setUpdateAudioCount] = useState(0);
   const [sounds, setSounds] = useState<AudioDTO[]>([]);
   const [searchText, setSearchText] = useState<string>("");
-  const [filterAttribute, setFilterAttribute] = useState<keyof AudioDTO>("name");
+  const [filterAttribute, setFilterAttribute] =
+    useState<keyof AudioDTO>("name");
   const [sortAttribute, setSortAttribute] = useState<keyof AudioDTO>("name");
   const [sortType, setSortType] = useState<SortType>(SortType.ASC);
   const [queryParams, setQueryParams] = useState<QueryParams>(() => ({
@@ -71,15 +74,22 @@ export default function Sounds() {
   useEffect(() => {
     if(!isPlaying){
       window.onwheel = function(event: WheelEvent) {
-        handleWheel(event);
+        if(event.deltaY === 125 || event.deltaY === -125){
+          var scrollHoveredInterval = setInterval(() => {
+            handleWheel(event);
+          }, 50);
+          setTimeout(() => {
+            clearTimeout(scrollHoveredInterval);
+          }, 150)
+        } else {
+          handleWheel(event);
+        }
       }
     }
   }, [isPlaying]);
 
   function handleWheel(event: WheelEvent) {
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-    const currentElement = document.elementFromPoint(mouseX, mouseY);
+    const currentElement = document.elementFromPoint(event.clientX, event.clientY);
     const trElement = currentElement?.closest("tr");
 
     if (trElement?.dataset.id) {
@@ -193,12 +203,12 @@ export default function Sounds() {
   }
 
   function handleDeleteAudioFile(deletedSoundId: string) {
-    console.log("Entrou no delete")
+    console.log("Entrou no delete");
     const soundsWithoutDeletedSound = sounds.filter(
       (sound) => sound.id !== deletedSoundId
     );
     console.log("soundsWithoutDeletedSound", soundsWithoutDeletedSound);
-    setSounds((prevParam) => prevParam = soundsWithoutDeletedSound);
+    setSounds((prevParam) => (prevParam = soundsWithoutDeletedSound));
   }
 
   function handleUpdateAudioFile(updateSound: AudioDTO) {
@@ -223,7 +233,7 @@ export default function Sounds() {
     }
   }
 
-  function handleFocused(){
+  function handleFocused() {
     setIsFocused(true);
   }
 
@@ -241,19 +251,24 @@ export default function Sounds() {
         lastUpdateDate: "",
         soundType: "",
         liked: false,
-      }); 
+      });
     } else {
       setSelectSingleSound(audio); // Define o ID do novo Sound selecionado
     }
   }
 
-  const searchBarBorderColor = isFocused ? '1px solid var(--border-gray-color)' : '1px solid var(--line-gray-color)'
+  const searchBarBorderColor = isFocused
+    ? "1px solid var(--border-gray-color)"
+    : "1px solid var(--line-gray-color)";
 
   return (
     <section className="sounds-section">
       <div className="sounds-container">
         <form className="search-bar-form" onSubmit={handleSubmit}>
-          <div className="search-bar-form-div" style={{border: searchBarBorderColor}}>
+          <div
+            className="search-bar-form-div"
+            style={{ border: searchBarBorderColor }}
+          >
             <SearchIcon fill="#999aa7" className="search-bar-icon" />
             <input
               value={searchText}
@@ -304,17 +319,17 @@ export default function Sounds() {
             </thead>
             <tbody className="sample-dashboard-table-body">
               {sounds.map((sound, index) => (
-                    <SoundSampleRow
-                      audio={sound}
-                      onDeleteAudioFile={handleDeleteAudioFile}
-                      onEditAudioFile={handleUpdateAudioFile}
-                      onClick={handleSelectSound}
-                      index={index + 1}
-                      key={sound.id}
-                      isSelected={selectSingleSound.id === sound.id}
-                      scrollRowHoveredId={scrollRowHoveredId}
-                    />
-                  ))}
+                <SoundSampleRow
+                  audio={sound}
+                  onDeleteAudioFile={handleDeleteAudioFile}
+                  onEditAudioFile={handleUpdateAudioFile}
+                  onClick={handleSelectSound}
+                  index={index + 1}
+                  key={sound.id}
+                  isSelected={selectSingleSound.id === sound.id}
+                  scrollRowHoveredId={scrollRowHoveredId}
+                />
+              ))}
             </tbody>
           </table>
         </div>
