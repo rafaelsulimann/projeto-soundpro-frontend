@@ -68,8 +68,11 @@ export default function Sounds() {
   });
 
   const [scrollRowHoveredId, setScrollRowHoveredId] = useState<string>("");
+  const [firstRenderCount, setIsFirstRenderCount] = useState(0);
 
   const { isPlaying } = useContext(ContextPlayer);
+
+  const [isBoxOptionOpen, setIsBoxOptionOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if(!isPlaying){
@@ -87,6 +90,30 @@ export default function Sounds() {
       }
     }
   }, [isPlaying]);
+
+  useEffect(() => {
+    if (firstRenderCount === 0) {
+      setIsFirstRenderCount(1);
+      return;
+    }
+    if (isBoxOptionOpen) {
+      const mainContainer = document.querySelector('.main-container') as HTMLElement;
+
+      if (!mainContainer) return; 
+
+      const handleWheel = (event: WheelEvent) => {
+        event.preventDefault(); // Impede o comportamento padrão de rolagem
+      };
+
+      if (isBoxOptionOpen) {
+        mainContainer.addEventListener("wheel", handleWheel, { passive: false });
+      }
+
+      return () => {
+        mainContainer.removeEventListener("wheel", handleWheel);
+      };
+    }
+  }, [isBoxOptionOpen]);
 
   function handleWheel(event: WheelEvent) {
     const currentElement = document.elementFromPoint(event.clientX, event.clientY);
@@ -328,6 +355,7 @@ export default function Sounds() {
                   key={sound.id}
                   isSelected={selectSingleSound.id === sound.id}
                   scrollRowHoveredId={scrollRowHoveredId}
+                  setIsBoxOptionOpen={setIsBoxOptionOpen}
                 />
               ))}
             </tbody>

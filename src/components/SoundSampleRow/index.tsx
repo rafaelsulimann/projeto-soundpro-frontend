@@ -21,6 +21,7 @@ type Props = {
   index: number;
   isSelected: boolean;
   scrollRowHoveredId: string;
+  setIsBoxOptionOpen: any;
 };
 
 export default function SoundSampleRow({
@@ -30,7 +31,8 @@ export default function SoundSampleRow({
   onClick,
   index,
   isSelected,
-  scrollRowHoveredId
+  scrollRowHoveredId,
+  setIsBoxOptionOpen
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
@@ -139,22 +141,25 @@ export default function SoundSampleRow({
       }
     }
   }
-
+  
   function handleRowClick() {
     if(isRightButtonClick){
       setIsRightButtonClick(false);
       setRightClickPosition({ x: 0, y: 0 });
+      setIsBoxOptionOpen(false);
       onClick(audio);
     } else {
       if(isSelected){
         console.log("Entrou no if do is this sound selected")
         setIsRightButtonClick(false);
         setRightClickPosition({ x: 0, y: 0 });
+        setIsBoxOptionOpen(false);
         onClick(audio);
       } else {
         console.log("não entrou no if do is this sound selected")
         setIsRightButtonClick(false);
         setRightClickPosition({ x: 0, y: 0 });
+        setIsBoxOptionOpen(false);
         onClick(audio);
       }
     }
@@ -175,9 +180,11 @@ export default function SoundSampleRow({
     }
     setRightClickPosition({ x: event.clientX, y: event.clientY });
     if(isRightButtonClick){
+      setIsBoxOptionOpen(true);
       return;
     }
-    setIsRightButtonClick(!isRightButtonClick);
+    setIsRightButtonClick(true);
+    setIsBoxOptionOpen(true);
   }
 
   function handlePoints3ButtonClick(newValueIsPoints3Click: boolean){
