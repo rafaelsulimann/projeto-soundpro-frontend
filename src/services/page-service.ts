@@ -526,7 +526,7 @@ function validateHasTextValue(searchText: string, filterAttribute: any): boolean
   return false;
 }
 
-function validateObjectNeedStayInPage<T, K extends keyof T, L extends keyof T>(firstObject: T, lastObject: T, newObject: T, sortAttributeValue: K, sortAttribute: L): boolean {
+function validateObjectNeedStayInPage<T, K extends keyof T>(firstObject: T, lastObject: T, newObject: T, sortAttributeValue: any, sortAttribute: K): boolean {
   if (typeof sortAttributeValue === 'string') {
     const firstObjectValueLower = (firstObject[sortAttribute] as unknown as string).toLowerCase();
     const lastObjectValueLower = (lastObject[sortAttribute] as unknown as string).toLowerCase();

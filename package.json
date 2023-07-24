@@ -21,7 +21,8 @@
     "react-popper": "^2.3.0",
     "react-router-dom": "6.4.1",
     "react-spring": "^9.7.2",
-    "sass": "^1.60.0"
+    "sass": "^1.60.0",
+    "tsc": "^2.0.4"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
