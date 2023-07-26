@@ -178,6 +178,9 @@ export default function SoundSampleRow({
     if(!isSelected){
       onClick(audio);
     }
+    if(isPoints3Click){
+      setIsPoints3Click(false);
+    }
     setRightClickPosition({ x: event.clientX, y: event.clientY });
     if(isRightButtonClick){
       setIsBoxOptionOpen(true);
@@ -189,6 +192,9 @@ export default function SoundSampleRow({
 
   function handlePoints3ButtonClick(newValueIsPoints3Click: boolean){
     setIsPoints3Click(newValueIsPoints3Click);
+    if(isRightButtonClick){
+      setIsRightButtonClick(false);
+    }
   }
 
   const bgSoundRowHoverColor = isHovered
