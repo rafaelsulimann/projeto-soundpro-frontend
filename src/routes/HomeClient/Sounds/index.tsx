@@ -66,13 +66,19 @@ export default function Sounds() {
     liked: false,
     soundType: "",
   });
-
   const [scrollRowHoveredId, setScrollRowHoveredId] = useState<string>("");
   const [firstRenderCount, setIsFirstRenderCount] = useState(0);
-
   const { isPlaying } = useContext(ContextPlayer);
-
   const [isBoxOptionOpen, setIsBoxOptionOpen] = useState<boolean>(false);
+  const [sound3PointsClicked, setSound3PointsClicked] = useState<AudioDTO>({
+    id: "",
+    name: "",
+    audioUrl: "",
+    creationDate: "",
+    lastUpdateDate: "",
+    soundType: "",
+    liked: false,
+  });
 
   useEffect(() => {
     if(!isPlaying){
@@ -284,6 +290,22 @@ export default function Sounds() {
     }
   }
 
+  function handle3PointsButtonClick(audio: AudioDTO) {
+    if (sound3PointsClicked.id === audio.id) {
+      setSound3PointsClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdateDate: "",
+        soundType: "",
+        liked: false,
+      });
+    } else {
+      setSound3PointsClicked(audio); // Define o ID do novo Sound selecionado
+    }
+  }
+
   const searchBarBorderColor = isFocused
     ? "1px solid var(--border-gray-color)"
     : "1px solid var(--line-gray-color)";
@@ -356,6 +378,8 @@ export default function Sounds() {
                   isSelected={selectSingleSound.id === sound.id}
                   scrollRowHoveredId={scrollRowHoveredId}
                   setIsBoxOptionOpen={setIsBoxOptionOpen}
+                  is3PointsClicked={sound3PointsClicked.id === sound.id}
+                  on3PointsClick={handle3PointsButtonClick}
                 />
               ))}
             </tbody>

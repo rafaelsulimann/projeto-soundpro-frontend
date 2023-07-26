@@ -35,19 +35,19 @@ export default function Points3Button({
   
   function handleDeleteClick() {
     onDeleteClick();
-    onButtonClick(false);
+    onButtonClick();
     setIsHovered(false);
   }
   
   function handleDownloadClick() {
     onDownloadClick();
-    onButtonClick(false);
+    onButtonClick();
     setIsHovered(false);
   }
   
   function handleEditClick() {
     onEditClick();
-    onButtonClick(false);
+    onButtonClick();
     setIsHovered(false);
   }
 
@@ -79,7 +79,7 @@ export default function Points3Button({
         !botaoRef.current?.contains(event.target as Node)
       ) {
         // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
-        onButtonClick(false);
+        onButtonClick();
       }
     }
 

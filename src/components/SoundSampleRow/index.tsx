@@ -22,6 +22,8 @@ type Props = {
   isSelected: boolean;
   scrollRowHoveredId: string;
   setIsBoxOptionOpen: any;
+  on3PointsClick: any;
+  is3PointsClicked: boolean;
 };
 
 export default function SoundSampleRow({
@@ -32,7 +34,9 @@ export default function SoundSampleRow({
   index,
   isSelected,
   scrollRowHoveredId,
-  setIsBoxOptionOpen
+  setIsBoxOptionOpen,
+  on3PointsClick,
+  is3PointsClicked
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
@@ -41,7 +45,6 @@ export default function SoundSampleRow({
   const boxRef = useRef<HTMLDivElement>(null);
   const [isRightButtonClick, setIsRightButtonClick] = useState<boolean>(false);
   const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
-  const [isPoints3Click, setIsPoints3Click] = useState<boolean>(false);
   const [firstRenderScrollRowHoveredIdCount, setFirstRenderCount] = useState(0);
   const trRef = useRef<HTMLTableRowElement>(null);
 
@@ -82,6 +85,7 @@ export default function SoundSampleRow({
       ) {
         // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
         setIsRightButtonClick(false);
+        setIsBoxOptionOpen(false);
       }
     }
 
@@ -93,6 +97,7 @@ export default function SoundSampleRow({
 
   function handleDeleteClick() {
     setIsRightButtonClick(false);
+    setIsBoxOptionOpen(false);
     soundService
       .deleteSoundById(audio.id)
       .then(() => {
@@ -108,6 +113,7 @@ export default function SoundSampleRow({
     const originalName = audio.name;
     const soundName = "zatura";
     setIsRightButtonClick(false);
+    setIsBoxOptionOpen(false);
     soundService
       .updateSound(audio.id, { soundName: soundName, liked: audio.liked })
       .then((response) => {
@@ -124,6 +130,7 @@ export default function SoundSampleRow({
 
   function handleDownloadClick() {
     setIsRightButtonClick(false);
+    setIsBoxOptionOpen(false);
     soundService
       .downloadSound(audio.id)
       .then((response) => {
@@ -146,8 +153,8 @@ export default function SoundSampleRow({
 
   function handleUpdateSrc(event: any, newSrc: string, liked: boolean) {
     event.stopPropagation();
-    if(isPoints3Click){
-      setIsPoints3Click(false);
+    if(is3PointsClicked){
+      on3PointsClick(audio);
     }
     if (src === "" || src === undefined) {
       setSrc(newSrc);
@@ -204,8 +211,8 @@ export default function SoundSampleRow({
     if(!isSelected){
       onClick(audio);
     }
-    if(isPoints3Click){
-      setIsPoints3Click(false);
+    if(is3PointsClicked){
+      on3PointsClick(audio);
     }
     setRightClickPosition({ x: event.clientX, y: event.clientY });
     if(isRightButtonClick){
@@ -216,8 +223,9 @@ export default function SoundSampleRow({
     setIsBoxOptionOpen(true);
   }
 
-  function handlePoints3ButtonClick(newValueIsPoints3Click: boolean){
-    setIsPoints3Click(newValueIsPoints3Click);
+  function handlePoints3ButtonClick(){
+    on3PointsClick(audio);
+    setIsBoxOptionOpen(true);
     if(isRightButtonClick){
       setIsRightButtonClick(false);
     }
@@ -319,7 +327,7 @@ export default function SoundSampleRow({
             onEditClick={handleEditClick}
             onDownloadClick={handleDownloadClick}
             onButtonClick={handlePoints3ButtonClick}
-            isButtonClick={isPoints3Click}
+            isButtonClick={is3PointsClicked}
           />
         </td>
       </tr>
