@@ -38,10 +38,11 @@ export default function SoundSampleRow({
     useContext(ContextPlayer);
   const [isHovered, setIsHovered] = useState(false);
   const [blobSrc, setBlobSrc] = useState<string>("");
+  const boxRef = useRef<HTMLDivElement>(null);
   const [isRightButtonClick, setIsRightButtonClick] = useState<boolean>(false);
   const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
   const [isPoints3Click, setIsPoints3Click] = useState<boolean>(false);
-  const [firstRenderCount, setFirstRenderCount] = useState(0);
+  const [firstRenderScrollRowHoveredIdCount, setFirstRenderCount] = useState(0);
   const trRef = useRef<HTMLTableRowElement>(null);
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function SoundSampleRow({
   }, []);
 
   useEffect(() => {
-    if(firstRenderCount === 0){
+    if(firstRenderScrollRowHoveredIdCount === 0){
       setFirstRenderCount(1);
       return;
     } 
@@ -63,7 +64,32 @@ export default function SoundSampleRow({
       setIsHovered(false);
       return;
     }
-  }, [scrollRowHoveredId])
+  }, [scrollRowHoveredId]);
+
+  useEffect(() => {
+    if (isRightButtonClick && boxRef.current) {
+      // Adiciona event listener para o evento "click" no objeto window
+      window.addEventListener("click", handleWindowClick);
+    } else {
+      // Remove event listener quando a box é fechada
+      window.removeEventListener("click", handleWindowClick);
+    }
+
+    // Função que é chamada quando o evento "click" é acionado no objeto window
+    function handleWindowClick(event: MouseEvent) {
+      if (
+        !boxRef.current?.contains(event.target as Node)
+      ) {
+        // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
+        setIsRightButtonClick(false);
+      }
+    }
+
+    // Função que é chamada quando o componente é desmontado
+    return () => {
+      window.removeEventListener("click", handleWindowClick);
+    };
+  }, [isRightButtonClick])
 
   function handleDeleteClick() {
     setIsRightButtonClick(false);
@@ -306,6 +332,7 @@ export default function SoundSampleRow({
               top: rightClickPosition.y,
               left: rightClickPosition.x,
             }}
+            ref={boxRef}
           >
             <BoxOption
               optionTextName="Excluir"
