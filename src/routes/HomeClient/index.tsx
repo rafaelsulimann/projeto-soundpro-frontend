@@ -4,8 +4,10 @@ import Principal from "../../components/Principal";
 export default function HomeClient() {
   return (
     <>
-      <Principal/>
-      <MusicPlayerBar />
+      <div className="home-client">
+        <Principal/>
+        <MusicPlayerBar />
+      </div>
     </>
   );
 }
