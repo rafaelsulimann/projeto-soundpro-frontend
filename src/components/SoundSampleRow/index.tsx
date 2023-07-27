@@ -24,6 +24,8 @@ type Props = {
   setIsBoxOptionOpen: any;
   on3PointsClick: any;
   is3PointsClicked: boolean;
+  isRightButtonClicked: boolean;
+  onRightButtonClick: any;
 };
 
 export default function SoundSampleRow({
@@ -36,14 +38,15 @@ export default function SoundSampleRow({
   scrollRowHoveredId,
   setIsBoxOptionOpen,
   on3PointsClick,
-  is3PointsClicked
+  is3PointsClicked,
+  isRightButtonClicked,
+  onRightButtonClick
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
   const [isHovered, setIsHovered] = useState(false);
   const [blobSrc, setBlobSrc] = useState<string>("");
   const boxRef = useRef<HTMLDivElement>(null);
-  const [isRightButtonClick, setIsRightButtonClick] = useState<boolean>(false);
   const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
   const [firstRenderScrollRowHoveredIdCount, setFirstRenderCount] = useState(0);
   const trRef = useRef<HTMLTableRowElement>(null);
@@ -70,7 +73,7 @@ export default function SoundSampleRow({
   }, [scrollRowHoveredId]);
 
   useEffect(() => {
-    if (isRightButtonClick && boxRef.current) {
+    if (isRightButtonClicked && boxRef.current) {
       // Adiciona event listener para o evento "click" no objeto window
       window.addEventListener("click", handleWindowClick);
     } else {
@@ -84,7 +87,7 @@ export default function SoundSampleRow({
         !boxRef.current?.contains(event.target as Node)
       ) {
         // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
-        setIsRightButtonClick(false);
+        onRightButtonClick(audio);
         setIsBoxOptionOpen(false);
       }
     }
@@ -93,10 +96,10 @@ export default function SoundSampleRow({
     return () => {
       window.removeEventListener("click", handleWindowClick);
     };
-  }, [isRightButtonClick])
+  }, [isRightButtonClicked])
 
   function handleDeleteClick() {
-    setIsRightButtonClick(false);
+    onRightButtonClick(audio);
     setIsBoxOptionOpen(false);
     soundService
       .deleteSoundById(audio.id)
@@ -112,7 +115,7 @@ export default function SoundSampleRow({
   function handleEditClick() {
     const originalName = audio.name;
     const soundName = "zatura";
-    setIsRightButtonClick(false);
+    onRightButtonClick(audio);
     setIsBoxOptionOpen(false);
     soundService
       .updateSound(audio.id, { soundName: soundName, liked: audio.liked })
@@ -129,7 +132,7 @@ export default function SoundSampleRow({
   }
 
   function handleDownloadClick() {
-    setIsRightButtonClick(false);
+    onRightButtonClick(audio);
     setIsBoxOptionOpen(false);
     soundService
       .downloadSound(audio.id)
@@ -176,21 +179,21 @@ export default function SoundSampleRow({
   }
   
   function handleRowClick() {
-    if(isRightButtonClick){
-      setIsRightButtonClick(false);
+    if(isRightButtonClicked){
+      onRightButtonClick(audio);
       setRightClickPosition({ x: 0, y: 0 });
       setIsBoxOptionOpen(false);
       onClick(audio);
     } else {
       if(isSelected){
         console.log("Entrou no if do is this sound selected")
-        setIsRightButtonClick(false);
+        onRightButtonClick(audio);
         setRightClickPosition({ x: 0, y: 0 });
         setIsBoxOptionOpen(false);
         onClick(audio);
       } else {
         console.log("não entrou no if do is this sound selected")
-        setIsRightButtonClick(false);
+        onRightButtonClick(audio);
         setRightClickPosition({ x: 0, y: 0 });
         setIsBoxOptionOpen(false);
         onClick(audio);
@@ -215,19 +218,19 @@ export default function SoundSampleRow({
       on3PointsClick(audio);
     }
     setRightClickPosition({ x: event.clientX, y: event.clientY });
-    if(isRightButtonClick){
+    if(isRightButtonClicked){
       setIsBoxOptionOpen(true);
       return;
     }
-    setIsRightButtonClick(true);
+    onRightButtonClick(audio);
     setIsBoxOptionOpen(true);
   }
 
   function handlePoints3ButtonClick(){
     on3PointsClick(audio);
     setIsBoxOptionOpen(true);
-    if(isRightButtonClick){
-      setIsRightButtonClick(false);
+    if(isRightButtonClicked){
+      onRightButtonClick(audio);
     }
   }
 
@@ -332,7 +335,7 @@ export default function SoundSampleRow({
         </td>
       </tr>
       <div>
-        {isRightButtonClick && rightClickPosition && isSelected &&(
+        {isRightButtonClicked && rightClickPosition && isSelected &&(
           <div
             className="options-box-div"
             style={{

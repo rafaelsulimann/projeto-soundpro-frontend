@@ -79,6 +79,15 @@ export default function Sounds() {
     soundType: "",
     liked: false,
   });
+  const [soundRightButtonClicked, setSoundRightButtonClicked] = useState<AudioDTO>({
+    id: "",
+    name: "",
+    audioUrl: "",
+    creationDate: "",
+    lastUpdateDate: "",
+    soundType: "",
+    liked: false,
+  });
 
   useEffect(() => {
     if(!isPlaying){
@@ -291,6 +300,17 @@ export default function Sounds() {
   }
 
   function handle3PointsButtonClick(audio: AudioDTO) {
+    if(soundRightButtonClicked.id !== ""){
+      setSoundRightButtonClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdateDate: "",
+        soundType: "",
+        liked: false,
+      });
+    }
     if (sound3PointsClicked.id === audio.id) {
       setSound3PointsClicked({
         id: "",
@@ -303,6 +323,33 @@ export default function Sounds() {
       });
     } else {
       setSound3PointsClicked(audio); // Define o ID do novo Sound selecionado
+    }
+  }
+
+  function handleRightButtonClick(audio: AudioDTO) {
+    if(sound3PointsClicked.id !== ""){
+      setSound3PointsClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdateDate: "",
+        soundType: "",
+        liked: false,
+      });
+    }
+    if (soundRightButtonClicked.id === audio.id) {
+      setSoundRightButtonClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdateDate: "",
+        soundType: "",
+        liked: false,
+      });
+    } else {
+      setSoundRightButtonClicked(audio); // Define o ID do novo Sound selecionado
     }
   }
 
@@ -380,6 +427,8 @@ export default function Sounds() {
                   setIsBoxOptionOpen={setIsBoxOptionOpen}
                   is3PointsClicked={sound3PointsClicked.id === sound.id}
                   on3PointsClick={handle3PointsButtonClick}
+                  isRightButtonClicked={soundRightButtonClicked.id === sound.id}
+                  onRightButtonClick={handleRightButtonClick}
                 />
               ))}
             </tbody>
