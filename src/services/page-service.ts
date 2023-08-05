@@ -140,18 +140,25 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
     case IATI0OLIQS:
     case IATD0NIITOLIQS:
       const objectNeedStayInPageIATI0OLIQS = validateObjectNeedStayInPage(pageReloadDTO.objects[0], pageReloadDTO.objects[pageReloadDTO.objects.length - 1], pageReloadDTO.newObject, pageReloadDTO.newObject[sortAttribute], sortAttribute);
+      console.log("objectNeedStayInPageIATI0OLIQS", objectNeedStayInPageIATI0OLIQS)
+      console.log("Entrou neste case")
       if (objectNeedStayInPageIATI0OLIQS) {
         const newObjectsIATI0OLIQS = [...pageReloadDTO.objects].slice(0, [...pageReloadDTO.objects].length - 1);
         newObjectsIATI0OLIQS.push(pageReloadDTO.newObject);
         newObjectsIATI0OLIQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
         pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLIQS));
         pageReloadDTO.setLastResponsePageContent((prevParam) => (prevParam = newObjectsIATI0OLIQS));
+        if(pageReloadDTO.isLastPageRef.current){
+          pageReloadDTO.isLastPageRef.current = false;
+          pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+        }
+        break;
+      }
+      if(pageReloadDTO.isLastPageRef.current){
         pageReloadDTO.isLastPageRef.current = false;
         pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
         break;
       }
-      pageReloadDTO.isLastPageRef.current = false;
-      pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
       break;
     case UATI0OLIQS:
     case UATD0NIITOLIQS:
@@ -198,12 +205,17 @@ export function reloadPage<T extends { id: any }, K extends keyof T, J extends k
         newObjectsIATI0OLMAQSILPLPLIQS.sort((a, b) => compareValues(a[sortAttribute], b[sortAttribute], sortOrder));
         pageReloadDTO.setObjects((prevParam) => (prevParam = newObjectsIATI0OLMAQSILPLPLIQS));
         pageReloadDTO.setLastResponsePageContent((prevParam) =>(prevParam = newObjectsIATI0OLMAQSILPLPLIQS).slice(-pageReloadDTO.queryParams.size));
+        if(pageReloadDTO.isLastPageRef.current){
+          pageReloadDTO.isLastPageRef.current = false;
+          pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+        }
+        break;
+      }
+      if(pageReloadDTO.isLastPageRef.current){
         pageReloadDTO.isLastPageRef.current = false;
         pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
         break;
       }
-      pageReloadDTO.isLastPageRef.current = false;
-      pageReloadDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
       break;
     case IATI0OLMAQSNILP:
     case IATD0NIITOLMAQSNILP:
@@ -435,6 +447,7 @@ export function createInfinityScroll(pageNextClickDTO: PageNextClickDTO, observe
   const intersectionObserver = new IntersectionObserver((entries) => {
     if (entries.some((entry) => entry.isIntersecting)) {
       handleNextPageClick(pageNextClickDTO);
+      console.log("Teste")
     }
   });
 
@@ -454,9 +467,9 @@ export function loadNextPage<T extends {id: string}, K extends keyof T>(pageNext
     const nextPage: T[] = response.data.content;
     pageNextDTO.isLastPageRef.current = response.data.last; // Use a função de retorno para obter o valor atualiza
     
-    if (pageNextDTO.isLastPageRef.current === false) {
-      pageNextDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
-    }
+    // if (pageNextDTO.isLastPageRef.current === false) {
+    //   pageNextDTO.setIntersectionObserverCount((prevParam) => prevParam + 1);
+    // }
     const uniqueSounds = nextPage.filter((nextSound: T) => {
       return ![...pageNextDTO.objects].some((sound) => sound.id === nextSound.id);
     });
@@ -488,6 +501,7 @@ export function searchPage<T extends { id: string }, K extends keyof T>(pageSear
 }
 
 function handleNextPageClick(pageNextClickDTO: PageNextClickDTO){
+  console.log("Entrou no next page")
   pageNextClickDTO.setQueryParams((prevParams) => ({ ...prevParams, page: prevParams.page + 1}));
   pageNextClickDTO.setNextPageCount((prevParam) => prevParam + 1);
 }
