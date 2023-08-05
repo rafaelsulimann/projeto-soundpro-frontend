@@ -12,79 +12,79 @@ import SearchIcon from "../Icons/Search";
 import SettingsIcon from "../Icons/Settings";
 import "./styles.scss";
 
-export default function Header() {
+export default function Aside() {
   return (
-    <header className="header">
-      <div className="header-logo">
-        <div className="header-div-comp">
+    <aside className="aside">
+      <div className="aside-logo">
+        <div className="aside-div-comp">
           <LogoIcon fill="#999AA7" className="iconSvg homeImg"/>
           <h1>Sound Pro</h1>
         </div>
       </div>
-      <div className="header-nav custom-scrollbar">
-        <div className="header-nav-session">
+      <div className="aside-nav custom-scrollbar">
+        <div className="aside-nav-session">
           <h2>MENU</h2>
           <nav>
             <ul>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <HomeIcon fill="#999AA7" className="iconSvg"/>
                 Home
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <SearchIcon fill="#9696A3" className="iconSvg"/>
                 Search
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <AlbumsIcon fill="#9696A3" className="iconSvg"/>
                 Albums
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <ArtistsIcon fill="#9696A3" className="iconSvg"/>
                 Artists
               </li>
             </ul>
           </nav>
         </div>
-        <div className="header-nav-session">
+        <div className="aside-nav-session">
           <h2>LIBRARY</h2>
           <nav>
             <ul>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <FavoriteIcon fill="#999AA7" className="iconSvg"/>
                 Favorite
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <PopularIcon fill="#999AA7" className="iconSvg"/>
                 Popular
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <MyMusicIcon fill="#999AA7" className="iconSvg"/>
                 My Music
               </li>
             </ul>
           </nav>
         </div>
-        <div className="header-nav-session header-nav-session-last">
+        <div className="aside-nav-session aside-nav-session-last">
           <h2>CUSTOMIZE</h2>
           <nav>
             <ul>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <NewPlaylistIcon fill="#999AA7" className="iconSvg"/>
                 New Playlist
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <PlaylistIcon fill="#999AA7" className="iconSvg"/>
                 Jazz
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <PlaylistIcon fill="#999AA7" className="iconSvg"/>
                 The Beatles
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <SettingsIcon fill="#999AA7" className="iconSvg"/>
                 Settings
               </li>
-              <li className="header-div-comp">
+              <li className="aside-div-comp">
                 <AccountIcon fill="#999AA7" className="iconSvg"/>
                 Acount
               </li>
@@ -92,6 +92,6 @@ export default function Header() {
           </nav>
         </div>
       </div>
-    </header>
+    </aside>
   );
 }

@@ -227,18 +227,21 @@ export default function SoundSampleRow({
   }
 
   function handlePoints3ButtonClick(){
-    on3PointsClick(audio);
-    setIsBoxOptionOpen(true);
+    if(!isSelected){
+      onClick(audio);
+    } 
     if(isRightButtonClicked){
       onRightButtonClick(audio);
     }
+    on3PointsClick(audio);
+    setIsBoxOptionOpen(!is3PointsClicked);
   }
 
   const bgSoundRowHoverColor = isHovered
     ? "var(--line-gray-color)"
     : "transparent";
   const bgSoundRowSelectedColor = isSelected
-    ? "var(--gray-light-color)"
+    ? "var(--gray-selected-color)"
     : "transparent";
 
   return (
@@ -340,7 +343,7 @@ export default function SoundSampleRow({
             className="options-box-div"
             style={{
               position: "absolute",
-              top: rightClickPosition.y,
+              top: rightClickPosition.y - 102,
               left: rightClickPosition.x,
             }}
             ref={boxRef}

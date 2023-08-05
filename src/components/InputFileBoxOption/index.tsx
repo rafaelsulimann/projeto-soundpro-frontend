@@ -6,23 +6,31 @@ type Props = {
   iconAltName?: string;
   className?: string;
   imgClassName?: string;
-  onFunctionClick?: any;
+  onFunctionChange?: any;
+  dataName?: string;
+  labelDivClassName: string;
+  labelClassName: string;
+  optionTextClassName: string;
 };
 
-export default function BoxOption({
+export default function InputFileBoxOption({
   optionTextName,
   iconSrc,
   iconAltName,
   className,
   imgClassName,
-  onFunctionClick,
+  onFunctionChange,
+  dataName,
+  labelDivClassName,
+  labelClassName,
+  optionTextClassName,
 }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const bgHovered = isHovered ? "#2d2d35" : "transparent";
 
   function handleClick(event: any) {
     event.stopPropagation();
-    onFunctionClick();
+    onFunctionChange(event);
   }
 
   return (
@@ -33,7 +41,6 @@ export default function BoxOption({
         className != null && className != "" ? className : "option-div"
       }
       style={{ background: bgHovered }}
-      onClick={(event: any) => handleClick(event)}
     >
       {iconSrc && (
         <img
@@ -46,7 +53,18 @@ export default function BoxOption({
           alt={iconAltName}
         />
       )}
-      <p>{optionTextName}</p>
+      <div data-name={dataName} className={labelDivClassName}>
+        <label htmlFor="file-upload" className={labelClassName}>
+          <p className={optionTextClassName}>{optionTextName}</p>
+          <input
+            id="file-upload"
+            type="file"
+            onChange={(event) => {
+              handleClick(event);
+            }}
+          />
+        </label>
+      </div>
     </div>
   );
 }

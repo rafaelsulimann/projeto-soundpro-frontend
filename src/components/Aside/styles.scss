@@ -1,17 +1,17 @@
-.header {
+.aside {
   padding: 15px 0px 0px 15px;
   width: 250px;
   display: flex;
   flex-direction: column;
   @media (max-height: 713.60px) {
-    max-height: 83.8vh;
+    max-height: 83vh;
   }
   @media (min-height: 714px) {
     min-height: 85vh;
     max-height: 85vh;
   }
   
-  .header-logo {
+  .aside-logo {
     margin-bottom: 40px;
     .homeImg {
       width: 35px !important;
@@ -35,9 +35,9 @@
         1px 0px 0px #000;
     }
   }
-  .header-nav {
+  .aside-nav {
     overflow: auto;
-    .header-nav-session {
+    .aside-nav-session {
       margin-bottom: 40px;
       h2 {
         font-size: 16px;
@@ -58,7 +58,7 @@
       }
     }
   }
-  .header-div-comp {
+  .aside-div-comp {
     display: flex;
     align-items: center;
     .iconSvg {
@@ -68,7 +68,7 @@
     }
   }
 
-  .header-nav-session-last {
+  .aside-nav-session-last {
     margin-bottom: 20px !important;
   }
 }

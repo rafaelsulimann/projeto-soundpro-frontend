@@ -38,6 +38,9 @@
   --music-dashboard-background-color: #19191e;
   --line-gray-color: #2d2d33;
   --gray-light-color: #999aa7;
+  --gray-selected-color: #4b4b54;
+  // --gray-selected-color: #595964;
+  // --gray-selected-color: #585864;
   --border-gray-color: #838289;
   --orange-color: #fc9700;
 }
@@ -54,7 +57,7 @@ body {
   color: var(--white-color);
 }
 
-header {
+aside {
   ::-webkit-scrollbar {
     width: 8px;
   }
@@ -65,7 +68,7 @@ header {
   }
 }
 
-header:hover{
+aside:hover{
   ::-webkit-scrollbar-thumb {
     background-color: var(--line-gray-color);
   }

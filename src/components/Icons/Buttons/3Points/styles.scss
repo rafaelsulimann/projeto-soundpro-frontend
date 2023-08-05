@@ -5,7 +5,7 @@
     cursor: pointer;
   }
   .options-box-div {
-    border: 1px solid var(--line-gray-color);
+    border: 1px solid var(--border-gray-color);
     box-shadow: 0 4px 5px rgba(0, 0, 0, 0.5);
     border-radius: 5px;
     display: flex;
@@ -15,7 +15,7 @@
     padding: 2px;
     position: absolute;
     min-height: 35px;
-    background-color: var(--music-dashboard-background-color);
+    background-color: #444449;
     color: var(--white-color);
     .delete-div {
       cursor: pointer;

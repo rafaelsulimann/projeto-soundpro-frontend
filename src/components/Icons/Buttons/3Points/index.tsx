@@ -59,7 +59,7 @@ export default function Points3Button({
           {
             name: "offset",
             options: {
-              offset: [24, -80], // Distância vertical entre o elemento de referência e a box
+              offset: [-90, -122], // Distância vertical entre o elemento de referência e a box
             },
           },
         ],
