@@ -26,6 +26,7 @@ type Props = {
   is3PointsClicked: boolean;
   isRightButtonClicked: boolean;
   onRightButtonClick: any;
+  updatedAudio: AudioDTO;
 };
 
 export default function SoundSampleRow({
@@ -40,12 +41,14 @@ export default function SoundSampleRow({
   on3PointsClick,
   is3PointsClicked,
   isRightButtonClicked,
-  onRightButtonClick
+  onRightButtonClick,
+  updatedAudio,
 }: Props) {
   const { src, setSrc, isPlaying, setIsPlaying, setLiked } =
     useContext(ContextPlayer);
   const [isHovered, setIsHovered] = useState(false);
   const [blobSrc, setBlobSrc] = useState<string>("");
+  const [updatedAudioCount, setUpdateAudioCount] = useState(0);
   const boxRef = useRef<HTMLDivElement>(null);
   const [rightClickPosition, setRightClickPosition] = useState({ x: 0, y: 0 });
   const [firstRenderScrollRowHoveredIdCount, setFirstRenderCount] = useState(0);
@@ -54,6 +57,16 @@ export default function SoundSampleRow({
   useEffect(() => {
     setBlobSrc(audio.audioUrl);
   }, []);
+
+  useEffect(() => {
+    if(updatedAudioCount === 0){
+      setUpdateAudioCount(prevState => prevState + 1);
+      return;
+    }
+    if(updatedAudio.id === audio.id && isPlaying && blobSrc !== src || updatedAudio.id === audio.id && !isPlaying && blobSrc !== src){
+      setBlobSrc(updatedAudio.audioUrl);
+    }
+  },[updatedAudio, isPlaying])
 
   useEffect(() => {
     if(firstRenderScrollRowHoveredIdCount === 0){
@@ -116,19 +129,8 @@ export default function SoundSampleRow({
     const originalName = audio.name;
     const soundName = "zatura";
     onRightButtonClick(audio);
-    setIsBoxOptionOpen(false);
-    soundService
-      .updateSound(audio.id, { soundName: soundName, liked: audio.liked })
-      .then((response) => {
-        console.log("Response updateSound", response.data);
-        console.log(`Sound ${originalName} updated to name teste`);
-        const newUpdatedSound: AudioDTO = response.data;
-        setBlobSrc(newUpdatedSound.audioUrl);
-        onEditAudioFile(newUpdatedSound);
-      })
-      .catch((error) => {
-        console.log(error.data);
-      });
+    // setIsBoxOptionOpen(false);
+    onEditAudioFile(audio);
   }
 
   function handleDownloadClick() {

@@ -3,7 +3,7 @@ export type AudioDTO ={
     name: string;
     audioUrl: string;
     creationDate: string;
-    lastUpdateDate: string;
+    lastUpdatedDate: string;
     liked: boolean;
     soundType: string;
 }

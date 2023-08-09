@@ -15,9 +15,12 @@ import {
   UseType,
 } from "../../../services/page-service";
 import { ContextPlayer } from "../../../utils/context-player";
+import * as forms from "../../../utils/forms"
 import { createPopper } from "@popperjs/core";
 import BoxOption from "../../../components/BoxOption";
 import InputFileBoxOption from "../../../components/InputFileBoxOption";
+import SoundEditForm from "../../../components/SoundEditForm";
+import { format, parseISO } from "date-fns";
 
 export default function Sounds() {
   const isLastPage = useRef(false);
@@ -26,7 +29,7 @@ export default function Sounds() {
     name: "",
     audioUrl: "",
     creationDate: "",
-    lastUpdateDate: "",
+    lastUpdatedDate: "",
     soundType: "",
     liked: false,
   });
@@ -56,7 +59,7 @@ export default function Sounds() {
     name: "",
     audioUrl: "",
     creationDate: "",
-    lastUpdateDate: "",
+    lastUpdatedDate: "",
     soundType: "",
     liked: false,
   });
@@ -65,7 +68,7 @@ export default function Sounds() {
     name: "",
     audioUrl: "",
     creationDate: "",
-    lastUpdateDate: "",
+    lastUpdatedDate: "",
     liked: false,
     soundType: "",
   });
@@ -78,7 +81,7 @@ export default function Sounds() {
     name: "",
     audioUrl: "",
     creationDate: "",
-    lastUpdateDate: "",
+    lastUpdatedDate: "",
     soundType: "",
     liked: false,
   });
@@ -88,7 +91,7 @@ export default function Sounds() {
       name: "",
       audioUrl: "",
       creationDate: "",
-      lastUpdateDate: "",
+      lastUpdatedDate: "",
       soundType: "",
       liked: false,
     });
@@ -267,10 +270,6 @@ export default function Sounds() {
     setSearchCount((prevParam) => prevParam + 1);
   }
 
-  function handleSubmit(event: any) {
-    event.preventDefault();
-  }
-
   function handleDeleteAudioFile(deletedSoundId: string) {
     console.log("Entrou no delete");
     const soundsWithoutDeletedSound = sounds.filter(
@@ -278,11 +277,6 @@ export default function Sounds() {
     );
     console.log("soundsWithoutDeletedSound", soundsWithoutDeletedSound);
     setSounds((prevParam) => (prevParam = soundsWithoutDeletedSound));
-  }
-
-  function handleUpdateAudioFile(updateSound: AudioDTO) {
-    setUpdateSoundDTO((prevParam) => (prevParam = updateSound));
-    setUpdateAudioCount((prevParam) => prevParam + 1);
   }
 
   function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -319,7 +313,7 @@ export default function Sounds() {
         name: "",
         audioUrl: "",
         creationDate: "",
-        lastUpdateDate: "",
+        lastUpdatedDate: "",
         soundType: "",
         liked: false,
       });
@@ -335,7 +329,7 @@ export default function Sounds() {
         name: "",
         audioUrl: "",
         creationDate: "",
-        lastUpdateDate: "",
+        lastUpdatedDate: "",
         soundType: "",
         liked: false,
       });
@@ -346,7 +340,7 @@ export default function Sounds() {
         name: "",
         audioUrl: "",
         creationDate: "",
-        lastUpdateDate: "",
+        lastUpdatedDate: "",
         soundType: "",
         liked: false,
       });
@@ -362,7 +356,7 @@ export default function Sounds() {
         name: "",
         audioUrl: "",
         creationDate: "",
-        lastUpdateDate: "",
+        lastUpdatedDate: "",
         soundType: "",
         liked: false,
       });
@@ -373,7 +367,7 @@ export default function Sounds() {
         name: "",
         audioUrl: "",
         creationDate: "",
-        lastUpdateDate: "",
+        lastUpdatedDate: "",
         soundType: "",
         liked: false,
       });
@@ -446,7 +440,7 @@ export default function Sounds() {
     useState<boolean>(false);
 
   function handleFromYoutubeButtonClick(event: any) {
-    console.log("Entrou no import")
+    console.log("Entrou no import");
     setIsFromYoutubeButtonClicked(true);
   }
 
@@ -474,6 +468,209 @@ export default function Sounds() {
       console.log(error);
     });
   }
+
+  useEffect(() => {
+        setFormData(forms.updateAll(formData, JSON.stringify(isEditPopupClicked)));
+    }
+  , []);
+
+  function handleChange(formDataProps: any) {
+    setFormData(formDataProps);
+  }
+
+  function handleTurnDirty(formDataProps: any) {
+    setFormData(formDataProps);
+  }
+
+  function handleEditSubmit(formDataProps: any) {
+    const formDataValidated = forms.dirtyAndValidateAll(formDataProps);
+    if (forms.hasAnyInvalid(formDataValidated)) {
+      setFormData(formDataValidated);
+      return;
+    }
+
+    const requestBody = forms.toValues(formData);
+
+    // if (isEditing) {
+    //   requestBody.id = params.productId;
+    // }
+
+    // const request = isEditing
+    // ? productService.updateRequest(requestBody)
+    // : productService.insertRequest(requestBody)
+
+    // request
+    //   .then(() => {
+    //     navigate("/admin/products");
+    //   })
+    //   .catch(error => {
+    //     setFormData(productService.setBackendErrors(formData, error.response.data.errors));
+    //   })
+  }
+
+  const [ isEditPopupClicked, setIsEditPopupClicked ] = useState<AudioDTO>({
+    id: "",
+    name: "",
+    audioUrl: "",
+    creationDate: "",
+    lastUpdatedDate: "",
+    soundType: "",
+    liked: false,
+  });
+
+  function formatDate(data: string): string{
+    const date = parseISO(data);
+    return format(date, 'dd/MM/yyyy HH:mm');
+  }
+
+  function handleSubmit(formData: any) {
+    console.log("formData", formData);
+    console.log("isEditPopupClicked", isEditPopupClicked);
+    soundService.updateSound(isEditPopupClicked.id, { soundName:formData.name.value, liked: isEditPopupClicked.liked})
+    .then((response) => {
+      console.log("Response updateSound", response.data);
+      const newUpdatedSound: AudioDTO = response.data;
+      setUpdateSoundDTO((prevParam) => (prevParam = newUpdatedSound));
+      setUpdateAudioCount((prevParam) => prevParam + 1);
+      handleEditPopupClick(response);
+    })
+    .catch((error) => {
+      console.log(error.data);
+    });
+  }
+
+  function handleUpdateAudioFile(updateSound: AudioDTO) {
+    setFormData((prevState: any) => ({
+      ...prevState, 
+      name: {
+        ...prevState.name,
+        value: updateSound.name
+      },
+      creationDate: {
+        ...prevState.creationDate,
+        value: formatDate(updateSound.creationDate)
+      },
+      lastUpdatedDate: {
+        ...prevState.lastUpdatedDate,
+        value: formatDate(updateSound.lastUpdatedDate)
+      },
+      soundType: {
+        ...prevState.soundType,
+        value: updateSound.soundType
+      },
+    }));
+      setSound3PointsClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdatedDate: "",
+        soundType: "",
+        liked: false,
+      });
+      setSoundRightButtonClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdatedDate: "",
+        soundType: "",
+        liked: false,
+      });
+    if (isEditPopupClicked.id !== "") {
+      setIsEditPopupClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdatedDate: "",
+        soundType: "",
+        liked: false,
+      });
+      setIsBoxOptionOpen(false);
+    } else {
+      setIsEditPopupClicked(updateSound);
+      setIsBoxOptionOpen(true);
+    }
+    // setUpdateSoundDTO((prevParam) => (prevParam = updateSound));
+    // setUpdateAudioCount((prevParam) => prevParam + 1);
+  }
+  
+  function handleEditPopupClick(event: any){
+      setSound3PointsClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdatedDate: "",
+        soundType: "",
+        liked: false,
+      });
+      setSoundRightButtonClicked({
+        id: "",
+        name: "",
+        audioUrl: "",
+        creationDate: "",
+        lastUpdatedDate: "",
+        soundType: "",
+        liked: false,
+      });
+      if (isEditPopupClicked.id !== "") {
+        setIsEditPopupClicked({
+          id: "",
+          name: "",
+          audioUrl: "",
+          creationDate: "",
+          lastUpdatedDate: "",
+          soundType: "",
+          liked: false,
+        });
+      }
+      setIsBoxOptionOpen(false);
+  }
+
+  const [formData, setFormData] = useState<any>({
+    name: {
+      value: "",
+      id: "name",
+      name: "name",
+      type: "text",
+      placeholder: "Nome",
+      // validation: function (value: any) {
+        //   return /^.{3,80}$/.test(value);
+        // },
+        // message: "Favor informar um nome de 3 a 80 caracteres",
+      },
+      creationDate: {
+        value: "2023-08-05T01:39:03Z",
+        id: "creationDate",
+        name: "creationDate",
+        type: "text",
+        placeholder: "Adicionado em",
+        // validation: function (value: any) {
+          //   return Number(value) > 0;
+          // },
+      // message: "Favor informar um nome de 3 a 80 caracteres",
+    },
+    lastUpdatedDate: {
+      value: "2023-08-05T01:39:03Z",
+      id: "lastUpdatedDate",
+      name: "lastUpdatedDate",
+      type: "text",
+      placeholder: "Atualizado em",
+    },
+    soundType: {
+      value: "",
+      id: "soundType",
+      name: "soundType",
+      type: "text",
+      placeholder: "Tipo de arquivo",
+      // validation: function (value: any) {
+      //   return /^.{10,}$/.test(value);
+      // },
+      // message: "Favor informar um nome de 3 a 80 caracteres",
+    },
+  });
 
   return (
     <section className="sounds-section">
@@ -516,7 +713,10 @@ export default function Sounds() {
               Importar
               <div>
                 {isImportButtonClicked && (
-                  <div className="options-box-div sounds-box-options-div" ref={boxRef}>
+                  <div
+                    className="options-box-div sounds-box-options-div"
+                    ref={boxRef}
+                  >
                     <InputFileBoxOption
                       className="from-computer-button-div"
                       optionTextName="Do computador"
@@ -526,20 +726,29 @@ export default function Sounds() {
                       labelClassName="from-computer-button-input"
                       optionTextClassName="fa fa-cloud-upload"
                     />
-                    {!isFromYoutubeButtonClicked 
-                    ? (<BoxOption
-                      optionTextName="Do youtube"
-                      className={"edit-div youtube-div"}
-                      onFunctionClick={handleFromYoutubeButtonClick}
-                    />)
-                    : (
+                    {!isFromYoutubeButtonClicked ? (
+                      <BoxOption
+                        optionTextName="Do youtube"
+                        className={"edit-div youtube-div"}
+                        onFunctionClick={handleFromYoutubeButtonClick}
+                      />
+                    ) : (
                       <div data-name="youtube-button" className="youtube-input">
-                        <input type="text" className="youtube-text" value={youtubeUrlText} onChange={(event) => handleYoutubeUrlChange(event)}/>
-                        <input type="button" className="youtube-submit-button" value="Enviar" onClick={handleYoutubeUrlSubmitClick}/>
+                        <input
+                          type="text"
+                          className="youtube-text"
+                          value={youtubeUrlText}
+                          placeholder="Youtube video url"
+                          onChange={(event) => handleYoutubeUrlChange(event)}
+                        />
+                        <input
+                          type="button"
+                          className="youtube-submit-button"
+                          value="Enviar"
+                          onClick={handleYoutubeUrlSubmitClick}
+                        />
                       </div>
-                    )
-                  }
-                    
+                    )}
                   </div>
                 )}
               </div>
@@ -575,6 +784,7 @@ export default function Sounds() {
                   on3PointsClick={handle3PointsButtonClick}
                   isRightButtonClicked={soundRightButtonClicked.id === sound.id}
                   onRightButtonClick={handleRightButtonClick}
+                  updatedAudio={updateSoundDTO}
                 />
               ))}
             </tbody>
@@ -582,6 +792,16 @@ export default function Sounds() {
         </div>
         {!isLastPage.current && <div id={observerClassName}></div>}
       </div>
+      {isEditPopupClicked.id !== "" && (
+        <SoundEditForm
+          formData={formData}
+          onChange={handleChange}
+          onTurnDirty={handleTurnDirty}
+          onSubmit={handleSubmit}
+          isEditPopupClicked={isEditPopupClicked}
+          onEditPopupClick={handleEditPopupClick}
+        />
+      )}
     </section>
   );
 }

@@ -122,42 +122,60 @@
 
 .from-computer-button-div {
   width: 100%;
-  height: 25px;
+  height: 40px;
   margin-bottom: 3px;
   border-radius: 3px;
   .from-computer-button {
     width: 100%;
-    height: 25px;
+    height: 40px;
     .from-computer-button-input {
       cursor: pointer;
       display: flex;
       align-items: center;
       width: 100%;
-      height: 25px;
+      height: 40px;
       border-radius: 3px;
       padding: 5px 10px;
+      font-weight: 400;
     }
   }
 }
 
+@keyframes subir {
+  from {
+      transform: translateY(10px); /* Começa 100 pixels abaixo */
+      opacity: 0;
+  }
+  to {
+      transform: translateY(0);     /* Volta à posição original */
+      opacity: 1;
+  }
+}
+
 .youtube-div {
-  height: 25px;
+  height: 40px;
+  font-weight: 400;
 }
 .youtube-input {
   display: flex;
   background-color: transparent;
   width: 100%;
-  height: 25px;
-
+  height: 40px;
+  font-weight: 400;
+  // animation-name: subir;
+  // animation-duration: 0.05s;    /* A duração da animação é de 2 segundos */
+  // animation-timing-function: ease-out; /* Efeito de desaceleração ao final da animação */
+  
   .youtube-text {
     background-color: transparent;
     width: 69%;
-    height: 25px;
+    height: 40px;
     border: 0.5px solid white;
+    padding-left: 3px;
     border-radius: 2px;
-    padding: 3px;
     color: white;
     margin-right: 2px;
+    font-size: 16px;
 
     &:focus {
       outline: 0.5px solid white;
@@ -165,22 +183,23 @@
       padding: 3px;
       vertical-align: middle;
     }
+
+    &::placeholder {
+      color: rgb(131, 131, 131);
+    }
   }
 
   .youtube-submit-button {
     position: relative;
-    top: -1px;
-    height: 22.8px;
+    height: 40px;
     border-radius: 2px;
     width: 30%;
-    height: 26.5px;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: var(--orange-color);
     font-size: 16px;
-    font-weight: 700;
     color: var(--white-color);
     cursor: pointer;
   }
@@ -189,5 +208,79 @@
 .sounds-box-options-div {
   min-width: 200px;
   max-width: 200px;
-  min-height: 50px;
+  min-height: 80px;
+}
+
+.sound-edit-form-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  .sound-edit-form-div {
+    position: absolute;
+    width: 450px;
+    height: 420px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #232325;
+    color: white;
+    border-radius: 10px;
+    padding: 20px;
+    .sound-edit-form-title {
+      display: flex;
+      h2 {
+        font-size: 28px;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+    }
+    .sound-edit-form {
+      input {
+        margin-bottom: 20px;
+        padding: 15px 10px;
+        background-color: transparent;
+        border-radius: 6px;
+        border: 1px solid var(--line-gray-color);
+        &:focus {
+          outline: none;
+        }
+      }
+      label {
+        position: absolute;
+        padding: 15px 10px;
+        pointer-events: none;
+        font-size: 14px;
+        animation-name: labelEffect;
+        animation-duration: 0.3s;    /* A duração da animação é de 2 segundos */
+        animation-timing-function: ease-out; /* Efeito de desaceleração ao final da animação */
+      }
+      .sound-edit-form-input-text {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        input {
+          color: #fff;
+          width: 100%;
+        }
+      }
+    }
+  }
+}
+
+@keyframes labelEffect {
+  from {
+      transform: translateY(10px) translatex(10px);
+      opacity: 0;
+      background-color: transparent;
+      font-size: 16px;
+    }
+    to {
+      opacity: 1;
+      transform: translateY(-10px) translatex(10px);
+      background-color: #232325;
+      font-size: 14px;
+  }
 }
