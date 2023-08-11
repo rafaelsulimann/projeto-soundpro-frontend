@@ -28,11 +28,12 @@ import LoadingFile from "../../../components/LoadingFile";
 export default function Sounds() {
   const [webSocketsLoadingFiles, setWebSocketsLoadingFiles] = useState<WebSocketLoadingFilesDTO[]>([]);
   const [isMinimizedHovered, setIsMinimizedHovered] = useState(false);
+  const [isMinimizedActive, setIsMinimizedActive] = useState(false);
   const [isClosedHovered, setIsClosedHovered] = useState(false);
   const [isTwoElementsInLoading, setIsTwoElementsInLoading] = useState(false);
   const [firstIsTwoElementsRenderCount, setFirstIsTwoElementsRenderCount] = useState(0);
 
-  useEffect(() => {
+  useEffect(() => { 
     if(firstIsTwoElementsRenderCount === 0){
       setFirstIsTwoElementsRenderCount(prevState => prevState + 1);
       return;
@@ -713,6 +714,11 @@ export default function Sounds() {
 
   function handleClosedUploadButton(){
     setWebSocketsLoadingFiles([]);
+    setIsClosedHovered(false);
+  }
+
+  function handleMinimizeUploadButton(){
+    setIsMinimizedActive(!isMinimizedActive);
   }
 
   return (
@@ -846,7 +852,7 @@ export default function Sounds() {
         />
       )}
       {webSocketsLoadingFiles.length > 0 && (
-      <div className="loading-files-div" style={{top: isTwoElementsInLoading ? window.innerHeight > 713.59 ? "67.5%" : "61.75%" : window.innerHeight > 713.59 ? "74%" : "69.7%"}}>
+      <div className= {isTwoElementsInLoading && isMinimizedActive ? "loading-files-div isMinimizedActive" : isMinimizedActive ? "loading-files-div isMinimizedActive" : isTwoElementsInLoading ? "loading-files-div isTwoElementsInLoading" : "loading-files-div"}>
         <div className="loading-files-header">
           <h2>Uploads</h2>
           <div className="loading-files-header-buttons">
@@ -854,6 +860,7 @@ export default function Sounds() {
               className="minimize-button-div"
               onMouseEnter={handleMinimizeMouseEnterHover}
               onMouseLeave={handleMinimizeMouseLeaveHover}
+              onClick={handleMinimizeUploadButton}
               style={{
                 background: isMinimizedHovered
                   ? "rgba(0, 0, 0, 0.2)"
@@ -880,7 +887,7 @@ export default function Sounds() {
         <hr />
         <div className="loading-file-upload-list">
           {webSocketsLoadingFiles.map((file) => (
-            <LoadingFile loadingRequestId={file.requestId} />
+            <LoadingFile loadingRequestId={file.requestId} isTwoElementsInLoading={webSocketsLoadingFiles.length > 2}/>
           ))}
         </div>
       </div>

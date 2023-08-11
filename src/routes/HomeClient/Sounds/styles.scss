@@ -307,13 +307,15 @@
     border: 1px solid black;
   }
   @media (max-height: 713.60px) {
+    top: 69.7%;
     right: 4.75%;
-    min-height: 120px;
+    // min-height: 120px;
     max-height: 177px;
   }
   @media (min-height: 714px) {
+    top: 74.25%;
     right: 4.75%;
-    min-height: 120px;
+    // min-height: 120px;
     max-height: 177px;
   }
   .loading-files-header {
@@ -372,13 +374,40 @@
   max-height: 114px;
 }
 
+.isTwoElementsInLoading {
+  @media (max-height: 713.60px) {
+    top: 61.75% !important;
+  }
+  @media (min-height: 714px) {
+    top: 67.5% !important;
+  }
+}
+
+.isMinimizedActive {
+  max-height: 60px;
+  hr{
+    display: none;
+  }
+  .loading-file-upload-list{
+    display: none;
+  }
+  @media (max-height: 713.60px) {
+    top: 78% !important;
+  }
+  @media (min-height: 714px) {
+    top: 81% !important;
+  }
+}
+
 @keyframes loading {
   from {
     transform: translateY(50px) translatex(0px);
     opacity: 0;
+    // background-color: transparent;
   }
   to {
     transform: translateY(0px) translatex(0px);
     opacity: 1;
+    // background-color: #4b4b54;
   }
 }

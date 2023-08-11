@@ -6,9 +6,10 @@ import './styles.scss';
 
 type Props = {
     loadingRequestId: string;
+    isTwoElementsInLoading: boolean;
 }
 
-export default function LoadingFile({loadingRequestId}: Props){
+export default function LoadingFile({loadingRequestId, isTwoElementsInLoading}: Props){
 
     const [progress, setProgress] = useState<LoadingAudioDTO>({
         soundName: "",
@@ -58,8 +59,8 @@ export default function LoadingFile({loadingRequestId}: Props){
       }
 
     return(
-        <div className="loading-file-row" onMouseEnter={handleRowMouseEnterHover} onMouseLeave={handleRowMouseLeaveHover} style={{background: isRowHovered ? "var(--line-gray-color)" : "transparent"}}>
-            <h2>{progress.soundName === null || progress.soundName === "" ? "Carregando..." : formatarString(progress.soundName)}</h2>
+        <div className="loading-file-row" onMouseEnter={handleRowMouseEnterHover} onMouseLeave={handleRowMouseLeaveHover} style={{background: isRowHovered ? "var(--line-gray-color)" : "transparent", padding: isTwoElementsInLoading ? "15px 6.75px 15px 15px" : "15px"}}>
+            <h2>{progress.soundName === null || progress.soundName === "" ? "Carregando" : formatarString(progress.soundName)}</h2>
             {/* <p>{progress.timeLeft}</p> */}
             <div className="box">
             <div className="box-circle">
