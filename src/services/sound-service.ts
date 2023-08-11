@@ -61,12 +61,13 @@ export function downloadSound(soundId: string){
   return requestBackend(config, contextPath);
 }
 
-export function youtubeConverterdownload(youtubeUrl: string){
+export function youtubeConverterdownload(youtubeUrl: string, requestId: string){
   const config: AxiosRequestConfig = {
     method: "POST",
     url: `/sounds/converter`,
     data: {
-      "youtubeVideoUrl": youtubeUrl
+      "youtubeVideoUrl": youtubeUrl,
+      "requestId": requestId
     }
   };
   return requestBackend(config, contextPath);

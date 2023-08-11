@@ -4,6 +4,7 @@ import SoundSampleRow from "../../../components/SoundSampleRow";
 import SearchIcon from "../../../components/Icons/Search";
 import * as soundService from "../../../services/sound-service";
 import * as pageService from "../../../services/page-service";
+import { v4 as uuidv4 } from 'uuid';
 import "./styles.scss";
 import {
   PageNextClickDTO,
@@ -21,8 +22,28 @@ import BoxOption from "../../../components/BoxOption";
 import InputFileBoxOption from "../../../components/InputFileBoxOption";
 import SoundEditForm from "../../../components/SoundEditForm";
 import { format, parseISO } from "date-fns";
+import { WebSocketLoadingFilesDTO } from "../../../models/loadingAudioDTO";
+import LoadingFile from "../../../components/LoadingFile";
 
 export default function Sounds() {
+  const [webSocketsLoadingFiles, setWebSocketsLoadingFiles] = useState<WebSocketLoadingFilesDTO[]>([]);
+  const [isMinimizedHovered, setIsMinimizedHovered] = useState(false);
+  const [isClosedHovered, setIsClosedHovered] = useState(false);
+  const [isTwoElementsInLoading, setIsTwoElementsInLoading] = useState(false);
+  const [firstIsTwoElementsRenderCount, setFirstIsTwoElementsRenderCount] = useState(0);
+
+  useEffect(() => {
+    if(firstIsTwoElementsRenderCount === 0){
+      setFirstIsTwoElementsRenderCount(prevState => prevState + 1);
+      return;
+    }
+    if(webSocketsLoadingFiles.length >= 2){
+      setIsTwoElementsInLoading(true);
+    } else {
+      setIsTwoElementsInLoading(false);
+    }
+  },[webSocketsLoadingFiles]);
+
   const isLastPage = useRef(false);
   const [selectSingleSound, setSelectSingleSound] = useState<AudioDTO>({
     id: "",
@@ -455,7 +476,9 @@ export default function Sounds() {
     setIsFromYoutubeButtonClicked(false);
     setYoutubeUrlText("");
     setIsBoxOptionOpen(false);
-    soundService.youtubeConverterdownload(youtubeUrlText)
+    const requestId = uuidv4();
+    setWebSocketsLoadingFiles(prevState => [...prevState, {requestId: requestId}]);
+    soundService.youtubeConverterdownload(youtubeUrlText, requestId)
     .then((response) => {
       setIsImportButtonClicked(false);
       setIsFromYoutubeButtonClicked(false);
@@ -672,6 +695,26 @@ export default function Sounds() {
     },
   });
 
+  function handleMinimizeMouseEnterHover() {
+    setIsMinimizedHovered(true);
+  }
+
+  function handleMinimizeMouseLeaveHover() {
+    setIsMinimizedHovered(false);
+  
+  }
+  function handleClosedMouseEnterHover() {
+    setIsClosedHovered(true);
+  }
+
+  function handleClosedMouseLeaveHover() {
+    setIsClosedHovered(false);
+  }
+
+  function handleClosedUploadButton(){
+    setWebSocketsLoadingFiles([]);
+  }
+
   return (
     <section className="sounds-section">
       <div className="sounds-container">
@@ -704,7 +747,7 @@ export default function Sounds() {
         </div>
         <div className="sounds-samples">
           <div className="sounds-samples-title">
-            <h2>Samples</h2>
+            <h2>Samples </h2>
             <div
               className="new-button"
               onClick={(event) => handleImportButtonClick(event)}
@@ -802,6 +845,46 @@ export default function Sounds() {
           onEditPopupClick={handleEditPopupClick}
         />
       )}
+      {webSocketsLoadingFiles.length > 0 && (
+      <div className="loading-files-div" style={{top: isTwoElementsInLoading ? window.innerHeight > 713.59 ? "67.5%" : "61.75%" : window.innerHeight > 713.59 ? "74%" : "69.7%"}}>
+        <div className="loading-files-header">
+          <h2>Uploads</h2>
+          <div className="loading-files-header-buttons">
+            <div
+              className="minimize-button-div"
+              onMouseEnter={handleMinimizeMouseEnterHover}
+              onMouseLeave={handleMinimizeMouseLeaveHover}
+              style={{
+                background: isMinimizedHovered
+                  ? "rgba(0, 0, 0, 0.2)"
+                  : "transparent",
+              }}
+            >
+              <div className="minimize-button"></div>
+            </div>
+            <div
+              className="close-button"
+              onMouseEnter={handleClosedMouseEnterHover}
+              onMouseLeave={handleClosedMouseLeaveHover}
+              onClick={handleClosedUploadButton}
+              style={{
+                background: isClosedHovered
+                  ? "rgba(0, 0, 0, 0.2)"
+                  : "transparent",
+              }}
+            >
+              <h2>x</h2>
+            </div>
+          </div>
+        </div>
+        <hr />
+        <div className="loading-file-upload-list">
+          {webSocketsLoadingFiles.map((file) => (
+            <LoadingFile loadingRequestId={file.requestId} />
+          ))}
+        </div>
+      </div>
+      )} 
     </section>
   );
 }

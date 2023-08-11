@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.7",
+    "@stomp/stompjs": "^7.0.0",
     "@types/react-router-dom": "5.3.3",
+    "@types/sockjs-client": "^1.5.1",
     "axios": "0.27.2",
     "buffer": "^6.0.3",
     "date-fns": "^2.30.0",
@@ -23,12 +25,16 @@
     "react-router-dom": "6.4.1",
     "react-select": "5.6.0",
     "react-spring": "^9.7.2",
+    "reconnecting-websocket": "^4.4.0",
     "sass": "^1.60.0",
-    "tsc": "^2.0.4"
+    "sockjs-client": "^1.6.1",
+    "tsc": "^2.0.4",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
+    "@types/uuid": "^9.0.2",
     "@vitejs/plugin-react": "^3.1.0",
     "typescript": "^4.9.3",
     "vite": "^4.2.0"

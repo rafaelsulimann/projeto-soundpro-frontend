@@ -1,3 +1,6 @@
+if (typeof window !== 'undefined' && typeof window.global === 'undefined') {
+  window.global = window;
+}
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import HomeClient from "./routes/HomeClient";
 import { useState } from "react";
@@ -12,7 +15,7 @@ export default function App() {
   const [src, setSrc] = useState<string>("");
   const [progress, setProgress] = useState<number>(0);
   const [liked, setLiked] = useState<boolean>(false);
-
+  
   return (
     <ContextPlayer.Provider
       value={{
