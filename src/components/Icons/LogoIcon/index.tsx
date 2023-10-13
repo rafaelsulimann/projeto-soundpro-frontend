@@ -1,3 +1,5 @@
+import { Container } from "./styles";
+
 type Props = {
     fill: string;
     className: string;
@@ -5,6 +7,7 @@ type Props = {
 
 export default function LogoIcon({fill, className}: Props) {
     return(
+      <Container>
         <svg
             width="156"
             height="105"
@@ -24,5 +27,6 @@ export default function LogoIcon({fill, className}: Props) {
             <rect y="32" width="12" height="42" rx="6" className="rect"/>
             <rect x="144" y="32" width="12" height="42" rx="6" className="rect"/>
           </svg>
+      </Container>
     );
 }

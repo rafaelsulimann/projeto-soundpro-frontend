@@ -37,8 +37,9 @@
   --dashboard-color: #222228;
   --music-dashboard-background-color: #19191e;
   // --line-gray-color: #2d2d33;
+  --line-gray-color: #2c2c32;
   --line-gray-color: #404049;
-  --gray-light-color: #999aa7;
+  --gray-light-color: #575764;
   --gray-selected-color: #4b4b54;
   // --gray-selected-color: #595964;
   // --gray-selected-color: #585864;
@@ -56,26 +57,6 @@
 body {
   background-color: var(--background-color);
   color: var(--white-color);
-}
-
-aside {
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 4px;
-  }
-}
-
-aside:hover{
-  ::-webkit-scrollbar-thumb {
-    background-color: var(--line-gray-color);
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: #3f3f48;
-  }
 }
 
 .box-hover {

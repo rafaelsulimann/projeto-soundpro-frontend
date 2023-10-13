@@ -1,10 +1,10 @@
 import { Outlet } from "react-router-dom";
-import "./styles.scss";
+import { Container } from "./styles";
 
 export default function Main() {
   return (
-    <main className="main-container">
+    <Container>
       <Outlet />
-    </main>
+    </Container>
   );
 }

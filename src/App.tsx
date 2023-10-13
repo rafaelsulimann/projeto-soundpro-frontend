@@ -38,7 +38,7 @@ export default function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomeClient />} >
-            <Route path="sounds" element={<Sounds />} />
+            <Route path="/sounds" element={<Sounds />} />
           </Route>
         </Routes>
       </BrowserRouter>

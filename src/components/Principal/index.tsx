@@ -1,14 +1,14 @@
 import Aside from "../Aside";
 import Main from "../Main";
-import "./styles.scss";
+import { Container } from "./styles";
 
 export default function Principal() {
   return (
     <>
-      <div className="principal-container">
+      <Container>
         <Aside />
         <Main />
-      </div>
+      </Container>
     </>
   );
 }

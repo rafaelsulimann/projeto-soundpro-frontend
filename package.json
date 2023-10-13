@@ -28,6 +28,7 @@
     "reconnecting-websocket": "^4.4.0",
     "sass": "^1.60.0",
     "sockjs-client": "^1.6.1",
+    "styled-components": "^6.0.8",
     "tsc": "^2.0.4",
     "uuid": "^9.0.0"
   },
