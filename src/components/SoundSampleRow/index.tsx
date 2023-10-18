@@ -7,11 +7,11 @@ import PlayRowButton from "../Icons/Buttons/PlayRow";
 import LikeButton from "../Icons/Buttons/Like";
 import Points3Button from "../Icons/Buttons/3Points";
 import * as soundService from "../../services/sound-service";
-import "./styles.scss";
 import MusicGifIcon from "../Icons/MusicGif";
 import BoxOption from "../BoxOption";
 import deleteIcon from "../../assets/delete-button.svg";
 import editIcon from "../../assets/edit-button.svg";
+import { Container } from "./styles";
 
 type Props = {
   audio: AudioDTO;
@@ -59,27 +59,30 @@ export default function SoundSampleRow({
   }, []);
 
   useEffect(() => {
-    if(updatedAudioCount === 0){
-      setUpdateAudioCount(prevState => prevState + 1);
+    if (updatedAudioCount === 0) {
+      setUpdateAudioCount((prevState) => prevState + 1);
       return;
     }
-    if(updatedAudio.id === audio.id && isPlaying && blobSrc !== src || updatedAudio.id === audio.id && !isPlaying && blobSrc !== src){
+    if (
+      (updatedAudio.id === audio.id && isPlaying && blobSrc !== src) ||
+      (updatedAudio.id === audio.id && !isPlaying && blobSrc !== src)
+    ) {
       setBlobSrc(updatedAudio.audioUrl);
     }
-  },[updatedAudio, isPlaying])
+  }, [updatedAudio, isPlaying]);
 
   useEffect(() => {
-    if(firstRenderScrollRowHoveredIdCount === 0){
+    if (firstRenderScrollRowHoveredIdCount === 0) {
       setFirstRenderCount(1);
       return;
-    } 
-    if(scrollRowHoveredId === audio.id){
-      if(!isHovered){
+    }
+    if (scrollRowHoveredId === audio.id) {
+      if (!isHovered) {
         setIsHovered(true);
       }
       return;
-    } 
-    if(isHovered){
+    }
+    if (isHovered) {
       setIsHovered(false);
       return;
     }
@@ -96,9 +99,7 @@ export default function SoundSampleRow({
 
     // Função que é chamada quando o evento "click" é acionado no objeto window
     function handleWindowClick(event: MouseEvent) {
-      if (
-        !boxRef.current?.contains(event.target as Node)
-      ) {
+      if (!boxRef.current?.contains(event.target as Node)) {
         // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
         onRightButtonClick(audio);
         setIsBoxOptionOpen(false);
@@ -109,7 +110,7 @@ export default function SoundSampleRow({
     return () => {
       window.removeEventListener("click", handleWindowClick);
     };
-  }, [isRightButtonClicked])
+  }, [isRightButtonClicked]);
 
   function handleDeleteClick() {
     onRightButtonClick(audio);
@@ -158,7 +159,7 @@ export default function SoundSampleRow({
 
   function handleUpdateSrc(event: any, newSrc: string, liked: boolean) {
     event.stopPropagation();
-    if(is3PointsClicked){
+    if (is3PointsClicked) {
       on3PointsClick(audio);
     }
     if (src === "" || src === undefined) {
@@ -179,22 +180,22 @@ export default function SoundSampleRow({
       }
     }
   }
-  
+
   function handleRowClick() {
-    if(isRightButtonClicked){
+    if (isRightButtonClicked) {
       onRightButtonClick(audio);
       setRightClickPosition({ x: 0, y: 0 });
       setIsBoxOptionOpen(false);
       onClick(audio);
     } else {
-      if(isSelected){
-        console.log("Entrou no if do is this sound selected")
+      if (isSelected) {
+        console.log("Entrou no if do is this sound selected");
         onRightButtonClick(audio);
         setRightClickPosition({ x: 0, y: 0 });
         setIsBoxOptionOpen(false);
         onClick(audio);
       } else {
-        console.log("não entrou no if do is this sound selected")
+        console.log("não entrou no if do is this sound selected");
         onRightButtonClick(audio);
         setRightClickPosition({ x: 0, y: 0 });
         setIsBoxOptionOpen(false);
@@ -213,14 +214,14 @@ export default function SoundSampleRow({
 
   function handleRightClick(event: React.MouseEvent<HTMLTableRowElement>) {
     event.preventDefault();
-    if(!isSelected){
+    if (!isSelected) {
       onClick(audio);
     }
-    if(is3PointsClicked){
+    if (is3PointsClicked) {
       on3PointsClick(audio);
     }
     setRightClickPosition({ x: event.clientX, y: event.clientY });
-    if(isRightButtonClicked){
+    if (isRightButtonClicked) {
       setIsBoxOptionOpen(true);
       return;
     }
@@ -228,11 +229,11 @@ export default function SoundSampleRow({
     setIsBoxOptionOpen(true);
   }
 
-  function handlePoints3ButtonClick(){
-    if(!isSelected){
+  function handlePoints3ButtonClick() {
+    if (!isSelected) {
       onClick(audio);
-    } 
-    if(isRightButtonClicked){
+    }
+    if (isRightButtonClicked) {
       onRightButtonClick(audio);
     }
     on3PointsClick(audio);
@@ -248,7 +249,7 @@ export default function SoundSampleRow({
 
   return (
     <>
-      <tr
+      <Container
         id={"sounds-samples-row"}
         ref={trRef}
         data-id={audio.id}
@@ -260,7 +261,7 @@ export default function SoundSampleRow({
         style={{
           background: isSelected
             ? bgSoundRowSelectedColor
-            : bgSoundRowHoverColor
+            : bgSoundRowHoverColor,
         }}
       >
         <td className="play-pause-button first-td">
@@ -338,45 +339,45 @@ export default function SoundSampleRow({
             isButtonClick={is3PointsClicked}
           />
         </td>
-      </tr>
-      <div>
-        {isRightButtonClicked && rightClickPosition && isSelected &&(
-          <div
-            className="options-box-div"
-            style={{
-              position: "absolute",
-              top: rightClickPosition.y - 102,
-              left: rightClickPosition.x,
-            }}
-            ref={boxRef}
-          >
-            <BoxOption
-              optionTextName="Excluir"
-              className={"delete-div"}
-              imgClassName={"delete-option-box-icon"}
-              iconSrc={deleteIcon}
-              iconAltName="Delete"
-              onFunctionClick={handleDeleteClick}
-            />
-            <BoxOption
-              optionTextName="Editar"
-              className={"edit-div"}
-              imgClassName={"edit-option-box-icon"}
-              iconSrc={editIcon}
-              iconAltName="Edit"
-              onFunctionClick={handleEditClick}
-            />
-            <BoxOption
-              optionTextName="Download"
-              className={"edit-div"}
-              imgClassName={"edit-option-box-icon"}
-              iconSrc={editIcon}
-              iconAltName="Download"
-              onFunctionClick={handleDownloadClick}
-            />
-          </div>
-        )}
-      </div>
+      </Container>
+        <div>
+          {isRightButtonClicked && rightClickPosition && isSelected && (
+            <div
+              className="options-box-div"
+              style={{
+                position: "absolute",
+                top: rightClickPosition.y - 102,
+                left: rightClickPosition.x,
+              }}
+              ref={boxRef}
+            >
+              <BoxOption
+                optionTextName="Excluir"
+                className={"delete-div"}
+                imgClassName={"delete-option-box-icon"}
+                iconSrc={deleteIcon}
+                iconAltName="Delete"
+                onFunctionClick={handleDeleteClick}
+              />
+              <BoxOption
+                optionTextName="Editar"
+                className={"edit-div"}
+                imgClassName={"edit-option-box-icon"}
+                iconSrc={editIcon}
+                iconAltName="Edit"
+                onFunctionClick={handleEditClick}
+              />
+              <BoxOption
+                optionTextName="Download"
+                className={"edit-div"}
+                imgClassName={"edit-option-box-icon"}
+                iconSrc={editIcon}
+                iconAltName="Download"
+                onFunctionClick={handleDownloadClick}
+              />
+            </div>
+          )}
+        </div>
     </>
   );
 }

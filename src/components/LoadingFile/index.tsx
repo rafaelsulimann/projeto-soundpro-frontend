@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Client } from "@stomp/stompjs";
 import SockJS from 'sockjs-client';
 import { LoadingAudioDTO } from "../../models/loadingAudioDTO";
-import './styles.scss';
+import { Container } from "./styles";
 
 type Props = {
     loadingRequestId: string;
@@ -20,7 +20,7 @@ export default function LoadingFile({loadingRequestId, isTwoElementsInLoading}: 
 
     useEffect(() => {
         console.log("Entrou no useEffect do webSocket")
-        const socket = new SockJS('http://localhost:8081/soundpro-sound/websocket-endpoint'); // Endereço do WebSocket no backend
+        const socket = new SockJS('http://localhost:8089/soundpro-sound/websocket-endpoint'); // Endereço do WebSocket no backend
         console.log("socket", socket);
         const stompClient = new Client({
             webSocketFactory: () => socket,
@@ -59,7 +59,7 @@ export default function LoadingFile({loadingRequestId, isTwoElementsInLoading}: 
       }
 
     return(
-        <div className="loading-file-row" onMouseEnter={handleRowMouseEnterHover} onMouseLeave={handleRowMouseLeaveHover} style={{background: isRowHovered ? "var(--line-gray-color)" : "transparent", padding: isTwoElementsInLoading ? "15px 6.75px 15px 15px" : "15px"}}>
+        <Container className="loading-file-row" onMouseEnter={handleRowMouseEnterHover} onMouseLeave={handleRowMouseLeaveHover} style={{background: isRowHovered ? "var(--line-gray-color)" : "transparent", padding: isTwoElementsInLoading ? "15px 6.75px 15px 15px" : "15px"}}>
             <h2>{progress.soundName === null || progress.soundName === "" ? "Carregando" : formatarString(progress.soundName)}</h2>
             {/* <p>{progress.timeLeft}</p> */}
             <div className="box">
@@ -81,6 +81,6 @@ export default function LoadingFile({loadingRequestId, isTwoElementsInLoading}: 
                 </svg>
             </div>
             </div>
-        </div>
+        </Container>
     );
 }

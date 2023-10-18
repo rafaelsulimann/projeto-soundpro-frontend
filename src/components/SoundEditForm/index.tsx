@@ -2,6 +2,7 @@ import FormInput from "../FormInput";
 import * as forms from "../../utils/forms";
 import { useEffect, useRef, useState } from "react";
 import { AudioDTO } from "../../models/audio";
+import { Container } from "./styles";
 
 type Props = {
   formData: any;
@@ -67,7 +68,7 @@ export default function SoundEditForm({
   function handleCancelClick(event: any) {}
 
   return (
-    <div className="container sound-edit-form-container">
+    <Container>
       <div className="sound-edit-form-div" ref={editBoxRef}>
         <div className="sound-edit-form-title">
           <h2>Editar detalhes</h2>
@@ -163,6 +164,6 @@ export default function SoundEditForm({
           </div> */}
         </form>
       </div>
-    </div>
+    </Container>
   );
 }

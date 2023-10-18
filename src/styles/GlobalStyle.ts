@@ -25,6 +25,25 @@ export default createGlobalStyle`
     body {
         background-color: var(--background-color);
         color: var(--white-color);
+
+        ::-webkit-scrollbar {
+          width: 8px;
+        }
+  
+        ::-webkit-scrollbar-thumb {
+          background-color: transparent;
+          border-radius: 4px;
+        }
+
+        &:hover {
+          ::-webkit-scrollbar-thumb {
+            background-color: #555561;
+          }
+
+          ::-webkit-scrollbar-thumb:hover {
+            background-color: #6b6b7a;
+          }
+        }
     };
 
     .box-hover {
@@ -52,4 +71,86 @@ export default createGlobalStyle`
         }
     };
 
+    @keyframes loading {
+        from {
+            transform: translateY(50px) translatex(0px);
+            opacity: 0;
+            // background-color: transparent;
+        }
+        to {
+            transform: translateY(0px) translatex(0px);
+            opacity: 1;
+            // background-color: #4b4b54;
+        }
+    }
+
+    @keyframes labelEffect {
+        from {
+            transform: translateY(10px) translatex(10px);
+            opacity: 0;
+            background-color: transparent;
+            font-size: 16px;
+        }
+        to {
+        opacity: 1;
+        transform: translateY(-10px) translatex(10px);
+        background-color: #232325;
+        font-size: 14px;
+        }
+    }
+
+    @keyframes subir {
+        from {
+            transform: translateY(10px); /* Começa 100 pixels abaixo */
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);     /* Volta à posição original */
+            opacity: 1;
+        }
+    }
+
+  .options-button {
+    position: relative;
+    width: 5px;
+    cursor: pointer;
+  }
+  .options-box-div {
+    border: 1px solid var(--border-gray-color);
+    box-shadow: 0 4px 5px rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 2px;
+    position: absolute;
+    min-height: 35px;
+    background-color: #444449;
+    color: var(--white-color);
+  }
+    .delete-div {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      border-radius: 3px;
+      padding: 5px 10px;
+    }
+      .delete-option-box-icon {
+        margin-right: 11px;
+        width: 15px;
+      }
+    .edit-div {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      width: 100%;
+      border-radius: 3px;
+      padding: 5px 10px;
+    }
+      .edit-option-box-icon {
+        margin-right: 11px;
+        width: 15px;
+      }
 `;

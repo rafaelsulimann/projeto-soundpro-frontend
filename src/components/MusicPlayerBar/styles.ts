@@ -10,7 +10,7 @@ export const LinhaBranca = styled.div`
 `;
 
 export const MusicPlayerBarContainer = styled.div`
-  min-height: 12vh;
+  min-height: 15vh;
   width: 100%;
   background-color: var(--music-dashboard-background-color);
   display: flex;

@@ -3,13 +3,16 @@ import SearchIcon from "../Icons/Search";
 import { Container } from "./styles";
 
 type Props = {
-    handleSubmit: any;
-    handleSearch: any;
+    onSearch: any;
     searchText: string;
 }
 
-export default function SearchBar({ handleSubmit, handleSearch, searchText }: Props) {
+export default function SearchBar({ onSearch, searchText }: Props) {
     const [isFocused, setIsFocused] = useState(false);
+
+    function handleSearch(event: any){
+      onSearch(event);
+    }
     
     function handleFocused() {
         setIsFocused(true);
@@ -23,7 +26,7 @@ export default function SearchBar({ handleSubmit, handleSearch, searchText }: Pr
     ? "1px solid var(--border-gray-color)"
     : "1px solid var(--line-gray-color)";
   return (
-    <Container onSubmit={handleSubmit}>
+    <Container>
       <div
         className="search-bar-form-div"
         style={{ border: searchBarBorderColor }}

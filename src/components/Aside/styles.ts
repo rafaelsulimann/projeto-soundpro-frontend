@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 export const Container = styled.aside`
-  width: 16%;
+  width: 17.7%;
   display: flex;
   flex-direction: column;
   padding-left: 10px;
@@ -10,14 +10,6 @@ export const Container = styled.aside`
     width: 35px;
     height: auto;
     fill: var(--purple-color);
-  }
-
-  @media (max-height: 713.60px) {
-    max-height: 83vh;
-  }
-  @media (min-height: 714px) {
-    min-height: 85vh;
-    max-height: 85vh;
   }
 
   ::-webkit-scrollbar-thumb {

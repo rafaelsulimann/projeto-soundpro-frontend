@@ -24,7 +24,7 @@ export const Container = styled.div`
     pointer-events: auto;
     -webkit-appearance: none; /* Remove a aparência padrão do navegador */
     position: relative;
-    top: 3.5px;
+    top: 4.5px;
     right: -2px;
     background-color: #fff; /* Cor da bolinha */
     width: 12px; /* Largura da bolinha */
