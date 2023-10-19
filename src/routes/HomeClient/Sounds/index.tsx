@@ -123,7 +123,7 @@ export default function Sounds() {
     }
     //Verifica se possui dois ou mais elementos na box de uploads
     if(hasTwoElementsInUploadBox()){
-      //se for igual o maior do que 2, então "true"
+      //se for igual ou maior do que 2, então "true"
       setIsTwoElementsInLoading(true);
     } else {
       //se não for, então "false"
@@ -131,9 +131,11 @@ export default function Sounds() {
     }
   },[webSocketsLoadingFiles]);
 
-  //1º - Verifica se a musica está tocando, pois caso não estiver, ele ativará a funcionalidade de obter a posição do mouse a cada 50 milisegundos e alterar a cor do background da table row
+  //1º - Verifica se a musica está tocando, pois caso não estiver, ele ativará a funcionalidade de obter a posição do mouse a cada 50 milisegundos e alterar a cor do background da table row que o mouse estiver cime no momento
   useEffect(() => {
+    //verifica se existe alguma musica tocando no momento
     if (!isPlaying) {
+      //se não estiver, então habilitamos a funcionalidade de obter a posição do mouse a cada 50 milissegundos e alterar a cor de fundo do table row que o mouse estiver em cima no momento
       enableHoveredTableRowWhenIsNotPlaying();
     }
   }, [isPlaying]);
@@ -264,36 +266,9 @@ export default function Sounds() {
     setFormData(forms.updateAll(formData, JSON.stringify(isEditPopupClicked)));
   }, []);
 
-  //verificar se o elemento que foi clicado é o "importar - DoComputador"
-  function handleInputFileClick(event: WheelEvent): boolean {
-    //obtem o elemento que o html que o mouse estiver posicionado em cima atualmente
-    const currentElement = document.elementFromPoint(
-      event.clientX,
-      event.clientY
-    );
-
-    //verificar se o elemento é do tipo <div>
-    const divElement = currentElement?.closest("div");
-
-    //se for <div>, verifica se possui o dataset name
-    if (divElement?.dataset.name) {
-
-      //se possuir, retorna "true"
-      return true;
-    } else {
-      //se não possuir, retorna "false"
-      return false;
-    }
-  }
-
   function handleSearch(event: any) {
-    isLastPage.current = true;
-    setSearchText(event.target.value);
-    setQueryParams((prevParams) => ({
-      ...prevParams,
-      page: 0,
-      name: event.target.value,
-    }));
+    updateSearchText(event.target.value);
+    updateQueryParams(event.target.value);
     searchPage();
   }
 
@@ -303,7 +278,7 @@ export default function Sounds() {
       (sound) => sound.id !== deletedSoundId
     );
     console.log("soundsWithoutDeletedSound", soundsWithoutDeletedSound);
-    setSounds((prevParam) => (prevParam = soundsWithoutDeletedSound));
+    updateSoundListAfterSoundDeleted(soundsWithoutDeletedSound);
   }
 
   function handleFileInputChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -355,9 +330,9 @@ export default function Sounds() {
   }
 
   function handleImportButtonClick(event: any) {
-    if (handleInputFileClick(event)) {
+    if (isFromComputerButtonClickInImportBox(event)) {
       return;
-    } else if (isImportButtonClicked) {
+    } else if (isImportBoxOptionOpen()) {
       console.log("Entrou no import");
       closeImportBoxOption();
     } else {
@@ -372,7 +347,7 @@ export default function Sounds() {
   }
 
   function handleYoutubeUrlChange(event: any) {
-    setYoutubeUrlText(event.target.value);
+    updateYoutubeUrlInputText(event.target.value);
   }
 
   function handleYoutubeUrlSubmitClick() {
@@ -476,6 +451,48 @@ export default function Sounds() {
     }
   }
 
+  function updateYoutubeUrlInputText(newValue: string){
+    setYoutubeUrlText(newValue);
+  }
+
+  //verificar se o elemento que foi clicado é o "importar - DoComputador"
+  function isFromComputerButtonClickInImportBox(event: WheelEvent): boolean {
+    //obtem o elemento que o html que o mouse estiver posicionado em cima atualmente
+    const currentElement = document.elementFromPoint(
+      event.clientX,
+      event.clientY
+    );
+
+    //verificar se o elemento é do tipo <div>
+    const divElement = currentElement?.closest("div");
+
+    //se for <div>, verifica se possui o dataset name
+    if (divElement?.dataset.name) {
+
+      //se possuir, retorna "true"
+      return true;
+    } else {
+      //se não possuir, retorna "false"
+      return false;
+    }
+  }
+
+  function updateSearchText(newValue: string){
+    setSearchText(newValue);
+  }
+
+  function updateQueryParams(newQueryParams: string){
+    setQueryParams((prevParams) => ({
+      ...prevParams,
+      page: 0,
+      name: newQueryParams,
+    }));
+  }
+
+  function updateSoundListAfterSoundDeleted(soundsWithoutDeletedSound: AudioDTO[]){
+    setSounds((prevParam) => (prevParam = soundsWithoutDeletedSound));
+  }
+
   function formatDate(data: string): string {
     const date = parseISO(data);
     return format(date, "dd/MM/yyyy HH:mm");
@@ -487,11 +504,14 @@ export default function Sounds() {
   }
 
   function enableHoveredTableRowWhenIsNotPlaying(){
+    //cria o evento de WheelEvent que será acionado quando o usuario utilizar o scroll na tela
     window.onwheel = function (event: WheelEvent) {
       var scrollHoveredInterval = setInterval(() => {
+        //habilita o hover do table row específico que o mouse estiver em cima a cada 50 milissegundos
         insertHoverInTableRowWhenMouseIsUp(event);
       }, 50);
       setTimeout(() => {
+        //para a atualização após 150 milissegundos, ou seja, após 3 atualizações
         clearTimeout(scrollHoveredInterval);
       }, 150);
     };
@@ -669,15 +689,7 @@ export default function Sounds() {
   }
 
   function handleEditPopupClick(){
-    if(isSoundOptionBoxOpenBy3Points()){
-      closeSoundOptionsBoxBy3Points();
-    }
-    if(isSoundOptionBoxOpenByRightClick()){
-      closeSoundOptionsBoxByRightClick();
-    }
-    if (isEditPopupOpen()) {
-      closeEditPopup();
-    }
+    closeEditPopup();
   }
 
   function isEditPopupOpen(){
