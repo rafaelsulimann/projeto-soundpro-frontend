@@ -398,6 +398,10 @@ export default function Sounds() {
     //   })
   }
 
+  function handleEditPopupClick(){
+    closeEditPopup();
+  }
+
   function handleSubmit(formData: any) {
     console.log("formData", formData);
     console.log("isEditPopupClicked", isEditPopupClicked);
@@ -686,10 +690,6 @@ export default function Sounds() {
     const requestId = uuidv4();
     setWebSocketsLoadingFiles(prevState => [...prevState, {requestId: requestId}]);
     return requestId;
-  }
-
-  function handleEditPopupClick(){
-    closeEditPopup();
   }
 
   function isEditPopupOpen(){

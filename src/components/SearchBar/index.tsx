@@ -1,6 +1,6 @@
 import { useState } from "react";
 import SearchIcon from "../Icons/Search";
-import { Container } from "./styles";
+import { Container, SearchBarDiv, SearchBarInputText } from "./styles";
 
 type Props = {
     onSearch: any;
@@ -27,21 +27,19 @@ export default function SearchBar({ onSearch, searchText }: Props) {
     : "1px solid var(--line-gray-color)";
   return (
     <Container>
-      <div
-        className="search-bar-form-div"
+      <SearchBarDiv
         style={{ border: searchBarBorderColor }}
       >
         <SearchIcon fill="#999aa7" className="search-bar-icon" />
-        <input
+        <SearchBarInputText
           value={searchText}
           type="text"
           placeholder="Procurar"
           onChange={handleSearch}
           onFocus={handleFocused}
           onBlur={handleBlur}
-          className="search-bar-input"
         />
-      </div>
+      </SearchBarDiv>
     </Container>
   );
 }
