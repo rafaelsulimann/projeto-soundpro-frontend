@@ -7,28 +7,35 @@ export const Container = styled.div`
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
+`;
 
-  .sound-edit-form-div {
-    position: absolute;
-    width: 450px;
-    height: 420px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: #232325;
+export const EditPopupDiv = styled.div`
+  position: absolute;
+  width: 450px;
+  height: 420px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #232325;
+  color: white;
+  border-radius: 10px;
+  padding: 20px;
+`;
+
+export const EditPopupTitleDiv = styled.div`
+  display: flex;
+`;
+
+export const EditPopupTitle = styled.h2`
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 700;
+`;
+
+export const EditPopupForm = styled.form`
+  input {
+    width: 100%;
     color: white;
-    border-radius: 10px;
-    padding: 20px;
-  }
-  .sound-edit-form-title {
-    display: flex;
-  }
-  .sound-edit-form-title h2 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    font-weight: 700;
-  }
-  .sound-edit-form input {
     margin-bottom: 20px;
     padding: 15px 10px;
     background-color: transparent;
@@ -38,7 +45,8 @@ export const Container = styled.div`
       outline: none;
     }
   }
-  .sound-edit-form label {
+
+  label {
     position: absolute;
     padding: 15px 10px;
     pointer-events: none;
@@ -47,13 +55,17 @@ export const Container = styled.div`
     animation-duration: 0.3s; /* A duração da animação é de 2 segundos */
     animation-timing-function: ease-out; /* Efeito de desaceleração ao final da animação */
   }
-  .sound-edit-form-input-text {
-    width: 100%;
-    height: 100%;
-    display: flex;
-  }
-  .sound-edit-form-input-text input {
-    color: #fff;
-    width: 100%;
-  }
 `;
+
+export const EditPopupFormInputTextDiv = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+`;
+
+export const EditPopupFormSubmitButton = styled.input`
+  color: #fff;
+  width: 100%;
+`;
+
+export const ErrorMessageTextDiv = styled.div``;

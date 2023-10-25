@@ -1,4 +1,15 @@
-import { Table } from "./styles";
+import {
+  Add,
+  ColumnTitle,
+  Id,
+  Liked,
+  Name,
+  Options,
+  Table,
+  TableBody,
+  TableHeader,
+  TableHeaderRow,
+} from "./styles";
 import { AudioDTO } from "../../models/audio";
 import SoundSampleRow from "../SoundSampleRow";
 
@@ -29,13 +40,12 @@ export default function SoundsDashBoard({
   on3PointsButtonClick,
   soundRightButtonClickedId,
   onRightButtonClick,
-  updateSoundDTO
+  updateSoundDTO,
 }: Props) {
-  
   function handleDeleteAudioFile(deletedSoundId: string) {
     onDeleteAudioFile(deletedSoundId);
   }
-    
+
   function handleUpdateAudioFile(updateSound: AudioDTO) {
     onUpdateAudioFile(updateSound);
   }
@@ -54,20 +64,20 @@ export default function SoundsDashBoard({
 
   return (
     <Table>
-      <thead className="sample-dashboard-table-header">
-        <tr className="sample-dashboard-table-header-row">
-          <th className="id id-header">
-            <h4>#</h4>
-          </th>
-          <th className="name name-header">
-            <h4>Nome</h4>
-          </th>
-          <th className="like like-header"></th>
-          <th className="add add-header"></th>
-          <th className="options options-header"></th>
-        </tr>
-      </thead>
-      <tbody className="sample-dashboard-table-body">
+      <TableHeader>
+        <TableHeaderRow>
+          <Id className="id id-header">
+            <ColumnTitle>#</ColumnTitle>
+          </Id>
+          <Name className="name name-header">
+            <ColumnTitle>Nome</ColumnTitle>
+          </Name>
+          <Liked className="like like-header"></Liked>
+          <Add className="add add-header"></Add>
+          <Options className="options options-header"></Options>
+        </TableHeaderRow>
+      </TableHeader>
+      <TableBody className="sample-dashboard-table-body">
         {sounds.map((sound, index) => (
           <SoundSampleRow
             audio={sound}
@@ -86,7 +96,7 @@ export default function SoundsDashBoard({
             updatedAudio={updateSoundDTO}
           />
         ))}
-      </tbody>
+      </TableBody>
     </Table>
   );
 }

@@ -1,5 +1,3 @@
-import './styles.scss'
-
 type Props = {
     simbolColor: string;
     className: string;

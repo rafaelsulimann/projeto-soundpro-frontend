@@ -1,8 +1,17 @@
 import FormInput from "../FormInput";
 import * as forms from "../../utils/forms";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { AudioDTO } from "../../models/audio";
-import { Container } from "./styles";
+import {
+  Container,
+  EditPopupDiv,
+  EditPopupTitle,
+  EditPopupTitleDiv,
+  EditPopupForm,
+  ErrorMessageTextDiv,
+  EditPopupFormInputTextDiv,
+  EditPopupFormSubmitButton,
+} from "./styles";
 
 type Props = {
   formData: any;
@@ -55,7 +64,6 @@ export default function SoundEditForm({
     );
   }
 
-
   function handleTurnDirty(name: string) {
     onTurnDirty(forms.dirtyAndValidate(formData, name));
   }
@@ -69,12 +77,12 @@ export default function SoundEditForm({
 
   return (
     <Container>
-      <div className="sound-edit-form-div" ref={editBoxRef}>
-        <div className="sound-edit-form-title">
-          <h2>Editar detalhes</h2>
-        </div>
-        <form className="sound-edit-form">
-          <div className="sound-edit-form-input-text">
+      <EditPopupDiv ref={editBoxRef}>
+        <EditPopupTitleDiv>
+          <EditPopupTitle>Editar detalhes</EditPopupTitle>
+        </EditPopupTitleDiv>
+        <EditPopupForm>
+          <EditPopupFormInputTextDiv>
             <FormInput
               {...formData.name}
               className="form-input"
@@ -82,9 +90,11 @@ export default function SoundEditForm({
               onTurnDirty={handleTurnDirty}
               labelId={formData.name.id}
             />
-            <div className="error-message">{formData.name.message}</div>
-          </div>
-          <div className="sound-edit-form-input-text">
+            <ErrorMessageTextDiv className="error-message">
+              {formData.name.message}
+            </ErrorMessageTextDiv>
+          </EditPopupFormInputTextDiv>
+          <EditPopupFormInputTextDiv>
             <FormInput
               {...formData.soundType}
               className="form-input"
@@ -92,9 +102,11 @@ export default function SoundEditForm({
               onTurnDirty={handleTurnDirty}
               labelId={formData.soundType.id}
             />
-            <div className="error-message">{formData.soundType.message}</div>
-          </div>
-          <div className="sound-edit-form-input-text">
+            <ErrorMessageTextDiv className="error-message">
+              {formData.soundType.message}
+            </ErrorMessageTextDiv>
+          </EditPopupFormInputTextDiv>
+          <EditPopupFormInputTextDiv>
             <FormInput
               {...formData.creationDate}
               className="form-input"
@@ -102,9 +114,11 @@ export default function SoundEditForm({
               onTurnDirty={handleTurnDirty}
               labelId={formData.creationDate.id}
             />
-            <div className="error-message">{formData.creationDate.message}</div>
-          </div>
-          <div className="sound-edit-form-input-text">
+            <ErrorMessageTextDiv className="error-message">
+              {formData.creationDate.message}
+            </ErrorMessageTextDiv>
+          </EditPopupFormInputTextDiv>
+          <EditPopupFormInputTextDiv>
             <FormInput
               {...formData.lastUpdatedDate}
               className="form-input"
@@ -112,58 +126,20 @@ export default function SoundEditForm({
               onTurnDirty={handleTurnDirty}
               labelId={formData.lastUpdatedDate.id}
             />
-            <div className="error-message">
+            <ErrorMessageTextDiv className="error-message">
               {formData.lastUpdatedDate.message}
-            </div>
-          </div>
-          <div className="sound-edit-form-input-text">
-            <input
+            </ErrorMessageTextDiv>
+          </EditPopupFormInputTextDiv>
+          <EditPopupFormInputTextDiv>
+            <EditPopupFormSubmitButton
               type="submit"
               value="Salvar"
               className="sound-edit-form-submit-button"
               onClick={handleSubmit}
             />
-          </div>
-          {/* <div className="sound-edit-form-input-text">
-            <FormSelect
-              {...formData.categories}
-              className="form-input input-select"
-              styles={selectStyles}
-              isMulti
-              options={categories}
-              noOptionsMessage={() => "Não há mais opções disponíveis"}
-              getOptionValue={(obj: any) => String(obj.id)}
-              getOptionLabel={(obj: any) => obj.name}
-              onTurnDirty={handleTurnDirty}
-              onChange={(obj: any) => {
-                handleSelectChange(obj);
-              }}
-            />
-            <div className="error-message">{formData.categories.message}</div>
-          </div> */}
-          {/* <div className="sound-edit-form-input-text input-description">
-            <label htmlFor={formData.description.id}>Descrição</label>
-            <FormTextarea
-              {...formData.description}
-              className="form-input"
-              onChange={handleChange}
-              onTurnDirty={handleTurnDirty}
-            />
-            <div className="error-message">{formData.description.message}</div>
-          </div> */}
-          {/* <div className="sound-edit-form-buttons">
-            <SecondButton
-              value="Cancelar"
-              buttonClassName="sound-edit-form-button"
-              onClick={handleCancelClick}
-            />
-            <PrimaryButton
-              value="Salvar"
-              buttonClassName="sound-edit-form-button"
-            />
-          </div> */}
-        </form>
-      </div>
+          </EditPopupFormInputTextDiv>
+        </EditPopupForm>
+      </EditPopupDiv>
     </Container>
   );
 }

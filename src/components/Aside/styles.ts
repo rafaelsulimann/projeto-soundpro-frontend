@@ -12,14 +12,6 @@ export const Container = styled.aside`
     fill: var(--purple-color);
   }
 
-  ::-webkit-scrollbar-thumb {
-    background-color: transparent;
-    border-radius: 4px;
-  }
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  
   &:hover {
     ::-webkit-scrollbar-thumb {
       background-color: #2c2c32;

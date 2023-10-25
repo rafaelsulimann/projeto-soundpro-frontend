@@ -11,7 +11,18 @@ import MusicGifIcon from "../Icons/MusicGif";
 import BoxOption from "../BoxOption";
 import deleteIcon from "../../assets/delete-button.svg";
 import editIcon from "../../assets/edit-button.svg";
-import { Container } from "./styles";
+import {
+  AddButton,
+  LikedButtonDiv,
+  OptionsBoxDiv,
+  PlayPauseButton,
+  SoundButtons,
+  SoundImage,
+  SoundInfos,
+  SoundInfosDiv,
+  SoundName,
+  TableBodyRow,
+} from "./styles";
 
 type Props = {
   audio: AudioDTO;
@@ -54,72 +65,75 @@ export default function SoundSampleRow({
   const [firstRenderScrollRowHoveredIdCount, setFirstRenderCount] = useState(0);
   const trRef = useRef<HTMLTableRowElement>(null);
 
+  //1º - Seta o Audio do SoundSampleRow
   useEffect(() => {
-    setBlobSrc(audio.audioUrl);
+    loadAudio();
   }, []);
 
+  //1º - interrompe a primeira execução quando a tela é renderizada
+  //2º - verifica se algum audio foi alterado o nome, ele verificar se este audio que foi alterado é igual ao que está tocando ou em stand by no reproduto de musica, pois então nós iremos atualizar a referencia do audio no firebase storage.
   useEffect(() => {
     if (updatedAudioCount === 0) {
       setUpdateAudioCount((prevState) => prevState + 1);
       return;
     }
     if (
-      (updatedAudio.id === audio.id && isPlaying && blobSrc !== src) ||
-      (updatedAudio.id === audio.id && !isPlaying && blobSrc !== src)
+      isThisRowTheLastUpdatedAudioAndIsCurrentPlaying() ||
+      isThisRowTheLastUpdatedAudioAndIsNotPlaying()
     ) {
-      setBlobSrc(updatedAudio.audioUrl);
+      loadUpdatedAudio();
     }
   }, [updatedAudio, isPlaying]);
 
+  //1º - interrompe a primeira execução quando a tela é renderizada
+  //2º - Verificar se o mouse está atualmente em cima deste row ou não, e caso estiver, ele irá setar o estado de "isHovered" para true
   useEffect(() => {
     if (firstRenderScrollRowHoveredIdCount === 0) {
-      setFirstRenderCount(1);
+      setFirstRenderCount((prevState) => prevState + 1);
       return;
     }
-    if (scrollRowHoveredId === audio.id) {
-      if (!isHovered) {
-        setIsHovered(true);
+    if (theMouseIsUpFromThisRow()) {
+      if (!thisRowIsCurrentlyHovered()) {
+        enableHover();
       }
       return;
     }
-    if (isHovered) {
-      setIsHovered(false);
+    if (thisRowIsCurrentlyHovered()) {
+      disableHover();
       return;
     }
   }, [scrollRowHoveredId]);
 
   useEffect(() => {
-    if (isRightButtonClicked && boxRef.current) {
+    if (isSoundOptionBoxOpenByRightClick()) {
       // Adiciona event listener para o evento "click" no objeto window
-      window.addEventListener("click", handleWindowClick);
+      window.addEventListener("click", validateMouseClickInSoundOptionBox);
     } else {
       // Remove event listener quando a box é fechada
-      window.removeEventListener("click", handleWindowClick);
+      window.removeEventListener("click", validateMouseClickInSoundOptionBox);
     }
 
     // Função que é chamada quando o evento "click" é acionado no objeto window
-    function handleWindowClick(event: MouseEvent) {
-      if (!boxRef.current?.contains(event.target as Node)) {
+    function validateMouseClickInSoundOptionBox(event: MouseEvent) {
+      if (!isMouseClickInSoundOptionBox(event)) {
         // Fecha a box se o elemento clicado não estiver dentro da box ou do botão
-        onRightButtonClick(audio);
-        setIsBoxOptionOpen(false);
+        closeSoundOptionsBoxByRightClick();
       }
     }
 
     // Função que é chamada quando o componente é desmontado
     return () => {
-      window.removeEventListener("click", handleWindowClick);
+      window.removeEventListener("click", validateMouseClickInSoundOptionBox);
     };
   }, [isRightButtonClicked]);
 
   function handleDeleteClick() {
-    onRightButtonClick(audio);
-    setIsBoxOptionOpen(false);
+    closeSoundOptionsBoxByRightClick();
     soundService
       .deleteSoundById(audio.id)
       .then(() => {
         console.log(`Sound ${audio.name} deleted successfully`);
-        onDeleteAudioFile(audio.id);
+        excludesDeletedSoundInDashboard();
       })
       .catch((error) => {
         console.log(error.data);
@@ -127,30 +141,15 @@ export default function SoundSampleRow({
   }
 
   function handleEditClick() {
-    const originalName = audio.name;
-    const soundName = "zatura";
-    onRightButtonClick(audio);
-    // setIsBoxOptionOpen(false);
-    onEditAudioFile(audio);
+    openEditPopup();
   }
 
   function handleDownloadClick() {
-    onRightButtonClick(audio);
-    setIsBoxOptionOpen(false);
+    closeSoundOptionsBoxByRightClick();
     soundService
       .downloadSound(audio.id)
       .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement("a");
-        const audioName = audio.name + ".mp3";
-        link.href = url;
-        link.setAttribute("download", audioName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Libera o objeto URL
-        window.URL.revokeObjectURL(url);
+        startDownload(response);
       })
       .catch((error) => {
         console.log(error);
@@ -158,48 +157,35 @@ export default function SoundSampleRow({
   }
 
   function handleUpdateSrc(event: any, newSrc: string, liked: boolean) {
-    event.stopPropagation();
-    if (is3PointsClicked) {
-      on3PointsClick(audio);
+    removeEventDefaultFunction(event);
+    if (isSoundOptionBoxOpenBy3Points()) {
+      closeSoundOptionBoxBy3Points();
     }
-    if (src === "" || src === undefined) {
-      setSrc(newSrc);
-      setLiked(liked);
+    if (notHaveSoundInPlayer()) {
+      insertNewSoundInPlayer(newSrc, liked);
     }
-    if (src === newSrc) {
+    if (isThisSoundEqualsCurrentSound(newSrc)) {
       if (isPlaying) {
-        setIsPlaying(!isPlaying);
+        pause();
       } else {
-        setIsPlaying(!isPlaying);
+        play();
       }
     } else {
-      setSrc(newSrc);
-      setLiked(liked);
+      insertNewSoundInPlayer(newSrc, liked);
       if (isPlaying) {
-        setIsPlaying(!isPlaying);
+        pause();
       }
     }
   }
 
   function handleRowClick() {
-    if (isRightButtonClicked) {
-      onRightButtonClick(audio);
-      setRightClickPosition({ x: 0, y: 0 });
-      setIsBoxOptionOpen(false);
-      onClick(audio);
+    if (isSoundOptionBoxOpenByRightClick()) {
+      selectSound();
     } else {
-      if (isSelected) {
-        console.log("Entrou no if do is this sound selected");
-        onRightButtonClick(audio);
-        setRightClickPosition({ x: 0, y: 0 });
-        setIsBoxOptionOpen(false);
-        onClick(audio);
+      if (isThisSoundCurrentlySelected()) {
+        unselectSound();
       } else {
-        console.log("não entrou no if do is this sound selected");
-        onRightButtonClick(audio);
-        setRightClickPosition({ x: 0, y: 0 });
-        setIsBoxOptionOpen(false);
-        onClick(audio);
+        selectSound();
       }
     }
   }
@@ -214,30 +200,171 @@ export default function SoundSampleRow({
 
   function handleRightClick(event: React.MouseEvent<HTMLTableRowElement>) {
     event.preventDefault();
-    if (!isSelected) {
-      onClick(audio);
+    if (!isThisSoundCurrentlySelected()) {
+      selectSound();
     }
-    if (is3PointsClicked) {
-      on3PointsClick(audio);
+    if (isSoundOptionBoxOpenBy3Points()) {
+      closeSoundOptionsBoxBy3points();
     }
-    setRightClickPosition({ x: event.clientX, y: event.clientY });
-    if (isRightButtonClicked) {
-      setIsBoxOptionOpen(true);
-      return;
-    }
-    onRightButtonClick(audio);
-    setIsBoxOptionOpen(true);
+    openSoundOptionBoxByRightClick(event);
   }
 
   function handlePoints3ButtonClick() {
-    if (!isSelected) {
-      onClick(audio);
+    if (!isThisSoundCurrentlySelected()) {
+      selectSound();
     }
-    if (isRightButtonClicked) {
-      onRightButtonClick(audio);
+    if (isSoundOptionBoxOpenByRightClick()) {
+      closeSoundOptionsBoxByRightClick();
     }
+    openSoundOptionBoxBy3Points();
+  }
+
+  function loadAudio() {
+    setBlobSrc(audio.audioUrl);
+  }
+
+  function isThisRowTheLastUpdatedAudioAndIsCurrentPlaying() {
+    return updatedAudio.id === audio.id && isPlaying && blobSrc !== src;
+  }
+
+  function isThisRowTheLastUpdatedAudioAndIsNotPlaying() {
+    return updatedAudio.id === audio.id && !isPlaying && blobSrc !== src;
+  }
+
+  function loadUpdatedAudio() {
+    setBlobSrc(updatedAudio.audioUrl);
+  }
+
+  function theMouseIsUpFromThisRow() {
+    return scrollRowHoveredId === audio.id;
+  }
+
+  function thisRowIsCurrentlyHovered() {
+    return isHovered;
+  }
+
+  function enableHover() {
+    setIsHovered(true);
+  }
+
+  function disableHover() {
+    setIsHovered(false);
+  }
+
+  function isSoundOptionBoxOpenByRightClick() {
+    return isRightButtonClicked && boxRef.current;
+  }
+
+  function isMouseClickInSoundOptionBox(event: MouseEvent) {
+    return boxRef.current?.contains(event.target as Node);
+  }
+
+  function closeSoundOptionsBoxByRightClick() {
+    onRightButtonClick(audio);
+    setRightClickPosition({ x: 0, y: 0 });
+    unlockScrollInMainDiv();
+  }
+
+  function closeSoundOptionsBoxBy3points() {
     on3PointsClick(audio);
-    setIsBoxOptionOpen(!is3PointsClicked);
+    unlockScrollInMainDiv();
+  }
+
+  function unlockScrollInMainDiv() {
+    setIsBoxOptionOpen(false);
+  }
+
+  function excludesDeletedSoundInDashboard() {
+    onDeleteAudioFile(audio.id);
+  }
+
+  function openEditPopup() {
+    onRightButtonClick(audio);
+    onEditAudioFile(audio);
+  }
+
+  function startDownload(response: any) {
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement("a");
+    const audioName = audio.name + ".mp3";
+    link.href = url;
+    link.setAttribute("download", audioName);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  function removeEventDefaultFunction(event: any) {
+    event.stopPropagation();
+  }
+
+  function pause() {
+    setIsPlaying(!isPlaying);
+  }
+
+  function play() {
+    setIsPlaying(!isPlaying);
+  }
+
+  function isThisSoundEqualsCurrentSound(newSrc: string) {
+    return src === newSrc;
+  }
+
+  function insertNewSoundInPlayer(newSrc: string, liked: boolean) {
+    setSrc(newSrc);
+    setLiked(liked);
+  }
+
+  function notHaveSoundInPlayer() {
+    return src === "" || src === undefined;
+  }
+
+  function closeSoundOptionBoxBy3Points() {
+    on3PointsClick(audio);
+  }
+
+  function isSoundOptionBoxOpenBy3Points() {
+    return is3PointsClicked;
+  }
+
+  function selectSound() {
+    closeSoundOptionsBoxByRightClick();
+    onClick(audio);
+  }
+
+  function unselectSound() {
+    closeSoundOptionsBoxByRightClick();
+    onClick(audio);
+  }
+
+  function isThisSoundCurrentlySelected() {
+    return isSelected;
+  }
+
+  function openSoundOptionBoxByRightClick(
+    event: React.MouseEvent<HTMLTableRowElement>
+  ) {
+    updatePositionBox(event);
+    if (isSoundOptionBoxOpenByRightClick()) {
+      lockScrollInMainDiv();
+      return;
+    }
+    onRightButtonClick(audio);
+    lockScrollInMainDiv();
+  }
+
+  function lockScrollInMainDiv() {
+    setIsBoxOptionOpen(true);
+  }
+
+  function updatePositionBox(event: React.MouseEvent<HTMLTableRowElement>) {
+    setRightClickPosition({ x: event.clientX, y: event.clientY });
+  }
+
+  function openSoundOptionBoxBy3Points() {
+    on3PointsClick(audio);
+    lockScrollInMainDiv();
   }
 
   const bgSoundRowHoverColor = isHovered
@@ -249,11 +376,10 @@ export default function SoundSampleRow({
 
   return (
     <>
-      <Container
-        id={"sounds-samples-row"}
+      <TableBodyRow
+        id="sounds-samples-row"
         ref={trRef}
         data-id={audio.id}
-        className="sounds-samples-row"
         onMouseEnter={handleRowMouseEnterHover}
         onMouseLeave={handleRowMouseLeaveHover}
         onClick={handleRowClick}
@@ -264,7 +390,7 @@ export default function SoundSampleRow({
             : bgSoundRowHoverColor,
         }}
       >
-        <td className="play-pause-button first-td">
+        <PlayPauseButton>
           {src === `${blobSrc}` ? (
             isPlaying ? (
               isHovered ? (
@@ -301,34 +427,34 @@ export default function SoundSampleRow({
           ) : (
             index
           )}
-        </td>
-        <td className="sound-infos">
-          <div className="sound-infos-div">
-            <img src={soundImg} alt="soundImg" />
-            <h3>{audio?.name}</h3>
-          </div>
-        </td>
-        <td className="sounds-samples-buttons">
+        </PlayPauseButton>
+        <SoundInfos>
+          <SoundInfosDiv>
+            <SoundImage src={soundImg} alt="soundImg" />
+            <SoundName>{audio?.name}</SoundName>
+          </SoundInfosDiv>
+        </SoundInfos>
+        <SoundButtons>
           {audio.liked ? (
-            <div className="like-button-div">
+            <LikedButtonDiv className="like-button-div">
               <LikeButton
                 simbolColor="rgb(166, 54, 54)"
                 className="like-button"
               />
-            </div>
+            </LikedButtonDiv>
           ) : (
-            <div className="like-button-div">
+            <LikedButtonDiv className="like-button-div">
               <LikeButton
                 simbolColor="var(--orange-color)"
                 className="like-button"
               />
-            </div>
+            </LikedButtonDiv>
           )}
-        </td>
-        <td className="sounds-samples-buttons">
-          <h4>+</h4>
-        </td>
-        <td className="sounds-samples-buttons last-td">
+        </SoundButtons>
+        <SoundButtons>
+          <AddButton>+</AddButton>
+        </SoundButtons>
+        <SoundButtons className="last-td">
           <Points3Button
             simbolColor="#999AA7"
             className="options-button"
@@ -338,46 +464,44 @@ export default function SoundSampleRow({
             onButtonClick={handlePoints3ButtonClick}
             isButtonClick={is3PointsClicked}
           />
-        </td>
-      </Container>
-        <div>
-          {isRightButtonClicked && rightClickPosition && isSelected && (
-            <div
-              className="options-box-div"
-              style={{
-                position: "absolute",
-                top: rightClickPosition.y - 102,
-                left: rightClickPosition.x,
-              }}
-              ref={boxRef}
-            >
-              <BoxOption
-                optionTextName="Excluir"
-                className={"delete-div"}
-                imgClassName={"delete-option-box-icon"}
-                iconSrc={deleteIcon}
-                iconAltName="Delete"
-                onFunctionClick={handleDeleteClick}
-              />
-              <BoxOption
-                optionTextName="Editar"
-                className={"edit-div"}
-                imgClassName={"edit-option-box-icon"}
-                iconSrc={editIcon}
-                iconAltName="Edit"
-                onFunctionClick={handleEditClick}
-              />
-              <BoxOption
-                optionTextName="Download"
-                className={"edit-div"}
-                imgClassName={"edit-option-box-icon"}
-                iconSrc={editIcon}
-                iconAltName="Download"
-                onFunctionClick={handleDownloadClick}
-              />
-            </div>
-          )}
-        </div>
+        </SoundButtons>
+      </TableBodyRow>
+      {isRightButtonClicked && rightClickPosition && isSelected && (
+        <OptionsBoxDiv
+          className="options-box-div"
+          style={{
+            position: "absolute",
+            top: rightClickPosition.y - 102,
+            left: rightClickPosition.x,
+          }}
+          ref={boxRef}
+        >
+          <BoxOption
+            optionTextName="Excluir"
+            className={"delete-div"}
+            imgClassName={"delete-option-box-icon"}
+            iconSrc={deleteIcon}
+            iconAltName="Delete"
+            onFunctionClick={handleDeleteClick}
+          />
+          <BoxOption
+            optionTextName="Editar"
+            className={"edit-div"}
+            imgClassName={"edit-option-box-icon"}
+            iconSrc={editIcon}
+            iconAltName="Edit"
+            onFunctionClick={handleEditClick}
+          />
+          <BoxOption
+            optionTextName="Download"
+            className={"edit-div"}
+            imgClassName={"edit-option-box-icon"}
+            iconSrc={editIcon}
+            iconAltName="Download"
+            onFunctionClick={handleDownloadClick}
+          />
+        </OptionsBoxDiv>
+      )}
     </>
   );
 }

@@ -5,7 +5,7 @@ import { Container } from "./styles";
 export default function Aside() {
   return (
     <Container>
-      <Logo fill="var(--purple-color)" className="logoImg"/>
+      <Logo fill="var(--purple-color)" className="logoImg" />
       <MenuList />
     </Container>
   );

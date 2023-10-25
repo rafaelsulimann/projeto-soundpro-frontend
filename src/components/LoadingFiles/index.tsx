@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { WebSocketLoadingFilesDTO } from "../../models/loadingAudioDTO";
 import LoadingFile from "../LoadingFile";
-import { Container } from "./styles";
+import { CloseButton, CloseButtonDiv, Container, Divider, LoadingFileHeaderButtons, LoadingFileHeaderDiv, LoadingFileHeaderTitle, LoadingFileUploadListDiv, MinimizeButton, MinimizeButtonDiv } from "./styles";
 
 type Props = {
   isTwoElementsInLoading: boolean;
@@ -51,11 +51,10 @@ export default function LoadingFiles({
     isMinimizedActive={isTwoElementsInLoading && isMinimizedActive || isMinimizedActive}
     isTwoElementsInLoading={isTwoElementsInLoading}
     >
-      <div className="loading-files-header">
-        <h2>Uploads</h2>
-        <div className="loading-files-header-buttons">
-          <div
-            className="minimize-button-div"
+      <LoadingFileHeaderDiv>
+        <LoadingFileHeaderTitle>Uploads</LoadingFileHeaderTitle>
+        <LoadingFileHeaderButtons>
+          <MinimizeButtonDiv
             onMouseEnter={handleMinimizeMouseEnterHover}
             onMouseLeave={handleMinimizeMouseLeaveHover}
             onClick={handleMinimizeUploadButton}
@@ -65,10 +64,9 @@ export default function LoadingFiles({
                 : "transparent",
             }}
           >
-            <div className="minimize-button"></div>
-          </div>
-          <div
-            className="close-button"
+            <MinimizeButton></MinimizeButton>
+          </MinimizeButtonDiv>
+          <CloseButtonDiv
             onMouseEnter={handleClosedMouseEnterHover}
             onMouseLeave={handleClosedMouseLeaveHover}
             onClick={handleClosedUploadButton}
@@ -78,19 +76,19 @@ export default function LoadingFiles({
                 : "transparent",
             }}
           >
-            <h2>x</h2>
-          </div>
-        </div>
-      </div>
-      <hr />
-      <div className="loading-file-upload-list">
+            <CloseButton>x</CloseButton>
+          </CloseButtonDiv>
+        </LoadingFileHeaderButtons>
+      </LoadingFileHeaderDiv>
+      <Divider isMinimizedActive={isMinimizedActive}/>
+      <LoadingFileUploadListDiv isMinimizedActive={isMinimizedActive}>
         {webSocketsLoadingFiles.map((file) => (
           <LoadingFile
             loadingRequestId={file.requestId}
-            isTwoElementsInLoading={webSocketsLoadingFiles.length > 2}
+            isTwoElementsInLoading={webSocketsLoadingFiles.length >= 2}
           />
         ))}
-      </div>
+      </LoadingFileUploadListDiv>
     </Container>
   );
 }

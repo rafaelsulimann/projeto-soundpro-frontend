@@ -25,25 +25,6 @@ export default createGlobalStyle`
     body {
         background-color: var(--background-color);
         color: var(--white-color);
-
-        ::-webkit-scrollbar {
-          width: 8px;
-        }
-  
-        ::-webkit-scrollbar-thumb {
-          background-color: transparent;
-          border-radius: 4px;
-        }
-
-        &:hover {
-          ::-webkit-scrollbar-thumb {
-            background-color: #555561;
-          }
-
-          ::-webkit-scrollbar-thumb:hover {
-            background-color: #6b6b7a;
-          }
-        }
     };
 
     .box-hover {

@@ -3,14 +3,14 @@ import { createPopper } from "@popperjs/core";
 import BoxOption from "../../../BoxOption";
 import deleteIcon from "../../../../assets/delete-button.svg";
 import editIcon from "../../../../assets/edit-button.svg";
-import "./styles.scss";
+import { Container, OptionsBoxDiv } from "./styles";
 
 type Props = {
   simbolColor: string;
   className: string;
   onDeleteClick: any;
   onEditClick: any;
-  onDownloadClick: any
+  onDownloadClick: any;
   onButtonClick: any;
   isButtonClick: boolean;
 };
@@ -22,7 +22,7 @@ export default function Points3Button({
   onEditClick,
   onDownloadClick,
   onButtonClick,
-  isButtonClick
+  isButtonClick,
 }: Props) {
   const [isHovered, setIsHovered] = useState(false);
   const botaoRef = useRef<HTMLDivElement>(null);
@@ -32,19 +32,19 @@ export default function Points3Button({
     event.stopPropagation();
     onButtonClick(!isButtonClick);
   }
-  
+
   function handleDeleteClick() {
     onDeleteClick();
     onButtonClick();
     setIsHovered(false);
   }
-  
+
   function handleDownloadClick() {
     onDownloadClick();
     onButtonClick();
     setIsHovered(false);
   }
-  
+
   function handleEditClick() {
     onEditClick();
     onButtonClick();
@@ -91,7 +91,7 @@ export default function Points3Button({
 
   return (
     <>
-      <div ref={botaoRef} className="options-button-container">
+      <Container ref={botaoRef}>
         <svg
           width="6"
           height="26"
@@ -99,7 +99,7 @@ export default function Points3Button({
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className={className}
-          onClick={(event:any) => handleButtonClick(event)}
+          onClick={(event: any) => handleButtonClick(event)}
         >
           <circle
             cx="3"
@@ -126,37 +126,35 @@ export default function Points3Button({
             strokeWidth="0.5"
           />
         </svg>
-        <div>
-          {isButtonClick && (
-            <div ref={boxRef} className="options-box-div">
-              <BoxOption
-                optionTextName="Excluir"
-                className={"delete-div"}
-                imgClassName={"delete-option-box-icon"}
-                iconSrc={deleteIcon}
-                iconAltName="Delete"
-                onFunctionClick={handleDeleteClick}
-              />
-              <BoxOption
-                optionTextName="Editar"
-                className={"edit-div"}
-                imgClassName={"edit-option-box-icon"}
-                iconSrc={editIcon}
-                iconAltName="Edit"
-                onFunctionClick={handleEditClick}
-              />
-              <BoxOption
-                optionTextName="Download"
-                className={"edit-div"}
-                imgClassName={"edit-option-box-icon"}
-                iconSrc={editIcon}
-                iconAltName="Download"
-                onFunctionClick={handleDownloadClick}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+        {isButtonClick && (
+          <OptionsBoxDiv ref={boxRef}>
+            <BoxOption
+              optionTextName="Excluir"
+              className={"delete-div"}
+              imgClassName={"delete-option-box-icon"}
+              iconSrc={deleteIcon}
+              iconAltName="Delete"
+              onFunctionClick={handleDeleteClick}
+            />
+            <BoxOption
+              optionTextName="Editar"
+              className={"edit-div"}
+              imgClassName={"edit-option-box-icon"}
+              iconSrc={editIcon}
+              iconAltName="Edit"
+              onFunctionClick={handleEditClick}
+            />
+            <BoxOption
+              optionTextName="Download"
+              className={"edit-div"}
+              imgClassName={"edit-option-box-icon"}
+              iconSrc={editIcon}
+              iconAltName="Download"
+              onFunctionClick={handleDownloadClick}
+            />
+          </OptionsBoxDiv>
+        )}
+      </Container>
     </>
   );
 }
